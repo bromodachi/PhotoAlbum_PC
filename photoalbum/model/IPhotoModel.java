@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 /**
  * @author Mark Labrador
  *
@@ -7,5 +9,5 @@ package model;
  * In this model, the controller will only be able to retrieve the user, if it already knows the user by id.  This will be entered in by the user.
  */
 public interface IPhotoModel {
-
+	public IUser getUser(String id);
 }

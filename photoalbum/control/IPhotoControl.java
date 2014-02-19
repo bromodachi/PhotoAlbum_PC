@@ -1,8 +1,8 @@
 package control;
 
 import simpleview.IInteractiveUI;
-import model.IPhotoAdminModel;
+import model.IPhotoModel;
 
 public interface IPhotoControl {
-	public void run(String UserId, IPhotoAdminModel model, IInteractiveUI view);
+	public void run(String UserId, IPhotoModel model, IInteractiveUI view);
 }
