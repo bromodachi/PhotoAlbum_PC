@@ -3,6 +3,10 @@ package model;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @author Mark Labrador
+ *
+ */
 public interface IUser extends Serializable{
 	public String getUserId();
 	public void setUserId(String id);

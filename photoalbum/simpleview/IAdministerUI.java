@@ -1,6 +1,10 @@
 package simpleview;
 
 
+/**
+ * @author Mark Labrador
+ *
+ */
 public interface IAdministerUI extends IErrorUI{
 	public void listUsers();
 	public void addUser(String id, String name);

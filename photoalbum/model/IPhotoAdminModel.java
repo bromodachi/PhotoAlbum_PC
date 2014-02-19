@@ -4,8 +4,10 @@ import java.util.List;
 
 /**
  * @author Mark Labrador
- * This is to be used by the administrator that is first initiated by the CmdView class when the application is started
- * and the user has not logged in yet.
+ * <p>
+ * Used by administrator when initiated by the CmdView class at application startup
+ * and user is not logged in.
+ * </p>
  */
 public interface IPhotoAdminModel {
 	public void readUser(IUser user);

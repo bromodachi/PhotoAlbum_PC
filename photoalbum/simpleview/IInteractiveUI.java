@@ -2,6 +2,10 @@ package simpleview;
 
 import java.util.Date;
 
+/**
+ * @author Mark Labrador
+ *
+ */
 public interface IInteractiveUI extends IErrorUI{
 	public void createAlbum(String name);
 	public void deleteAlbum(String id);

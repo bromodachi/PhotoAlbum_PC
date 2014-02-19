@@ -4,6 +4,10 @@ import control.IPhotoControl;
 import model.IPhotoAdminModel;
 import model.IPhotoModel;
 
+/**
+ * @author Mark Labrador
+ *
+ */
 public class CmdView {
 	public static void main(String[] args) {
 		String errMsg = "Please enter in a valid command.";
