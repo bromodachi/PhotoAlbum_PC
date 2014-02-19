@@ -1,14 +1,14 @@
 package simpleview;
 
 import control.IPhotoControl;
-import model.IPhotoModel;
+import model.IPhotoAdminModel;
 
 public class CmdView {
 	public static void main(String[] args) {
 		String errMsg = "Please enter in a valid command.";
 		if(args.length > 0) {
 			String command = args[0];
-			IPhotoModel model = null; //TODO Instantiate the model.
+			IPhotoAdminModel model = null; //TODO Instantiate the model.
 			switch(command) {
 				case "listusers":
 					break;

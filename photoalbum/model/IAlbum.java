@@ -2,6 +2,10 @@ package model;
 
 import java.io.Serializable;
 
+/**
+ * @author Mark Labrador
+ *
+ */
 public interface IAlbum extends Serializable{
 	public String getAlbumId();
 	public void setAlbumId(String id);
