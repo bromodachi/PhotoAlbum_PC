@@ -3,6 +3,11 @@ package control;
 /**
  * @author Conrado Uraga
  *
+ *<p>
+ * Interface that will be implemented in the admin controls. 
+ * Set error messages and print that message stored
+ * in the admin controls global variable
+ *</p>
  */
 public interface IErrorControl {
 	/**
