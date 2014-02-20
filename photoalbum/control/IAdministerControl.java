@@ -6,6 +6,10 @@ import model.IPhotoAdminModel;
 /**
  * @author Conrado Uraga
  *
+ *<p>
+ * Holds the control for "administering" the user that is run in the command line. 
+ * Implemented to read command line args and to create, delete, or list users the models pass
+ *</p>
  */
 public interface IAdministerControl extends IErrorControl, IPhotoControl{
 	
@@ -45,6 +49,7 @@ public interface IAdministerControl extends IErrorControl, IPhotoControl{
 	 * @param id passed the unique user id to gain access.
 	 * If user id doesn't exist, we shall pass an error to 
 	 * IErrorControl.java
+	 * Once logged in, it goes into interactive mode.
 	 */
 	public void login(String id);
 }
