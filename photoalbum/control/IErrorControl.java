@@ -3,7 +3,7 @@ package control;
 /**
  * @author Conrado Uraga
  *<p>
- * Interface that will be implemented in the admin controls. 
+ * Interface that will be implemented for both controllers.
  * Set error messages and print that message stored
  * in the admin controls global variable
  *</p>
