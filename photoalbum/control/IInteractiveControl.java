@@ -37,12 +37,10 @@ public interface IInteractiveControl extends IErrorControl, IPhotoControl{
 	 */
 	public void createAlbum(String name);
 	/**
-	 * deletes the album in the user's list
-	 * @param id is the user unique identification that is linked to
+	 * deletes the album in the user's list. Not controller already knows the user id.
+	 * @param id is the photo unique identification that is linked to
 	 * his list. If, for some reason, he/she passes an id that doesn't exist,
 	 * we should print an error stating the user doesn't exist
-	 * @param albumName is the name of the album we wish to delete from the user list
-	 * if it doesn't exist, we should print an error
 	 */
 	public void deleteAlbum(String id);
 	/**
