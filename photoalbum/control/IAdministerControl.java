@@ -9,8 +9,8 @@ import model.IPhotoAdminModel;
  *<p>
  * The class that implements this is created first when the program runs. 
  * Holds the control for "administering" the user that is run in the command line. 
- * Implemented methods are read command line args and to create, delete, or list users on the model(admin or interactive)
- * that is passed
+ * Implemented methods are read command line args and to create, delete, or list users on the admin mode.
+ * Creates an interactive controller when the user logs in.
  *</p>
  */
 public interface IAdministerControl extends IErrorControl, IPhotoControl{
