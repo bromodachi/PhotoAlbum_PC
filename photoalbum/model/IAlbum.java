@@ -5,20 +5,23 @@ import java.util.List;
 
 /**
  * @author Mark Labrador
- * Primarily a collection of IPhoto objects.  This is a collection of 
+ * <p>
+ * A sub-model for the collection of albums.
+ * </p>
  */
 public interface IAlbum extends Serializable, List<IPhoto>{
 	/*
 	 * Required
 	 */
-	
 	/**
+	 * Gets the album's identifier.
 	 * @return Identifier associated with the album.  This is normally a separate and unique
 	 * identifier from the associated album name.
 	 */
 	public String getAlbumId();
 	
 	/**
+	 * Sets the album's identifier.
 	 * @param id Identifier to be associated with the album.  This is normally a separate and
 	 * unique identifier from the filename associated with the photo.
 	 */
@@ -28,14 +31,17 @@ public interface IAlbum extends Serializable, List<IPhoto>{
 	 * Getters and Setters
 	 */
 	/**
-	 * @return Gets album's name.
+	 * Gets the album's name.
+	 * @return Album name.
 	 */
 	public String getAlbumName();
 	/**
-	 * @param name Name of album.
+	 * Sets the album's name.
+	 * @param name Album name.
 	 */
 	public void setAlbumName(String name);
 	/**
+	 * Gets the number of photos contained in the album.
 	 * @return Number of photos in album.
 	 */
 	public int getAlbumSize();
@@ -47,7 +53,10 @@ public interface IAlbum extends Serializable, List<IPhoto>{
 	 * Adds a photo to the album, if it does not already exists.  Otherwise, lets user know it already
 	 * exists and does nothing.
 	 * 
-	 * @param photo New photo to be added.
+	 * This should also keep track of the size of the album by incrementing a counter every time a
+	 * photo is added.
+	 * 
+	 * @param photo Photo to be added.
 	 */
 	public void addPhoto(IPhoto photo);
 	
@@ -55,7 +64,10 @@ public interface IAlbum extends Serializable, List<IPhoto>{
 	 * Deletes a photo in the album, if it exists.  Otherwise, lets user know it already exists 
 	 * and does nothing.
 	 * 
-	 * @param id Identifier of photo to be deleted.
+	 * This should also keep track of the size of the album by decrementing a counter every time a photo
+	 * is removed.
+	 * 
+	 * @param id Photo identifier.
 	 */
 	public void deletePhoto(String id);
 	
@@ -63,8 +75,8 @@ public interface IAlbum extends Serializable, List<IPhoto>{
 	 * Recaptions a photo in the album, if it exists.  Otherwise, lets user know it already exists
 	 * and does nothing.
 	 * 
-	 * @param id Identifier of the photo to be recaptioned.
-	 * @param caption New caption given by user.
+	 * @param id Photo identifier.
+	 * @param caption New caption.
 	 */
 	public void recaptionPhoto(String id, String caption);
 }
