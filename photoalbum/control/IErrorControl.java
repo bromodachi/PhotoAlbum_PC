@@ -1,7 +1,7 @@
 package control;
 
 /**
- * @author Mark Labrador
+ * @author Conrado Uraga
  *
  */
 public interface IErrorControl {
@@ -16,8 +16,4 @@ public interface IErrorControl {
 	 * if it doesn't exist
 	 */
 	public void showError();
-	/**
-	 * hides the error if the user resolves the error he/she created.
-	 */
-	public void hideError();
 }

@@ -2,25 +2,36 @@ package control;
 
 import java.util.Date;
 
+import model.IPhotoModel;
+
 /**
- * @author Mark Labrador
+ * @author Conrado Uraga
  *
  */
-public interface IInteractiveControl extends IErrorControl{
+public interface IInteractiveControl extends IErrorControl, IPhotoControl{
 	/**
 	 *note: all errors like illegal parameters, invalid dates should be in this format
 	 *Error: <description of error>
 	 */
+	/**
+	 * Runs the photo model of the userid. Will do the communication between the model and the view
+	 * passed in the parameters.
+	 * @param userid user's album we wish to run.
+	 */
+	public void run(String userid);
 	
 	/**
-	 * reads the command the user inputs in the commandLine
-	 * command must be precise to the specification given to us
+	 * 
+	 * This links the controller to the model including any listeners requiring registration for
+	 * a single user only.
+	 * 
+	 * @param model sets the model passed in the class that implements this interface. 
 	 */
-	public String[] readCommand();
+	public void setInteractiveModel(IPhotoModel model);
 	/**
 	 * creates the album that is in the parameter. if the album
 	 * already exists, we pass an error to IErrorControl.java.
-	 * If not, we add it to the user's list
+	 * If not, we add it to the user's list.
 	 * @param name will be the name of the album to be added in the
 	 * user's list as long as it doesn't conflict with an exiting name
 	 */
@@ -33,7 +44,7 @@ public interface IInteractiveControl extends IErrorControl{
 	 * @param albumName is the name of the album we wish to delete from the user list
 	 * if it doesn't exist, we should print an error
 	 */
-	public void deleteAlbum(String id, String albumName);
+	public void deleteAlbum(String id);
 	/**
 	 * lists the albums in the user's list
 	 */

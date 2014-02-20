@@ -2,8 +2,26 @@ package control;
 
 import java.util.Date;
 
+import model.IPhotoModel;
+
+/**
+ * @author Conrado Uraga
+ *
+ */
 public class InteractiveControl implements IInteractiveControl {
+	private IPhotoModel model;
+	private String userId;
 	
+	public InteractiveControl(String userId) {
+		this.userId = userId;
+		this.model = null; //TODO Set default model.
+	}
+	
+	public InteractiveControl(String userId, IPhotoModel model) {
+		this.userId = userId;
+		this.model = model;
+	}
+
 	@Override
 	public void setErrorMessage(String msg) {
 		// TODO Auto-generated method stub
@@ -17,9 +35,32 @@ public class InteractiveControl implements IInteractiveControl {
 	}
 
 	@Override
-	public void hideError() {
+	public String[] readCommand() {
 		// TODO Auto-generated method stub
+		return null;
+	}
 
+	/* (non-Javadoc)
+	 * @see control.IInteractiveControl#run(java.lang.String)
+	 * 
+	 * This implementation makes this method the primary entry point
+	 * for the interactive control.
+	 */
+	@Override
+	public void run(String userId) {
+		this.userId = userId;
+		String cmd = "";
+		while(!cmd.equals("logout")) {
+			String[] tokens = readCommand();
+			cmd = tokens[0];
+			
+			//TODO Implement a condition-based statement to trigger the appropriate command.
+		}
+	}
+
+	@Override
+	public void setInteractiveModel(IPhotoModel model) {
+		this.model = model;
 	}
 
 	@Override
@@ -100,11 +141,4 @@ public class InteractiveControl implements IInteractiveControl {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public String[] readCommand() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

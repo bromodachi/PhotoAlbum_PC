@@ -1,11 +1,26 @@
 package control;
 
+import model.IPhotoAdminModel;
+
 
 /**
- * @author Mark Labrador
+ * @author Conrado Uraga
  *
  */
-public interface IAdministerControl extends IErrorControl{
+public interface IAdministerControl extends IErrorControl, IPhotoControl{
+	
+	/**
+	 * This method provides a hook to enter the program.  This should be implemented such that
+	 * triggering of the program can occur without having to recreate the control object.
+	 * 
+	 * @param args Normally command-line arguments
+	 */
+	public void run(String[] args);
+	
+	/**
+	 * @param model Admin specific set of methods for interacting with the model.
+	 */
+	public void setAdminModel(IPhotoAdminModel model);
 	/**
 	 * List the existing users in the current database
 	 */
