@@ -7,5 +7,5 @@ import model.IPhotoModel;
  *
  */
 public interface IPhotoControl {
-	public void run(String UserId, IPhotoModel model, IInteractiveControl view);
+	public void run(IPhotoModel model);
 }

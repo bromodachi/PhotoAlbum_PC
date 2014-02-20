@@ -28,7 +28,7 @@ public class CmdView {
 					IInteractiveControl view = new InteractiveControl(); //TODO Instantiate the view.
 					IPhotoModel model = null; //TODO Instantiate the model.
 					IPhotoControl control = null; //TODO Instantiate the control.
-					control.run(userId, model, view);
+					control.run(model);
 					break;
 				default:
 					System.out.println(errMsg);
