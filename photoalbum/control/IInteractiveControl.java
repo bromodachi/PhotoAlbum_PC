@@ -7,6 +7,12 @@ import model.IPhotoModel;
 /**
  * @author Conrado Uraga
  *
+ *<p>
+ * Is triggered when a user logins in the cmdview and thus updates it to allows the user to 
+ * interactive with his own albums. The admin control will create an object of this
+ * and leave the rest of the responsibility to this until the user is done.
+ *</p>
+ *
  */
 public interface IInteractiveControl extends IErrorControl, IPhotoControl{
 	/**
