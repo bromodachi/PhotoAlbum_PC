@@ -8,7 +8,9 @@ import model.IPhotoModel;
 
 /**
  * @author Mark Labrador
- *
+ * Main entry-point for the program.
+ * 
+ * TODO The merge with bromo_javadoc branch should entirely replace this file.
  */
 public class CmdView {
 	public static void main(String[] args) {

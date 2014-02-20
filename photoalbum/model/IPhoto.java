@@ -6,7 +6,9 @@ import java.util.List;
 
 /**
  * @author Mark Labrador
- * This is the basic unit of content in the application.
+ * <p>
+ * A sub-model by which users can make changes to a single photo.
+ * </p>
  */
 public interface IPhoto extends Serializable{
 	/*

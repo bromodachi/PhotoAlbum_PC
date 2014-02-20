@@ -4,10 +4,18 @@ import java.util.List;
 
 /**
  * @author Mark Labrador
- *
- * This is to be passed to the controller.  It was made specifically to separate the responsibilities of the administrator from that of the user.
- * In this model, the controller will only be able to retrieve the user, if it already knows the user by id.  This will be entered in by the user.
+ *<p>
+ * This is meant to be used by an interactive controller.  It limits the controller to accessing
+ * one user at a time, and can only change users when the user requests the change via knowledge
+ * of the ID the user wants to access.
+ * </p>
  */
 public interface IPhotoModel {
-	public IUser getUser(String id);
+	/**
+	 * Retrieves the sub-model to operate on a single user.
+	 * 
+	 * @param userId Identification of the user.
+	 * @return Sub-model for the user.
+	 */
+	public IUser getUser(String userId);
 }
