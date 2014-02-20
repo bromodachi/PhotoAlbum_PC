@@ -8,7 +8,9 @@ import model.IPhotoModel;
 
 /**
  * @author Mark Labrador
- *
+ * Main entry-point for the program.
+ * 
+ * TODO The merge with bromo_javadoc branch should entirely replace this file.
  */
 public class CmdView {
 	public static void main(String[] args) {
@@ -28,7 +30,7 @@ public class CmdView {
 					IInteractiveControl view = new InteractiveControl(); //TODO Instantiate the view.
 					IPhotoModel model = null; //TODO Instantiate the model.
 					IPhotoControl control = null; //TODO Instantiate the control.
-					control.run(userId, model, view);
+					control.run(model);
 					break;
 				default:
 					System.out.println(errMsg);
