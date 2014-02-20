@@ -1,8 +1,13 @@
 package control;
 
 /**
- * @author Mark Labrador
- *
+ * @author Conrado Uraga
+ *<p>
+ * Interface that will be implemented for both controllers.
+ * Set error messages and print that message stored
+ * in the admin controls global variable
+ *</p>
+ 
  */
 public interface IErrorControl {
 	/**
@@ -16,8 +21,4 @@ public interface IErrorControl {
 	 * if it doesn't exist
 	 */
 	public void showError();
-	/**
-	 * hides the error if the user resolves the error he/she created.
-	 */
-	public void hideError();
 }
