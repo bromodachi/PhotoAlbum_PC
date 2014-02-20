@@ -1,6 +1,8 @@
 package simpleview;
 
+import control.IInteractiveControl;
 import control.IPhotoControl;
+import control.InteractiveControl;
 import model.IPhotoAdminModel;
 import model.IPhotoModel;
 
@@ -23,7 +25,7 @@ public class CmdView {
 					break;
 				case "login":
 					String userId = args[1];
-					IInteractiveUI view = null; //TODO Instantiate the view.
+					IInteractiveControl view = new InteractiveControl(); //TODO Instantiate the view.
 					IPhotoModel model = null; //TODO Instantiate the model.
 					IPhotoControl control = null; //TODO Instantiate the control.
 					control.run(userId, model, view);

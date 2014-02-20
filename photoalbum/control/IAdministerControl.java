@@ -1,6 +1,11 @@
-package view;
+package control;
 
-public interface IAdministerUI {
+
+/**
+ * @author Mark Labrador
+ *
+ */
+public interface IAdministerControl extends IErrorControl{
 	public void listUsers();
 	public void addUser(String id, String name);
 	public void deleteUser(String id);

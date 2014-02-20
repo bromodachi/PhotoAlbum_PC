@@ -1,4 +1,4 @@
-package simpleview;
+package control;
 
 import java.util.Date;
 
@@ -6,7 +6,8 @@ import java.util.Date;
  * @author Mark Labrador
  *
  */
-public interface IInteractiveUI extends IErrorUI{
+public interface IInteractiveControl extends IErrorControl{
+	public String[] readCommand();
 	public void createAlbum(String name);
 	public void deleteAlbum(String id);
 	public void listAlbums();
