@@ -1,5 +1,7 @@
 package control;
 
+import java.util.Iterator;
+
 import model.IPhotoAdminModel;
 import model.IPhotoModel;
 
@@ -21,12 +23,14 @@ public class AdminControl implements IAdministerControl {
 	@Override
 	public void setErrorMessage(String msg) {
 		// TODO Auto-generated method stub
+		/*should be passing it through the view, I believe*/
+		view.setError(msg);
 
 	}
 
 	@Override
 	public void showError() {
-		// TODO Auto-generated method stub
+		view.showError();
 
 	}
 
@@ -46,21 +50,31 @@ public class AdminControl implements IAdministerControl {
 			break;
 		case "adduser":
 			if(args.length >= 3)	this.addUser(args[1], args[2]);
-			else					throw new IllegalArgumentException(); //TODO Place proper adduser error message.
+			else{
+				String error="Error: <Incorrect Format>";
+				setErrorMessage(error);
+				showError();
+			}				//	throw new IllegalArgumentException(); //TODO Place proper adduser error message.
 			break;
 		case "deleteuser":
 			if(args.length >= 2)	this.deleteUser(args[1]);
-			else					throw new IllegalArgumentException(); //TODO Place proper deleteuser error message.
+			else{					
+				String error="Error: <Incorrect Format>";
+				setErrorMessage(error);
+				showError();
+				//throw new IllegalArgumentException();
+				} //TODO Place proper deleteuser error message.
 			break;
 		case "login":
 			String userId = args[1];
-			IPhotoModel model = null; //TODO Instantiate the model.
+			login(userId);
+			/*IPhotoModel model = null; //TODO Create the model by passing it through the constructor
 			IInteractiveControl control = null; //TODO Instantiate the control.
 			control.setInteractiveModel(model);
-			control.run(userId);
+			control.run(userId);*/
 			break;
 		default:
-			String errMsg = "Please enter a valid command.";
+			String errMsg = "Error: <Please enter a valid command.>";
 			setErrorMessage(errMsg);
 			showError();
 			break;
@@ -75,24 +89,52 @@ public class AdminControl implements IAdministerControl {
 	@Override
 	public void listUsers() {
 		// TODO Auto-generated method stub
-
+		Iterator<String> iter=model.getUsers().iterator();
+		String userNames="";
+		userNames=userNames+"\n"+iter.next();
+		
 	}
 
 	@Override
 	public void addUser(String id, String name) {
-		// TODO Auto-generated method stub
-
+		if(verifyUser(id)){
+			/**/
+			String error="user <"+id+"> already exists with name <"+name+">";
+			setErrorMessage(error);
+			showError();
+		}
+		model.getUsers().add(id);
+		String msg="created user <"+id+"> with name <" +name+">";
+		//where would I set this msg?
 	}
 
 	@Override
 	public void deleteUser(String id) {
-		// TODO Auto-generated method stub
-
+		if(!verifyUser(id)){
+			/**/
+			String error="user <"+id+"> does not exist";
+			setErrorMessage(error);
+			showError();
+		}
+		model.deleteUser(id);
+		String msg="deleted user <"+id+">";
 	}
 
 	@Override
 	public void login(String id) {
-		// TODO Auto-generated method stub
-
+		if(!verifyUser(id)){
+			/**/
+			String error="user <"+id+"> does not exist";
+			setErrorMessage(error);
+			showError();
+		}
+		/*IPhoto is missing constructor*/
+		IPhotoModel model =null;
+		InteractiveControl user=new InteractiveControl(id, model);
+		user.setInteractiveModel(model);
+		user.run(id);
+	}
+	public boolean verifyUser(String id){
+		return model.getUsers().contains(id);
 	}
 }
