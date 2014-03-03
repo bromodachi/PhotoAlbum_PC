@@ -9,7 +9,7 @@ import java.util.List;
  * A sub-model for the collection of albums.
  * </p>
  */
-public interface IAlbum extends Serializable, List<IPhoto>{
+public interface IAlbum extends Serializable, Iterable<IPhoto>{
 	/*
 	 * Required
 	 */
