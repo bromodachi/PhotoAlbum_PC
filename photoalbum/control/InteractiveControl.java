@@ -139,7 +139,7 @@ public class InteractiveControl implements IInteractiveControl {
 			String error="album exists for user <"+userId+">:"+"\n<"+"tokens[1]";
 			setErrorMessage(error);
 			showError();
-			break;
+			return;
 		}
 		/*setAlbumId(String id);*/
 		/*addAlbum(IAlbum album);*/
@@ -157,7 +157,7 @@ public class InteractiveControl implements IInteractiveControl {
 			String error="album does not exist for user <"+userId+">:\n<"+id+">";
 			setErrorMessage(error);
 			showError();
-			break;
+			return;
 		}
 		model.deleteAlbum(id);
 		String msg="deleted album from user <"+userId+">:\n<"+id+"+>";
@@ -167,9 +167,17 @@ public class InteractiveControl implements IInteractiveControl {
 	@Override
 	public void listAlbums() {
 		// TODO Auto-generated method stub
-		Iterator<String> iter=model.getAlbums().iterator();
 		String AlbumNames="";
-		AlbumNames=AlbumNames+"\n"+iter.next();
+		List album1=model.getAlbums();
+		for(int i=0; i<=album1.size(); i++){
+			if(i==0){
+				/*must get the photos date. I can look at each photo to see which has
+				 * the earliest date and latest date. Maybe sort the photos? Hmm..*/
+				AlbumNames=album1.get(i).getAlbumName()+"> number of photos: <"+album1.get(i).getAlbumSize()+", <\n";
+			}
+			AlbumNames=AlbumNames+album1.get(i).getAlbumName()+"> number of photos: <"+album1.get(i).getAlbumSize()+", <\n";
+			
+		}
 
 	}
 
@@ -179,11 +187,10 @@ public class InteractiveControl implements IInteractiveControl {
 			String error="album does not exist for user <"+userId+">:\n<"+albumId+">";
 			setErrorMessage(error);
 			showError();
-			break;
+			return;
 		}
 		/*I've never extended a list before. Correct?*/
 		Iterator<String> iter=model.getAlbums().get(albumId).List().iterator();
-		
 		String PhotoInfo="";
 		PhotoInfo=PhotoInfo+"\n"+iter.next();
 		
@@ -197,44 +204,177 @@ public class InteractiveControl implements IInteractiveControl {
 		 * Photo must be created before and?*/
 		if(!model.getAlbums().contains(albumId)){
 			String error="album does not exist for user <"+userId+">:\n<"+albumId+">";
-			setErrorMessage(error);
-			showError();
-			break;
+			cmd.setErrorMessage(error);
+			cmd.showError();
+			return;
 		}
-		if()
-		
-		
+		/*how to access photo? */
+		if(!model.Photo.contains(photoFileName)){
+			String error="File <"+photoFileName+"> does not exist";
+			cmd.setErrorMessage(error);
+			cmd.showError();
+			return;
+			
+		}
+		/*add to album Photo class*/
+		Photo addTo=model.PhotoModel.Photo.get(photoFileName);
+		addTo.setCaption(photoCaption);
+		Album objectiveAlbum=model.getAlbums(albumId)
+		objectiveAlbum.addPhoto(addTo);
+		String success="Added photo <"+photoFileName+">:\n <"+photoCaption+"> - Album: <"+albumId+">"; 
+		cmd.setErrorMessage(success);
+		cmd.showError();
 
 	}
 
 	@Override
 	public void movePhoto(String albumIdSrc, String albumIdDest, String photoId) {
-		// TODO Auto-generated method stub
-
+		if((!model.getAlbums().contains(albumIdSrc))){
+			String error="album does not exist for user <"+userId+">:\n<"+albumIdSrc+">";
+			cmd.setErrorMessage(error);
+			return;
+			
+		}
+		if(!model.getAlbums().contains(albumIdDest)){
+			String error="album does not exist for user <"+userId+">:\n<"+albumIdDest+">";
+			cmd.setErrorMessage(error);
+			return;
+			
+		}
+		if(!model.Photo.contains(photoID)){
+			String error="File <"+photoId+"> does not exist";
+			cmd.setErrorMessage(error);
+			cmd.showError();
+			return;
+		}
+		if(!model.getAlbums().get(albumIdSrc).Photo.contains(photoId)){
+			String error="File <"+photoId+"> does not exist in <"+albumIdSrc+">";
+			cmd.setErrorMessage(error);
+			cmd.showError();
+			return;
+			
+		}
+		Album source=model.getAlbums().get(albumIdSrc);
+		Album destination=model.getAlbums().get(albumIdDest);
+		Photo moveMe= source.Photo.get(photoId);
+		destination.addPhoto(moveMe);
+		source.deletePhoto(photoId);
+		String success= "Moved photo <"+photoId+">:\n<"+photoId+"> - From album <"+albumIdSrc+"> to album <"+albumIdDest+">";
+		cmd.setErrorMessage(success);
+		cmd.showError();
 	}
 
 	@Override
 	public void removePhoto(String albumId, String photoId) {
-		// TODO Auto-generated method stub
-
+		if(!model.getAlbums().contains(albumId)){
+			String error="album does not exist for user <"+userId+">:\n<"+albumId+">";
+			cmd.setErrorMessage(error);
+			cmd.showError();
+			return;
+		}
+		if(!model.getAlbums().get(albumId).Photo.contains(photoId)){
+			String error="Photo <"+photoId+"> does not exist in <"+albumId+">";
+			cmd.setErrorMessage(error);
+			cmd.showError();
+			return;
+		}
+		/*I wonder if I can even do this..*/
+		model.getAlbums().get(albumId).deletePhoto(photoId);
+		String success= "Removed photo:\n<"+photoId+"> - From album <"+albumId+">";
+		cmd.setErrorMessage(success);
+		cmd.showError();
 	}
 
 	@Override
 	public <V> void addTag(String photoId, String tagType, V tagValue) {
-		// TODO Auto-generated method stub
-
+		/*in case photo doesn't exist*/
+		if(!model.IAlbum.Photo.contains(photoId)){
+			String error="Photo <"+photoId+"> does not exist";
+			cmd.setErrorMessage(error);
+			cmd.showError();	
+			return;
+		}
+		/*random guesses atm in how to access these data structures*/
+		Photo getMe=model.IAlbum.Photo.get(photoId);
+		switch(tagType.toLowerCase()){
+		case "names": 
+			V check=getMe.getInjective();
+			if(!check.equals("")){
+				String error="Tag already exists for <"+photoId+"> <"+tagType+">:<"+tagValue+">";
+				cmd.setErrorMessage(error);
+				cmd.showError();	
+				return;
+			}
+			getMe.setTagInjective(tagType, tagValue);
+			
+			
+			break;
+		case "location":
+			V check=getMe.getInjective();
+			if(!check.equals("")){
+				String error="Tag already exists for <"+photoId+"> <"+tagType+">:<"+tagValue+">";
+				cmd.setErrorMessage(error);
+				cmd.showError();	
+				return;
+			}
+			getMe.setTagInjective(tagType, tagValue);
+			
+			break;
+		default:
+			/*perhaps edit later*/
+			String error="Error <Not a real tag>";
+			cmd.setErrorMessage(error);
+			cmd.showError();	
+			break;
+		
+		
+		}
+		if(check.equals(tagType)){
+			String error="Tag already exists for <"+photoId+"> <"+tagType+":<"+tagValue+">";
+			cmd.setErrorMessage(error);
+			cmd.showError();
+		}
+		getMe.setTagInjective(check);
+		String success="Added tag:\n<"+photoId+"> <"+tagType+">:<"+tagValue+">";
+		cmd.setErrorMessage(success);
+		cmd.showError();
 	}
 
 	@Override
 	public void deleteTag(String photoId, String tagType) {
 		// TODO Auto-generated method stub
-
+		if(!model.IAlbum.Photo.contains(photoId)){
+			String error="Photo <"+photoId+"> does not exist";
+			cmd.setErrorMessage(error);
+			cmd.showError();	
+			return;
+		}
+		Photo getMe=model.IAlbum.Photo.get(photoId);
+		if(tagType!=getMe.get)
 	}
 
 	@Override
 	public void getPhotoInfo(String photoId) {
-		// TODO Auto-generated method stub
-
+		if(!model.IAlbum.Photo.contains(photoId)){
+			String error="Photo <"+photoId+"> does not exist";
+			cmd.setErrorMessage(error);
+			cmd.showError();	
+			return;
+		}
+		if(model.getAlbums().contains(photoId)){
+			Iterator<String> iter=model.getAlbums().iterator();
+			String AlbumNames="";
+			AlbumNames=AlbumNames+"\n"+iter.next();
+			while(iter.hasNext()){
+				if(it)
+				
+			} 
+			
+		}
+		Photo getPhoto=model.IAlbum.Photo.get(photoId);
+		String photoInfo="";
+		photoInfo=photoInfo+"'Photo file name: <"+getPhoto.getFileName()+">\n";
+		photoInfo="Album: <"+
 	}
 
 	@Override
