@@ -9,7 +9,7 @@ import java.util.List;
  * A sub-model for the user by which a single user can be modified.
  * </p>
  */
-public interface IUser extends Serializable{
+public interface IUser extends Serializable, Comparable<String>{
 	/**
 	 * Gets the user's identifier.
 	 * @return Identifier associated with user.
@@ -20,6 +20,10 @@ public interface IUser extends Serializable{
 	 * @param albumId Identifier to be associated with the user.
 	 */
 	public void setUserId(String albumId);
+	
+	public String getFullUsername();
+	
+	public void setFullUsername(String username);
 	/**
 	 * Gets a list of albums.
 	 * @return Collection of albums.

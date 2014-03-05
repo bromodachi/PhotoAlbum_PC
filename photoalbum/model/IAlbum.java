@@ -1,6 +1,8 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
  * A sub-model for the collection of albums.
  * </p>
  */
-public interface IAlbum extends Serializable, Iterable<IPhoto>{
+public interface IAlbum extends Serializable, Comparable<String>{
 	/*
 	 * Required
 	 */
@@ -70,6 +72,8 @@ public interface IAlbum extends Serializable, Iterable<IPhoto>{
 	 * @param id Photo identifier.
 	 */
 	public void deletePhoto(String id);
+	
+	public List<IPhoto> getPhotoList();
 	
 	/**
 	 * Recaptions a photo in the album, if it exists.  Otherwise, lets user know it already exists
