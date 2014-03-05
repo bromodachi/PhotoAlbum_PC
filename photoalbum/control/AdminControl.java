@@ -1,6 +1,7 @@
 package control;
 
 import java.util.Iterator;
+import java.util.List;
 
 import model.IPhotoAdminModel;
 import model.IPhotoModel;
@@ -88,10 +89,12 @@ public class AdminControl implements IAdministerControl {
 
 	@Override
 	public void listUsers() {
-		// TODO Auto-generated method stub
-		Iterator<String> iter=model.getUsers().iterator();
+		// edit this
+		List<String> iter=model.getUserIDs();
 		String userNames="";
-		userNames=userNames+"\n"+iter.next();
+		for (int i=0; i<iter.size();i++){
+			userNames=userNames+"<"+iter.get(i)+">\n";
+		}
 		
 	}
 
@@ -103,7 +106,7 @@ public class AdminControl implements IAdministerControl {
 			setErrorMessage(error);
 			showError();
 		}
-		model.getUsers().add(id);
+		model.getUserIDs().add(id);
 		String msg="created user <"+id+"> with name <" +name+">";
 		//where would I set this msg?
 	}
@@ -135,6 +138,6 @@ public class AdminControl implements IAdministerControl {
 		user.run(id);
 	}
 	public boolean verifyUser(String id){
-		return model.getUsers().contains(id);
+		return model.getUserIDs().contains(id);
 	}
 }
