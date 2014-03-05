@@ -21,12 +21,14 @@ import java.util.List;
  * </p>
  */
 public interface IPhotoAdminModel {
+	public IUser addUser(String username);
+	
 	/**
 	 * This reads users from storage into memory.  If the user does not
 	 * exist, this should do nothing.
 	 * @param userId Identifier of the desired user.
 	 */
-	public void readUser(String userId);
+	public IUser readUser(String userId);
 	/**
 	 * This writes a user from memory into storage.  If the user does not
 	 * exist, this should do nothing.
@@ -43,7 +45,7 @@ public interface IPhotoAdminModel {
 	/**
 	 * @return Collection of user names.
 	 */
-	public List<String> getUsers();
+	public List<String> getUserIDs();
 	/**
 	 * Loads the users from previous session.
 	 */
