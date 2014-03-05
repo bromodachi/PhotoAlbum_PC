@@ -262,7 +262,7 @@ public class InteractiveControl implements IInteractiveControl {
 		}
 		/*how to access photo? */
 		
-		if(!model.getUser(userId).IPhoto.contains(photoFileName)){
+		if(!model.photoExists(photoFileName)){
 			String error="File <"+photoFileName+"> does not exist";
 			setErrorMessage(error);
 			showError();
@@ -352,7 +352,7 @@ public class InteractiveControl implements IInteractiveControl {
 	@Override
 	public <V> void addTag(String photoId, String tagType, V tagValue) {
 		/*in case photo doesn't exist*/
-		if(!model.getUser(userId).Photo.contains(photoId)){
+		if(!model.photoExists(photoId))){
 			String error="Photo <"+photoId+"> does not exist";
 			setErrorMessage(error);
 			showError();	
@@ -405,7 +405,7 @@ public class InteractiveControl implements IInteractiveControl {
 	}
 
 	@Override
-	public void deleteTag(String photoId, String tagType) {
+	public void deleteTag(String photoId, String tagType, String tagValue) {
 		// TODO Auto-generated method stub
 		if(!model.IAlbum.Photo.contains(photoId)){
 			String error="Photo <"+photoId+"> does not exist";
@@ -414,11 +414,54 @@ public class InteractiveControl implements IInteractiveControl {
 			return;
 		}
 		Photo getMe=model.IAlbum.Photo.get(photoId);
-		if(tagType!=getMe.get)
+		switch(tagType){
+			case"location":
+			if(getMe.getLocationTag.equals("")){
+				String error="Tag does not exist for <"+getMe.getFileName+"> <"+tagType+">:<"+getMe.getLocationTag()+">";
+				setErrorMessage(error);
+				showError();
+				return;
+			}
+			else{
+				String temp=getMe.getLocationTag();
+				getMe.setLocation("");
+				String success="Deleted tag:\n<"+photoId+"> <"+tagtype+">:<"+temp+">";
+				setErrorMessage(success);
+				showError();
+				return;
+			}
+			/*maybe change below*/
+			case:"Names of people":
+			if((getMe.getPeopleTags().isEmpty)|| (!getMe.getPeopleTags().contains(tagValue))){
+			/*replace tagtype by appropriate value*/
+				String error="Tag does not exist for <"+getMe.getFileName+"> <"+tagType+">:<"+tagValue+">";
+				setErrorMessage(error);
+				showError();
+				return;
+			}
+			else{
+				getMe.getPeopleTags().removePersonTag(tagValue);
+				String success="Deleted tag:\n<"+photoId+"> <"+tagtype+">:<"+tagValue+">";
+				setErrorMessage(success);
+				showError();
+				return;
+			
+			}
+			default:
+				String error="Error <Tag value doesn't exist>"
+				SetErrorMessage(error);
+				showError();
+				return;
+		}
+		
+			
+		
+		}
 	}
 
 	@Override
 	public void getPhotoInfo(String photoId) {
+	/*NOT DONE WITH THIS. DO SEARCH IF AN ALBUM CONTAINS A PHOTO OR NOT, ITS NAME. MOVE stuff*/
 		if(!model.Photo.contains(photoId)){
 			String error="Photo <"+photoId+"> does not exist";
 			setErrorMessage(error);
@@ -429,27 +472,31 @@ public class InteractiveControl implements IInteractiveControl {
 			int index=model.Photo.indexOf(photoId);
 			Photo getMe=model.Photo.get(index);
 			/*have to double check this*/
-			String tag=getMe.getTagInjective();
-			List<String> evenMore=getMe.getTagSurjective();
-			/*contains more tagsz*/
-			String tags=
-			String AlbumNames="";
-			AlbumNames=AlbumNames+"Photo file name: <"+getMe.getFileName()+">\nAlbum: <"+getMe.getAlbum()+"> "+"\nDate: <"+getMe.getDate()+">\nCaption: <"+getMe.getCaption()+"Tags:\n"+ 
-			while(iter.hasNext()){
-				if(it)
-				
-			} 
+			String locationTagz="<Location>:"+getMe.getLocationTag;
+			String evenMore="";
+			for (int i=0;i<getMe.getPeopleTags().size;i++){
+				evenMore=evenMore+"<Name of People>:<"+getMe.getPeopleTags().get(i)+">\n";
 			
+			}
+			/*contains more tagsz*/
+			if(!locationTags.equals("")){
+				AlbumNames=AlbumNames+"Photo file name: <"+getMe.getFileName()+">\nAlbum: <"+getMe.getAlbum()+"> "+"\nDate: <"+getMe.getDate()+">\nCaption: <"+getMe.getCaption()+"Tags:\n"+locationTagz+"\n"+evenMore; 
+			}
+			else{
+				AlbumNames=AlbumNames+"Photo file name: <"+getMe.getFileName()+">\nAlbum: <"+getMe.getAlbum()+"> "+"\nDate: <"+getMe.getDate()+">\nCaption: <"+getMe.getCaption()+"Tags:\n"+evenMore; 
+			
+			}
 		}
 		Photo getPhoto=model.IAlbum.Photo.get(photoId);
 		String photoInfo="";
 		photoInfo=photoInfo+"'Photo file name: <"+getPhoto.getFileName()+">\n";
-		photoInfo="Album: <"+
+		photoInfo="Album: <"+AlbumNames
 	}
 
 	@Override
 	public void getPhotosByDate(String start, String end) {
 		// TODO Auto-generated method stub
+		//not done with this yet
 		Date begin=null;
 		Date endz=null;
 		/*check if valid dates have been passed for both of the variables*/
@@ -462,7 +509,6 @@ public class InteractiveControl implements IInteractiveControl {
 			catch (ParseException e) {
 			  System.out.println("Error: <Invalid date for one of inputs>");
 			}
-		/*Not finished with this yet*/
 		List<IPhoto> finalList=new ArrayList<IPhoto>();
 		List<IAlbum> album1=model.getUser(userId).getAlbums();
 		InteractiveControl.PhotoCompare comparePower=new InteractiveControl.PhotoCompare();
