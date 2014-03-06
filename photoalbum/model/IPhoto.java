@@ -10,7 +10,7 @@ import java.util.List;
  * A sub-model by which users can make changes to a single photo.
  * </p>
  */
-public interface IPhoto extends Serializable{
+public interface IPhoto extends Serializable, Comparable<String>{
 	/*
 	 * Required
 	 */
@@ -63,49 +63,10 @@ public interface IPhoto extends Serializable{
 	/*
 	 * Tags
 	 */
-	/**
-	 * Injective tagging retrieval is necessary for tags associated with only one value 
-	 * (1-1 relationship).  This is for properties such as location -> <location>, 
-	 * where only one value can occur.
-	 * 
-	 * @param tagType Tag previously added for this 1-1 association.
-	 * @return Single value associated with the tag.
-	 */
-	public <V> V getTagInjective(String tagType);
+	public String getLocationTag();
+	public void setLocationTag(String Location);
 	
-	/**
-	 * Injective tagging association is necessary for tags to be associated with only one value 
-	 * (1-1 relationship).
-	 * 
-	 * @param tagType Tag to be added in an 1-1 association.
-	 * @param value Single value to be associated with the tag.
-	 */
-	public <V> void setTagInjective(String tagType, V value);
-	
-	/**
-	 * Surjective tagging retrieval is necessary for tags associated with multiple values 
-	 * (one-to-many relationship).  This is for properties such as people -> <List-Of-People>
-	 * 
-	 * @param tagType Tag previously added for this one-to-many association.
-	 * @return Multiple values associated with the tag.
-	 */
-	public <V> List<V> getTagSurjective(String tagType);
-	
-	/**
-	 * Surjective tagging association is necessary for tags to be associated with multiple values 
-	 * (one-to-many relationship).
-	 * 
-	 * @param tagType, Tag to be added in an one-to-many association.
-	 * @param value Multiple values to be associated with this tag.
-	 */
-	public <V> void setTagSurjective(String tagType, List<V> value);
-	
-	/*
-	 * Attributes
-	 */
-	/**
-	 * @param attributeId Identifier of the attribute to be associated with the photo.
-	 * @param setting Specific attribute setting to be associated with the photo.
-	 */
-	public void setAttribute(String attributeId, String setting);
+	public List<String> getPeopleTags();
+	public void personTag(String personName);
+	public void removePersonTag(String personName);
 }
