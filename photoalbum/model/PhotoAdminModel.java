@@ -20,20 +20,25 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		String testUser = "TestUser";
 		PhotoAdminModel model = new PhotoAdminModel("./data/");
 		model.writeUser(testUser);
+		System.out.println("TestUser created");
 	}
 	
 	private String database;
 	private String lastSessionLocation = "./data/lastSession.stat";
-	private ArrayList<IUser> users;
+	private ArrayList<User> users;
 	
 	public PhotoAdminModel(String database) {
 		this.database = database;
-		this.users = new ArrayList<IUser>();
+		this.users = new ArrayList<User>();
 	}
 	
 	@Override
-	public IUser addUser(String userId) {
-		return null;
+	public IUser addUser(String userId, String username) {
+		int index = Collections.binarySearch(this.users, userId);
+		if(index < 0) return null;
+		User newUser = this.users.get(index);
+		if(!newUser.getUserId().equals(userId)) newUser = new User(userId, username);
+		return newUser;
 	}
 
 	@Override
@@ -107,7 +112,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 			try{
 				FileInputStream fileIn = new FileInputStream(child.getAbsoluteFile());
 				ObjectInputStream in = new ObjectInputStream(fileIn);
-				IUser user = (IUser)in.readObject();
+				User user = (User)in.readObject();
 				this.users.add(user);
 				in.close();
 				fileIn.close();

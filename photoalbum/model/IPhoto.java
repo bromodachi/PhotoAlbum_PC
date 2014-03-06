@@ -39,6 +39,7 @@ public interface IPhoto extends Serializable, Comparable<String>{
 	 * @param fileName File name of photo; given by the user.
 	 */
 	public void setFileName(String fileName);
+	
 	/**
 	 * @return Caption associated with the photo.
 	 */
@@ -63,10 +64,28 @@ public interface IPhoto extends Serializable, Comparable<String>{
 	/*
 	 * Tags
 	 */
+	/**
+	 * @return The location tag.
+	 */
 	public String getLocationTag();
+	
+	/**
+	 * @param Location The location to change it to.
+	 */
 	public void setLocationTag(String Location);
 	
+	/**
+	 * @return List of people tags.
+	 */
 	public List<String> getPeopleTags();
+	
+	/**
+	 * @param personName The name of a person you'd like to tag in the photo.
+	 */
 	public void personTag(String personName);
+	
+	/**
+	 * @param personName The name of a person to remove the tag in the photo.
+	 */
 	public void removePersonTag(String personName);
 }
