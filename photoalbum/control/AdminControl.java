@@ -1,9 +1,14 @@
 package control;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 
+import simpleview.CmdView;
 import model.IPhotoAdminModel;
 import model.IPhotoModel;
+import model.PhotoModel;
 
 /**
  * @author Conrado Uraga
@@ -11,37 +16,45 @@ import model.IPhotoModel;
  */
 public class AdminControl implements IAdministerControl {
 	private IPhotoAdminModel model;
+	private CmdView view;
 
 	public AdminControl() {
 		this.model = null; //TODO Set default admin model.
 	}
 	
-	public AdminControl(IPhotoAdminModel model) {
+	public AdminControl(IPhotoAdminModel model, CmdView view) {
 		this.model = model;
+		this.view=view;
 	}
 	
 	@Override
 	public void setErrorMessage(String msg) {
 		// TODO Auto-generated method stub
 		/*should be passing it through the view, I believe*/
-		view.setError(msg);
-
+		view.setMessage(msg);
 	}
 
 	@Override
 	public void showError() {
-		view.showError();
+		view.showMessage();
 
 	}
 
 	@Override
 	public String[] readCommand() {
-		// TODO Auto-generated method stub
-		return null;
+		String [] arg=null;
+		try{
+		BufferedReader input=new BufferedReader(new InputStreamReader(System.in));
+		String output=input.readLine();
+		arg=output.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+		return arg;
+		}catch (IOException e){
+			return arg;
+		}
 	}
 	
 	@Override
-	public void run(String[] args) {
+	/* Original public void run(String[] args) {
 		//TODO Add additional validation checking on the args: length of list per command.
 		String cmd = args[0];
 		switch(cmd) {
@@ -71,6 +84,52 @@ public class AdminControl implements IAdministerControl {
 			/*IPhotoModel model = null; //TODO Create the model by passing it through the constructor
 			IInteractiveControl control = null; //TODO Instantiate the control.
 			control.setInteractiveModel(model);
+			control.run(userId);
+			break;
+		default:
+			String errMsg = "Error: <Please enter a valid command.>";
+			setErrorMessage(errMsg);
+			showError();
+			break;
+	}
+	}*/
+	public void run(String[] args) {
+		
+		/*BELOW iS JUST FOR SAKE OF EASE FOR ME WIL NOT BE INCLUDED IN FINAL*/
+		String cmd ="";
+		while(!cmd.equals("logout")) {
+			String[] tokens= readCommand();
+		cmd =tokens[0];
+		switch(cmd) {
+		case "listusers":
+			this.listUsers();
+			break;
+		case "adduser":
+			if(tokens.length == 3){	
+				tokens[1]=tokens[1].replace("\"","");
+				tokens[2]=tokens[2].replace("\"","");
+				this.addUser(tokens[1], tokens[2]);}
+			else{
+				String error="Error: <Incorrect Format>";
+				setErrorMessage(error);
+				showError();
+			}				//	throw new IllegalArgumentException(); //TODO Place proper adduser error message.
+			break;
+		case "deleteuser":
+			if(args.length >= 2)	this.deleteUser(args[1]);
+			else{					
+				String error="Error: <Incorrect Format>";
+				setErrorMessage(error);
+				showError();
+				//throw new IllegalArgumentException();
+				} //TODO Place proper deleteuser error message.
+			break;
+		case "login":
+			String userId = tokens[1];
+			login(userId);
+			/*IPhotoModel model = null; //TODO Create the model by passing it through the constructor
+			IInteractiveControl control = null; //TODO Instantiate the control.
+			control.setInteractiveModel(model);
 			control.run(userId);*/
 			break;
 		default:
@@ -79,6 +138,7 @@ public class AdminControl implements IAdministerControl {
 			showError();
 			break;
 	}
+		}
 	}
 
 	@Override
@@ -91,7 +151,7 @@ public class AdminControl implements IAdministerControl {
 		// TODO Auto-generated method stub
 		String success="";
 		for(int i=0; i<model.getUserIDs().size();i++){
-			success=success+"<"+model.getUserIDs().get(i)+">\n";
+			success=success+"<"+model.getUserIDs()+">\n";
 		}
 		setErrorMessage(success);
 		showError();
@@ -107,9 +167,10 @@ public class AdminControl implements IAdministerControl {
 			setErrorMessage(error);
 			showError();
 		}
-		model.addUser(id);
+		model.addUser(id, name);
 		String msg="created user <"+id+"> with name <" +name+">";
-		//where would I set this msg?
+		setErrorMessage(msg);
+		showError();
 	}
 
 	@Override
@@ -133,9 +194,9 @@ public class AdminControl implements IAdministerControl {
 			showError();
 		}
 		/*IPhoto is missing constructor*/
-		IPhotoModel model =null;
-		InteractiveControl user=new InteractiveControl(id, model);
-		user.setInteractiveModel(model);
+		IPhotoModel modelz =new PhotoModel(this.model);
+		InteractiveControl user=new InteractiveControl(id, modelz, this.view);
+		user.setInteractiveModel(modelz);
 		user.run(id);
 	}
 	public boolean verifyUser(String id){
