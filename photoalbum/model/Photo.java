@@ -9,14 +9,12 @@ public class Photo implements IPhoto {
 	private static final long serialVersionUID = 1L;
 	private String photoId;
 	private String fileName;
-	private String user;
 	private String caption;
 	private Date photoDate;
 	private String locationTag;
 	private ArrayList<String> peopleTags;
 
-	public Photo(String user, String photoId, String fileName) {
-		this.user = user;
+	public Photo(String photoId, String fileName) {
 		this.photoId = photoId;
 		this.fileName = fileName;
 		this.peopleTags = new ArrayList<String>();

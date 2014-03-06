@@ -73,6 +73,11 @@ public interface IAlbum extends Serializable, Comparable<String>{
 	 */
 	public void deletePhoto(String id);
 	
+	/**
+	 * This is a list of photos contained in the album.
+	 * 
+	 * @return A full list of photos contained in this album.
+	 */
 	public List<IPhoto> getPhotoList();
 	
 	/**
