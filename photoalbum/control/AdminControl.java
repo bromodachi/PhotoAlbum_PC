@@ -89,9 +89,13 @@ public class AdminControl implements IAdministerControl {
 	@Override
 	public void listUsers() {
 		// TODO Auto-generated method stub
-		Iterator<String> iter=model.getUsers().iterator();
-		String userNames="";
-		userNames=userNames+"\n"+iter.next();
+		String success="";
+		for(int i=0; i<model.getUserIDs().size();i++){
+			success=success+"<"+model.getUserIDs().get(i)+">\n";
+		}
+		setErrorMessage(success);
+		showError();
+		
 		
 	}
 
@@ -103,7 +107,7 @@ public class AdminControl implements IAdministerControl {
 			setErrorMessage(error);
 			showError();
 		}
-		model.getUsers().add(id);
+		model.addUser(id);
 		String msg="created user <"+id+"> with name <" +name+">";
 		//where would I set this msg?
 	}
@@ -135,6 +139,6 @@ public class AdminControl implements IAdministerControl {
 		user.run(id);
 	}
 	public boolean verifyUser(String id){
-		return model.getUsers().contains(id);
+		return model.getUserIDs().contains(id);
 	}
 }
