@@ -80,34 +80,43 @@ public class InteractiveControl implements IInteractiveControl {
 	 */
 	@Override
 	public void run(String userId) {
+		String splitMe;
+		String []splitting;
 		this.userId = userId;
 		String cmd = "";
 		int i=1;
 		while(!cmd.equals("logout")) {
 			String[] tokens = readCommand();
 			cmd = tokens[0];
+			i=1;
 			switch(cmd){
 			case "createAlbum":
-				if(tokens.length>1){
+				if(tokens.length>2){
 					String error="Error: <Incorrect Format>";
 					setErrorMessage(error);
 					showError();
 					break;
 				}
 				/*replace with proper command. th*/
+				tokens[1]=tokens[1].replace("<", "");
+				tokens[1]=tokens[1].replace(">", "");
+				tokens[1]=tokens[1].replace("\"","");
 				createAlbum(tokens[1]);
 				break;
 			case "deleteAlbum":
-				if(tokens.length>1){
+				if(tokens.length>2){
 					String error="Error: <Incorrect Format>";
 					setErrorMessage(error);
 					showError();
 					break;
 				}
+				tokens[1]=tokens[1].replace("<", "");
+				tokens[1]=tokens[1].replace(">", "");
+				tokens[1]=tokens[1].replace("\"","");
 				deleteAlbum(tokens[1]);
 				break;
 			case "listAlbums":
-				if(tokens.length>0){
+				if(tokens.length>1){
 					String error="Error: <Incorrect Format>";
 					setErrorMessage(error);
 					showError();
@@ -116,17 +125,19 @@ public class InteractiveControl implements IInteractiveControl {
 				listAlbums();
 				break;
 			case "listPhotos":
-				if(tokens.length>1){
+				if(tokens.length>2){
 					String error="Error: <Incorrect Format>";
 					setErrorMessage(error);
 					showError();
 					break;
 				}
-				tokens[1].replace("\"","");
+				tokens[1]=tokens[1].replace("<", "");
+				tokens[1]=tokens[1].replace(">", "");
+				tokens[1]=tokens[1].replace("\"","");
 				listPhotos(tokens[1]);
 				break;
 			case "addPhoto":
-				if(tokens.length>3){
+				if(tokens.length>4){
 					String error="Error: <Incorrect Format>";
 					setErrorMessage(error);
 					showError();
@@ -134,11 +145,133 @@ public class InteractiveControl implements IInteractiveControl {
 				}
 				while(i!=4){
 					tokens[i].replace("\"","");
+					tokens[i].replace("<", "");
+					tokens[i].replace(">", "");
 					i++;
 				}
 				addPhoto(tokens[1], tokens[2], tokens[3]);
 				break;
+			case "movePhoto":
+				if(tokens.length>4){
+					String error="Error: <Incorrect Format>";
+					setErrorMessage(error);
+					showError();
+					break;
+				}
+				while(i!=4){
+					tokens[i].replace("\"","");
+					tokens[i].replace("<", "");
+					tokens[i].replace(">", "");
+					i++;
+				}
+				movePhoto(tokens[1], tokens[2], tokens[3]);
+				break;
+			case "removePhoto":
+				if(tokens.length>3){
+					String error="Error: <Incorrect Format>";
+					setErrorMessage(error);
+					showError();
+					break;
+				}
+				while(i!=3){
+					tokens[i].replace("\"","");
+					tokens[i].replace("<", "");
+					tokens[i].replace(">", "");
+					i++;
+				}
+				removePhoto(tokens[1], tokens[2]);
+				break;
+			case "addTag":
+				if(tokens.length>3){
+					String error="Error: <Incorrect Format>";
+					setErrorMessage(error);
+					showError();
+					break;
+				}
+				while(i!=3){
+					tokens[i].replace("\"","");
+					tokens[i].replace("<", "");
+					tokens[i].replace(">", "");
+					i++;
+				}
+				splitMe=tokens[3];
+				splitting=splitMe.split(":");
+				
+				addTag(tokens[1], splitting[0], splitting[1]);
+				break;
+			case "deleteTag":
+				if(tokens.length>3){
+					String error="Error: <Incorrect Format>";
+					setErrorMessage(error);
+					showError();
+					break;
+				}
+				while(i!=3){
+					tokens[i].replace("\"","");
+					tokens[i].replace("<", "");
+					tokens[i].replace(">", "");
+					i++;
+				}
+				splitMe=tokens[3];
+				splitting=splitMe.split(":");
+				addTag(tokens[1], splitting[0], splitting[1]);
+				break;
+			case "listPhotoInfo":
+				if(tokens.length>2){
+					String error="Error: <Incorrect Format>";
+					setErrorMessage(error);
+					showError();
+					break;
+				}
+				tokens[1]=tokens[1].replace("<", "");
+				tokens[1]=tokens[1].replace(">", "");
+				tokens[1]=tokens[1].replace("\"","");
+				listPhotos(tokens[1]);
+				break;
+			case "getPhotosByDate":
+				if(tokens.length>3){
+					String error="Error: <Incorrect Format>";
+					setErrorMessage(error);
+					showError();
+					break;
+				}
+				while(i!=3){
+					tokens[i].replace("\"","");
+					tokens[i].replace("<", "");
+					tokens[i].replace(">", "");
+					i++;
+				}
+				getPhotosByDate(tokens[1],tokens[2]);
+				break;
+			case "getPhotosByTag":
+				if(tokens.length>2){
+					String error="Error: <Incorrect Format>";
+					setErrorMessage(error);
+					showError();
+					break;
+				}
+					String cpy=tokens[1];
+					tokens[1].replace("\"","");
+					tokens[1].replace("<", "");
+					tokens[1].replace(">", "");
+					if(tokens[1].contains(":")){
+						splitMe=tokens[1];
+						splitting=splitMe.split(":");
+						getPhotosByTag(splitting[0], splitting[1], cpy);
+						break;
+					}
+					else{
+						getPhotosByTag("", tokens[1], cpy);
+						
+					}
+
+					
+					
+		
 			default:
+				String error="Error: <Incorrect input. Try again>";
+				setErrorMessage(error);
+				showError();
 					break;
 			}
 			//TODO Implement a condition-based statement to trigger the appropriate command.
@@ -184,6 +317,7 @@ public class InteractiveControl implements IInteractiveControl {
 		String msg="deleted album from user <"+userId+">:\n<"+id+"+>";
 		setErrorMessage(msg);
 		showError();
+		return;
 
 	}
 
@@ -262,7 +396,7 @@ public class InteractiveControl implements IInteractiveControl {
 		}
 		/*how to access photo? */
 		
-		if(!model.getUser(userId).IPhoto.contains(photoFileName)){
+		if(!model.photoExists(photoFileName)){
 			String error="File <"+photoFileName+"> does not exist";
 			setErrorMessage(error);
 			showError();
@@ -350,50 +484,74 @@ public class InteractiveControl implements IInteractiveControl {
 	}
 
 	@Override
-	public <V> void addTag(String photoId, String tagType, V tagValue) {
+	public void addTag(String photoId, String tagType, String tagValue) {
 		/*in case photo doesn't exist*/
-		if(!model.getUser(userId).Photo.contains(photoId)){
+		List<IAlbum> albums=model.getUser(userId).getAlbums();
+		IPhoto getMe=null;
+		outerLoop:
+		for (int i=0; i<model.getUser(userId).getAlbums().size(); i++){
+			IAlbum temp= albums.get(i);
+			List<IPhoto> photoList=temp.getPhotoList();
+			/*Collections.binarySearch(this.peopleTags, personName);*/
+			/*int index=Collections.binarySearch(photoList, photoId);
+				if(index>=0){
+					editMe=photoList.get(index);
+					break outerLoop;
+				}*/
+					int index=Collections.binarySearch(photoList, photoId);
+				if(index>=0){
+					getMe=photoList.get(index);
+					break outerLoop;
+				}
+				
+				
+		}
+		if(getMe==null){
 			String error="Photo <"+photoId+"> does not exist";
 			setErrorMessage(error);
 			showError();	
 			return;
 		}
 		/*random guesses atm in how to access these data structures*/
-		Photo getMe=model.getUser(userId).Photo.get(photoId);
 		switch(tagType.toLowerCase()){
-		case "names": 
-			V check=getMe.getInjective();
+		case "location": 
+			String check=getMe.getLocationTag();
+			/**/
 			if(!check.equals("")){
 				String error="Tag already exists for <"+photoId+"> <"+tagType+">:<"+tagValue+">";
-				cmd.setErrorMessage(error);
-				cmd.showError();	
+				setErrorMessage(error);
+				showError();	
 				return;
 			}
-			getMe.setTagInjective(tagType, tagValue);
-			
-			
-			break;
-		case "location":
-			V check=getMe.getInjective();
-			if(!check.equals("")){
+			getMe.setLocationTag(tagValue);
+			String success="Added tag:\n<"+photoId+">\n<"+tagType+">:<"+tagValue+">";
+			setErrorMessage(success);
+			showError();
+			return;
+		case "people":
+			if(getMe.getPeopleTags().contains(tagValue)){
 				String error="Tag already exists for <"+photoId+"> <"+tagType+">:<"+tagValue+">";
-				cmd.setErrorMessage(error);
-				cmd.showError();	
+				setErrorMessage(error);
+				showError();	
 				return;
 			}
-			getMe.setTagInjective(tagType, tagValue);
+			getMe.personTag(tagValue);
+			/*edit this later with correct values*/
+			String success2="Added tag:\n<"+photoId+">\n<"+tagType+">:<"+tagValue+">";
+			setErrorMessage(success2);
+			showError();
 			
-			break;
+			return;
 		default:
 			/*perhaps edit later*/
 			String error="Error <Not a real tag>";
-			cmd.setErrorMessage(error);
-			cmd.showError();	
+			setErrorMessage(error);
+			showError();	
 			break;
 		
 		
 		}
-		if(check.equals(tagType)){
+		/*if(check.equals(tagType)){
 			String error="Tag already exists for <"+photoId+"> <"+tagType+":<"+tagValue+">";
 			cmd.setErrorMessage(error);
 			cmd.showError();
@@ -401,50 +559,158 @@ public class InteractiveControl implements IInteractiveControl {
 		getMe.setTagInjective(check);
 		String success="Added tag:\n<"+photoId+"> <"+tagType+">:<"+tagValue+">";
 		cmd.setErrorMessage(success);
-		cmd.showError();
+		cmd.showError();*/
 	}
 
 	@Override
-	public void deleteTag(String photoId, String tagType) {
+	public void deleteTag(String photoId, String tagType, String tagValue) {
 		// TODO Auto-generated method stub
-		if(!model.IAlbum.Photo.contains(photoId)){
-			String error="Photo <"+photoId+"> does not exist";
-			cmd.setErrorMessage(error);
-			cmd.showError();	
-			return;
+		model.getUser(userId).getAlbums();
+		List<IAlbum> albums=model.getUser(userId).getAlbums();
+		IPhoto editMe=null;
+		outerLoop:
+		for (int i=0; i<model.getUser(userId).getAlbums().size(); i++){
+			IAlbum temp= albums.get(i);
+			List<IPhoto> photoList=temp.getPhotoList();
+			/*Collections.binarySearch(this.peopleTags, personName);*/
+			int index=Collections.binarySearch(photoList, photoId);
+				if(index>=0){
+					editMe=photoList.get(index);
+					break outerLoop;
+				}
+				
+				
 		}
-		Photo getMe=model.IAlbum.Photo.get(photoId);
-		if(tagType!=getMe.get)
+		if(editMe==null){
+			String error="Photo <"+photoId+"> does not exist";
+			setErrorMessage(error);
+			showError();	
+			return;
+			
+		}
+		switch(tagType){
+			case"location":
+			if(editMe.getLocationTag().equals("")){
+				String error="Tag does not exist for <"+editMe.getFileName()+"> <"+tagType+">:<"+tagValue+">";
+				setErrorMessage(error);
+				showError();
+				return;
+			}
+			else{
+				String temp=editMe.getLocationTag();
+				editMe.setLocationTag("");
+				String success="Deleted tag:\n<"+photoId+"> <"+tagType+">:<"+temp+">";
+				setErrorMessage(success);
+				showError();
+				return;
+			}
+			/*maybe change below*/
+			case"people":
+				
+			if((editMe.getPeopleTags().isEmpty())|| (!editMe.getPeopleTags().contains(tagValue))){
+			/*replace tagtype by appropriate value*/
+				String error="Tag does not exist for <"+editMe.getFileName()+"> <"+tagType+">:<"+tagValue+">";
+				setErrorMessage(error);
+				showError();
+				return;
+			}
+			else{
+				editMe.removePersonTag(tagValue);
+				String success="Deleted tag:\n<"+photoId+"> <"+tagType+">:<"+tagValue+">";
+				setErrorMessage(success);
+				showError();
+				return;
+			
+			}
+			default:
+				String error="Error <Tag value doesn't exist>";
+				setErrorMessage(error);
+				showError();
+				return;
+		}
+		
+			
+		
 	}
+	
 
 	@Override
+	public String getPAlbumNames(List<IAlbum> albums, String photoId){
+		IPhoto editMe=null;
+		String albumNames="";
+		int first=0;
+		/**iterate each album, get their names if it contains the photoId*/
+		for (int i=0; i<model.getUser(userId).getAlbums().size(); i++){
+			IAlbum temp= albums.get(i);
+			List<IPhoto> photoList=temp.getPhotoList();
+			/*Collections.binarySearch(this.peopleTags, personName);*/
+			int index=Collections.binarySearch(photoList, photoId);
+				if(index>=0){
+					if(first==0){
+					albumNames=albumNames+"Album: <"+temp.getAlbumName()+">";
+					editMe=temp.getPhotoList().get(index);
+					first=1;
+					}
+					else{
+						albumNames=albumNames+",<"+temp.getAlbumName()+">";
+					}
+				}
+				
+				
+		}
+		return albumNames;
+		
+		
+	}
 	public void getPhotoInfo(String photoId) {
-		if(!model.Photo.contains(photoId)){
+	/*NOT DONE WITH THIS. DO SEARCH IF AN ALBUM CONTAINS A PHOTO OR NOT, ITS NAME. MOVE stuff*/
+		if(!model.photoExists.contains(photoId)){
 			String error="Photo <"+photoId+"> does not exist";
 			setErrorMessage(error);
 			showError();	
 			return;
 		}
-		if(model.Photo.contains(photoId)){
-			int index=model.Photo.indexOf(photoId);
-			Photo getMe=model.Photo.get(index);
-			/*have to double check this*/
-			String tag=getMe.getTagInjective();
-			List<String> evenMore=getMe.getTagSurjective();
-			/*contains more tagsz*/
-			String tags=
-			String AlbumNames="";
-			AlbumNames=AlbumNames+"Photo file name: <"+getMe.getFileName()+">\nAlbum: <"+getMe.getAlbum()+"> "+"\nDate: <"+getMe.getDate()+">\nCaption: <"+getMe.getCaption()+"Tags:\n"+ 
-			while(iter.hasNext()){
-				if(it)
+		List<IAlbum> albums=model.getUser(userId).getAlbums();
+		IPhoto editMe=null;
+		String albumNames="";
+		int first=0;
+		/**iterate each album, get their names if it contains the photoId*/
+		for (int i=0; i<model.getUser(userId).getAlbums().size(); i++){
+			IAlbum temp= albums.get(i);
+			List<IPhoto> photoList=temp.getPhotoList();
+			/*Collections.binarySearch(this.peopleTags, personName);*/
+			int index=Collections.binarySearch(photoList, photoId);
+				if(index>=0){
+					if(first==0){
+					albumNames=albumNames+"Album: <"+temp.getAlbumName()+">";
+					editMe=temp.getPhotoList().get(index);
+					first=1;
+					}
+					else{
+						albumNames=albumNames+",<"+temp.getAlbumName()+">";
+					}
+				}
 				
-			} 
-			
+				
 		}
-		Photo getPhoto=model.IAlbum.Photo.get(photoId);
-		String photoInfo="";
-		photoInfo=photoInfo+"'Photo file name: <"+getPhoto.getFileName()+">\n";
-		photoInfo="Album: <"+
+		albumNames=albumNames+"\n";
+		String locationTagz="";
+		String evenMore="";
+		if(!(editMe.getLocationTag().equals(""))){
+			locationTagz="<Location>:<"+editMe.getLocationTag()+">\n";
+		}
+			for (int i=0;i<editMe.getPeopleTags().size();i++){
+				evenMore=evenMore+"<Name of People>:<"+editMe.getPeopleTags().get(i)+">\n";
+			
+			}
+			/*contains more tagsz*/
+			String success="Photo file name: <"+photoId+">\n"+albumNames+"Date: <"+editMe.getDate()+">\nCaption: <"+editMe.getCaption()+">\n";
+				success=success+locationTagz+evenMore;
+				setErrorMessage(success);
+				showError();
+				return;
+			
+			
 	}
 
 	@Override
@@ -461,28 +727,96 @@ public class InteractiveControl implements IInteractiveControl {
 			endz = dateFormat.parse(start);
 			}
 			catch (ParseException e) {
-			  System.out.println("Error: <Invalid date for one of inputs>");
+			  String error="Error: <Invalid date for one of inputs>";
+			  setErrorMessage(error);
+			  showError();
 			}
-		List<IPhoto> finalList=new ArrayList<IPhoto>();
+		String listPhotos="";
 		List<IAlbum> album1=model.getUser(userId).getAlbums();
-		InteractiveControl.PhotoCompare comparePower=new InteractiveControl.PhotoCompare();
+		String success="";
+		String albumNames="";
+	//	InteractiveControl.PhotoCompare comparePower=new InteractiveControl.PhotoCompare();
 		for(int i=0; i<album1.size();i++){
 			IAlbum temp=album1.get(i);
 			List<IPhoto> photoList=temp.getPhotoList();
-			Collections.sort(photoList, comparePower);
+		//	Collections.sort(photoList, comparePower);
 			for(int j=0; j<photoList.size();j++){
 				if(photoList.get(j).getDate().after(begin) && photoList.get(j).getDate().before(endz)){
-					finalList.add(photoList.get(j));
+					/* getPAlbumNames(List<IAlbum> albums, String photoId)*/
+					albumNames=getPAlbumNames(album1, photoList.get(j).getFileName());
+					listPhotos=listPhotos+"<"+photoList.get(j).getCaption()+"> - "+albumNames+"- Date: <"+photoList.get(j).getDate()+">\n";
 				}
 			}
 		}
+		success="Photos for user <user id> in range <"+userId+"> in range <"+start+"> to <"+end+">:\n"+listPhotos;
+		setErrorMessage(success);
+		showError();
 		
 
 	}
 
 	@Override
-	public void getPhotosByTag(String tagType) {
-		// TODO Auto-generated method stub
+	public void getPhotosByTag(String tagType, String tagValue, String ori) {
+		/*Assuming that it's by albums only*/
+		List <IAlbum> getMe=model.getUser(userId).getAlbums();
+		String validPhotos="";
+		String albumNames="";
+		String success="";
+		String listPhotos="";
+		if(tagType.equals("location")){
+			for (int i=0; i<getMe.size();i++){
+				IAlbum temp=getMe.get(i);
+				List <IPhoto> getPhotos=temp.getPhotoList();
+				for(int j=0; j<getPhotos.size(); j++){
+					if((getPhotos.get(j).getLocationTag().equals(tagValue))){
+					/*have to get it by photo info. Look at documentation*/
+						albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
+						validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDate()+">\n";
+					}
+				}
+			}
+		}
+		/*int index=Collections.binarySearch(photoList, photoId);
+		if(index>=0){
+			editMe=photoList.get(index);
+			break outerLoop;
+		}*/
+		if(tagType.equals("person")){
+		for (int i=0; i<getMe.size();i++){
+			IAlbum temp=getMe.get(i);
+			List <IPhoto> getPhotos=temp.getPhotoList();
+				for(int j=0; j<getPhotos.size(); j++){
+					albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
+					validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDate()+">\n";
+				
+				}
+			}
+		}
+		else{
+			
+			for (int i=0; i<getMe.size();i++){
+				IAlbum temp=getMe.get(i);
+				List <IPhoto> getPhotos=temp.getPhotoList();
+				for(int j=0; j<getPhotos.size(); j++){
+					List<String> tagz=getPhotos.get(j).getPeopleTags();
+					if((getPhotos.get(j).getLocationTag().equals(tagValue))){
+						albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
+						validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDate()+">\n";
+					
+						
+					}
+					if(tagz.contains(tagValue)){
+						albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
+						validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDate()+">\n";
+					}
+					
+				}
+			}
+		}
+		success="Photos for user <"+userId+"> with tags"+ori+":\n"+validPhotos;
+		setErrorMessage(success);
+		showError();
+
 
 	}
 
@@ -501,5 +835,10 @@ public class InteractiveControl implements IInteractiveControl {
 	        }
 
 	}*/
+		/*call save in model*/
+		model.setModel();
+		model.saveStuff();
+		exit();
+		
 	}
 }
