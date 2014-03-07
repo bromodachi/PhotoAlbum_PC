@@ -16,7 +16,6 @@ public interface IAlbum extends Serializable, Comparable<String>{
 	/*
 	 * Required
 	 */
-
 	
 	/*
 	 * Getters and Setters

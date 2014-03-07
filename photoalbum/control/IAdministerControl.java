@@ -13,7 +13,7 @@ import model.IPhotoAdminModel;
  * Creates an interactive controller when the user logs in.
  *</p>
  */
-public interface IAdministerControl extends IErrorControl, IPhotoControl{
+public interface IAdministerControl extends IErrorControl{
 	
 	/**
 	 * This method provides a hook to enter the program.  This should be implemented such that
@@ -54,4 +54,6 @@ public interface IAdministerControl extends IErrorControl, IPhotoControl{
 	 * Once logged in, it goes into interactive mode.
 	 */
 	public void login(String id);
+
+	String[] readCommand();
 }

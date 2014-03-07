@@ -47,7 +47,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	}
 
 	@Override
-	public IUser readUser(String userId) {
+	public IUser getUser(String userId) {
 		int index = Collections.binarySearch(this.users, userId);
 		if(index < 0) return null;
 		IUser user = this.users.get(index);
