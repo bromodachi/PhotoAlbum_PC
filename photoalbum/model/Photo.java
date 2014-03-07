@@ -1,5 +1,6 @@
 package model;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -95,5 +96,10 @@ public class Photo implements IPhoto {
 		int index = Collections.binarySearch(this.peopleTags, personName);
 		if(index < 0) return;
 		if(this.peopleTags.get(index).equals(personName)) this.peopleTags.remove(index);
+	}
+
+	@Override
+	public String getDateString() {
+		return new SimpleDateFormat("MM/DD/YYYY-HH:MM:SS").format(this.photoDate);
 	}
 }
