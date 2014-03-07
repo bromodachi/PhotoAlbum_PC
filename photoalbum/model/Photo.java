@@ -78,7 +78,7 @@ public class Photo implements IPhoto {
 	@Override
 	public List<String> getPeopleTags() {
 		ArrayList<String> defensiveCopy = new ArrayList<String>();
-		Collections.copy(defensiveCopy, this.peopleTags);
+		defensiveCopy.addAll(this.peopleTags);
 		return defensiveCopy;
 	}
 	
@@ -91,6 +91,7 @@ public class Photo implements IPhoto {
 	
 	@Override
 	public void removePersonTag(String personName) {
+		Collections.sort(this.peopleTags);
 		int index = Collections.binarySearch(this.peopleTags, personName);
 		if(index < 0) return;
 		if(this.peopleTags.get(index).equals(personName)) this.peopleTags.remove(index);

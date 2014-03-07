@@ -29,7 +29,7 @@ public class User implements IUser {
 	@Override
 	public List<IAlbum> getAlbums() {
 		ArrayList<IAlbum> defensiveCopy = new ArrayList<IAlbum>();
-		Collections.copy(defensiveCopy, this.albumList);
+		defensiveCopy.addAll(this.albumList);
 		return defensiveCopy;
 	}
 
