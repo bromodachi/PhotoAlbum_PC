@@ -39,8 +39,8 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		Collections.sort(this.users, new UserComparator());
 		int index = Collections.binarySearch(this.users, userId);
 		IUser newUser = null;
-		if(index >= 0 && newUser.getUserId().equals(userId)) {
-			newUser = this.users.get(index);
+		if(index >= 0) {
+			if(this.users.get(index).getUserId().equals(userId)) newUser = this.users.get(index);
 		} else {
 			newUser = new User(userId, username);
 			this.users.add(newUser);
@@ -50,17 +50,11 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public IUser getUser(String userId) {
-//		Collections.sort(this.users, new UserComparator());
-//		int index = Collections.binarySearch(this.users, userId);
-//		if(index < 0)	return null;
-//		IUser user = this.users.get(index);
-//		if(user.getUserId().equals(userId)) return user;
-		
-		IUser user = null;
-		for(IUser u : this.users) {
-			if(u.getUserId().equals(userId)) return u;
-		}
-		
+		Collections.sort(this.users, new UserComparator());
+		int index = Collections.binarySearch(this.users, userId);
+		if(index < 0)	return null;
+		IUser user = this.users.get(index);
+		if(user.getUserId().equals(userId)) return user;
 		try{
 			FileInputStream fileIn = new FileInputStream(database + user.getUserId());
 			ObjectInputStream in = new ObjectInputStream(fileIn);
