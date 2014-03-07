@@ -1,4 +1,4 @@
-package control;
+package controlpackage control;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
