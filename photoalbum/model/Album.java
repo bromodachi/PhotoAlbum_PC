@@ -34,7 +34,7 @@ public class Album implements IAlbum{
 	public void addPhoto(IPhoto photo) {
 		Collections.sort(this.photoList, new PhotoComparator());
 		int index = Collections.binarySearch(this.photoList, photo.getPhotoID());
-		if(!this.photoList.get(index).getPhotoID().equals(photo.getPhotoID()))	this.photoList.add(photo);
+		if(index >= 0 && this.photoList.get(index).getPhotoID().equals(photo.getPhotoID()))	this.photoList.add(photo);
 	}
 
 	@Override
