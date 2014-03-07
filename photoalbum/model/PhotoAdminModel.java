@@ -35,12 +35,10 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	}
 	
 	private String userdatabase;
-	private String photodatabase;
 	private List<IUser> users;
 	
 	public PhotoAdminModel() {
 		this.userdatabase = "data/";
-		this.photodatabase = "photos/";
 		this.users = new ArrayList<IUser>();
 	}
 	
@@ -188,13 +186,13 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public boolean photoExists(String fileName) {
-		File file = new File(photodatabase+fileName);
+		File file = new File(fileName);
 		return file.exists();
 	}
 
 	@Override
 	public Date photoFileDate(String fileName) {
-		File file = new File(photodatabase+fileName);
+		File file = new File(fileName);
 		long dateRaw = file.lastModified();
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(dateRaw);
@@ -223,7 +221,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public String photoFileDateString(String fileName) {
-		File file = new File(photodatabase+fileName);
+		File file = new File(fileName);
 		long dateRaw = file.lastModified();
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(dateRaw);
