@@ -94,8 +94,7 @@ public class Photo implements IPhoto {
 	public void removePersonTag(String personName) {
 		Collections.sort(this.peopleTags);
 		int index = Collections.binarySearch(this.peopleTags, personName);
-		if(index < 0) return;
-		if(this.peopleTags.get(index).equals(personName)) this.peopleTags.remove(index);
+		if(index >= 0 && this.peopleTags.get(index).equals(personName)) this.peopleTags.remove(index);
 	}
 
 	@Override
