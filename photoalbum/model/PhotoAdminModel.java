@@ -20,21 +20,27 @@ import java.util.UUID;
 public class PhotoAdminModel implements IPhotoAdminModel {
 	
 	public static void main(String[] args) {
+		System.out.println("Running...");
 		String testUser = "TestUser";
+		String testUser2 = "TestUser2";
 		PhotoAdminModel model = new PhotoAdminModel();
+//		model.addUser(testUser, "testUser");
+//		model.addUser(testUser2, "testUser2");
 		model.loadPreviousSession();
-		model.saveCurrentSession();
+		//model.saveCurrentSession();
 		List<String> users = model.getUserIDs();
 		for(String s : users) {
 			System.out.println("UserId: " + s);
 		}
 	}
 	
-	private String database;
+	private String userdatabase;
+	private String photodatabase;
 	private List<IUser> users;
 	
 	public PhotoAdminModel() {
-		this.database = "data/";
+		this.userdatabase = "data/";
+		this.photodatabase = "photos/";
 		this.users = new ArrayList<IUser>();
 	}
 	
@@ -60,7 +66,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		IUser user = this.users.get(index);
 		if(user.getUserId().equals(userId)) return user;
 		try{
-			FileInputStream fileIn = new FileInputStream(database + user.getUserId());
+			FileInputStream fileIn = new FileInputStream(userdatabase + user.getUserId());
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			user = (IUser)in.readObject();
 			in.close();
@@ -85,7 +91,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		IUser user = this.users.get(index);
 		try {
 			if(user.getUserId().equals(userId)) {
-				FileOutputStream fileOut = new FileOutputStream(database + user.getUserId());
+				FileOutputStream fileOut = new FileOutputStream(userdatabase + user.getUserId());
 				ObjectOutputStream out = new ObjectOutputStream(fileOut);
 				out.writeObject(user);
 				out.close();
@@ -103,7 +109,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		IUser user = this.users.get(index);
 		if(user.equals(userId)) {
 			this.users.remove(index);
-			File file = new File(database + userId + ".ser");
+			File file = new File(userdatabase + userId + ".ser");
 			file.delete();
 		}
 	}
@@ -120,7 +126,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	@Override
 	public void loadPreviousSession() {
 		try {
-			File dir = new File(database);
+			File dir = new File(userdatabase);
 			for(File child : dir.listFiles()) {
 					FileInputStream fileIn = new FileInputStream(child.getAbsoluteFile());
 					ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -147,7 +153,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public IUser loadPreviousUserSession(String userid) {
-		File dir = new File(database);
+		File dir = new File(userdatabase);
 		for(File child : dir.listFiles()) {
 			try{
 				if(child.getName().equals(userid)) {
@@ -182,13 +188,13 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public boolean photoExists(String fileName) {
-		File file = new File(database+fileName);
+		File file = new File(photodatabase+fileName);
 		return file.exists();
 	}
 
 	@Override
 	public Date photoFileDate(String fileName) {
-		File file = new File(database+fileName);
+		File file = new File(photodatabase+fileName);
 		long dateRaw = file.lastModified();
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(dateRaw);
@@ -217,7 +223,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public String photoFileDateString(String fileName) {
-		File file = new File(database+fileName);
+		File file = new File(photodatabase+fileName);
 		long dateRaw = file.lastModified();
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(dateRaw);
