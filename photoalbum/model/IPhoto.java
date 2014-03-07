@@ -10,7 +10,7 @@ import java.util.List;
  * A sub-model by which users can make changes to a single photo.
  * </p>
  */
-public interface IPhoto extends Serializable{
+public interface IPhoto extends Serializable, Comparable<String>{
 	/*
 	 * Required
 	 */
@@ -39,6 +39,7 @@ public interface IPhoto extends Serializable{
 	 * @param fileName File name of photo; given by the user.
 	 */
 	public void setFileName(String fileName);
+	
 	/**
 	 * @return Caption associated with the photo.
 	 */
@@ -64,48 +65,27 @@ public interface IPhoto extends Serializable{
 	 * Tags
 	 */
 	/**
-	 * Injective tagging retrieval is necessary for tags associated with only one value 
-	 * (1-1 relationship).  This is for properties such as location -> <location>, 
-	 * where only one value can occur.
-	 * 
-	 * @param tagType Tag previously added for this 1-1 association.
-	 * @return Single value associated with the tag.
+	 * @return The location tag.
 	 */
-	public <V> V getTagInjective(String tagType);
+	public String getLocationTag();
 	
 	/**
-	 * Injective tagging association is necessary for tags to be associated with only one value 
-	 * (1-1 relationship).
-	 * 
-	 * @param tagType Tag to be added in an 1-1 association.
-	 * @param value Single value to be associated with the tag.
+	 * @param Location The location to change it to.
 	 */
-	public <V> void setTagInjective(String tagType, V value);
+	public void setLocationTag(String Location);
 	
 	/**
-	 * Surjective tagging retrieval is necessary for tags associated with multiple values 
-	 * (one-to-many relationship).  This is for properties such as people -> <List-Of-People>
-	 * 
-	 * @param tagType Tag previously added for this one-to-many association.
-	 * @return Multiple values associated with the tag.
+	 * @return List of people tags.
 	 */
-	public <V> List<V> getTagSurjective(String tagType);
+	public List<String> getPeopleTags();
 	
 	/**
-	 * Surjective tagging association is necessary for tags to be associated with multiple values 
-	 * (one-to-many relationship).
-	 * 
-	 * @param tagType, Tag to be added in an one-to-many association.
-	 * @param value Multiple values to be associated with this tag.
+	 * @param personName The name of a person you'd like to tag in the photo.
 	 */
-	public <V> void setTagSurjective(String tagType, List<V> value);
+	public void personTag(String personName);
 	
-	/*
-	 * Attributes
-	 */
 	/**
-	 * @param attributeId Identifier of the attribute to be associated with the photo.
-	 * @param setting Specific attribute setting to be associated with the photo.
+	 * @param personName The name of a person to remove the tag in the photo.
 	 */
-	public void setAttribute(String attributeId, String setting);
+	public void removePersonTag(String personName);
 }
