@@ -886,16 +886,26 @@ public class InteractiveControl implements IInteractiveControl {
 			editMe=photoList.get(index);
 			break outerLoop;
 		}*/
-		if(tagType.equals("person")){
+		if(tagType.equals("people")){
 		for (int i=0; i<getMe.size();i++){
 			IAlbum temp=getMe.get(i);
 			List <IPhoto> getPhotos=temp.getPhotoList();
-				for(int j=0; j<getPhotos.size(); j++){
-					albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
-					validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDate()+">\n";
-				
+			for(int j=0; j<getPhotos.size(); j++){
+				List<String> tagz=getPhotos.get(j).getPeopleTags();
+				if(!(tagz.isEmpty())){
+				/*have to get it by photo info. Look at documentation*/
+					tempValid.add(getPhotos.get(j));
 				}
 			}
+		}
+		for(int j=0; j<tempValid.size();j++){
+			albumNames=getPAlbumNames((getMe), tempValid.get(j).getFileName());
+			validPhotos=validPhotos+"<"+tempValid.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+tempValid.get(j).getDate()+">\n";
+		}
+		success="Photos for user <"+userId+"> with tags "+ori+":\n"+validPhotos;
+		setErrorMessage(success);
+		showError();
+		return;
 		}
 		else{
 			System.out.println(tagValue);
