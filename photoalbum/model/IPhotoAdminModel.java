@@ -49,7 +49,7 @@ public interface IPhotoAdminModel {
 	 * exist, this should do nothing.
 	 * @param userId Identifier of the desired user.
 	 */
-	public IUser readUser(String userId);
+	public IUser getUser(String userId);
 	
 	/**
 	 * This writes a user from memory into storage.  If the user does not
@@ -96,7 +96,7 @@ public interface IPhotoAdminModel {
 	
 	/**
 	 * @param fileName Name of the photo file to retrieve the last modification date of.
-	 * @return Last modification date of the photo file.
+	 * @return Last modification date of the photo file or null if it doesn't exist.
 	 */
 	public Date photoFileDate(String fileName);
 }

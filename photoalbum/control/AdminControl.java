@@ -7,8 +7,7 @@ import java.util.Iterator;
 
 import simpleview.CmdView;
 import model.IPhotoAdminModel;
-import model.IPhotoModel;
-import model.PhotoModel;
+import model.PhotoAdminModel;
 
 /**
  * @author Conrado Uraga
@@ -194,9 +193,8 @@ public class AdminControl implements IAdministerControl {
 			showError();
 		}
 		/*IPhoto is missing constructor*/
-		IPhotoModel modelz =new PhotoModel(this.model);
+		IPhotoAdminModel modelz =new PhotoAdminModel();
 		InteractiveControl user=new InteractiveControl(id, modelz, this.view);
-		user.setInteractiveModel(modelz);
 		user.run(id);
 	}
 	public boolean verifyUser(String id){

@@ -1,4 +1,4 @@
-package controlpackage control;
+package control;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -21,7 +21,7 @@ import simpleview.CmdView;
 import model.Album;
 import model.IAlbum;
 import model.IPhoto;
-import model.IPhotoModel;
+import model.IPhotoAdminModel;
 import model.Photo;
 
 /**
@@ -29,16 +29,11 @@ import model.Photo;
  *
  */
 public class InteractiveControl implements IInteractiveControl {
-	private IPhotoModel model;
+	private IPhotoAdminModel model;
 	private String userId;
 	private CmdView view;
 	
-	public InteractiveControl(String userId) {
-		this.userId = userId;
-		this.model = null; //TODO Set default model.
-	}
-	
-	public InteractiveControl(String userId, IPhotoModel model, CmdView view) {
+	public InteractiveControl(String userId, IPhotoAdminModel model, CmdView view) {
 		this.userId = userId;
 		this.model = model;
 		this.view =view;
@@ -304,11 +299,6 @@ public class InteractiveControl implements IInteractiveControl {
 	}
 
 	@Override
-	public void setInteractiveModel(IPhotoModel model) {
-		this.model = model;
-	}
-
-	@Override
 	public void createAlbum(String name) {
 		List<IAlbum> album=model.getUser(userId).getAlbums();
 		InteractiveControl.AlbumCompare comparePower=new InteractiveControl.AlbumCompare();
@@ -324,9 +314,7 @@ public class InteractiveControl implements IInteractiveControl {
 		/*setAlbumId(String id);*/
 		/*addAlbum(IAlbum album);*/
 		/*create new album, add it to the user's album list*/
-		String uniqueID = UUID.randomUUID().toString();
-		Album addMe=new Album(uniqueID, name);
-		addMe.setAlbumId(userId);
+		Album addMe = new Album(name);
 		model.getUser(userId).addAlbum(addMe);
 		String success="created album for user <"+userId+">:\n<"+name+">";
 		setErrorMessage(success);
@@ -469,7 +457,7 @@ public class InteractiveControl implements IInteractiveControl {
 		//how can I access the photos? Once I get the photo..
 		/*String user, String photoId, String fileName*/
 		String uniqueID = UUID.randomUUID().toString();
-		Photo addMe=new Photo(userId, uniqueID, photoFileName);
+		Photo addMe=new Photo(userId, photoFileName);
 		addMe.setCaption(photoCaption);
 		IAlbum objectiveAlbum=album1.get(index);
 		objectiveAlbum.addPhoto(addMe);

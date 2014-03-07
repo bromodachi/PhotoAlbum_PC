@@ -12,7 +12,7 @@ import model.PhotoAdminModel;
 public class CmdView {
 	private String msg;
 	public static void main(String[] args) {
-		IPhotoAdminModel adminModel = new PhotoAdminModel("./data/"); //TODO Instantiate the administrator's model.
+		IPhotoAdminModel adminModel = new PhotoAdminModel(); //TODO Instantiate the administrator's model.
 		CmdView test=new CmdView();
 		IAdministerControl adminControl = new AdminControl(adminModel, test); //TODO Instantiate the administrator's control.
 		adminControl.setAdminModel(adminModel);

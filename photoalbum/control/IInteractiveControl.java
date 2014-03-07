@@ -1,10 +1,8 @@
 package control;
 
-import java.util.Date;
 import java.util.List;
 
 import model.IAlbum;
-import model.IPhotoModel;
 
 /**
  * @author Conrado Uraga
@@ -16,7 +14,7 @@ import model.IPhotoModel;
  *</p>
  *
  */
-public interface IInteractiveControl extends IErrorControl, IPhotoControl{
+public interface IInteractiveControl extends IErrorControl{
 	/**
 	 *note: all errors like illegal parameters, invalid dates should be in this format
 	 *Error: <description of error>
@@ -28,14 +26,6 @@ public interface IInteractiveControl extends IErrorControl, IPhotoControl{
 	 */
 	public void run(String userid);
 	
-	/**
-	 * 
-	 * This links the controller to the model including any listeners requiring registration for
-	 * a single user only.
-	 * 
-	 * @param model sets the model passed in the class that implements this interface. 
-	 */
-	public void setInteractiveModel(IPhotoModel model);
 	/**
 	 * creates the album that is in the parameter. if the album
 	 * already exists, we pass an error to IErrorControl.java.
@@ -127,4 +117,6 @@ public interface IInteractiveControl extends IErrorControl, IPhotoControl{
 	 * No output for this method. Logs out the user.
 	 */
 	public void logout();
+
+	String[] readCommand();
 }
