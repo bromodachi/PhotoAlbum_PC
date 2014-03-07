@@ -464,6 +464,7 @@ public class InteractiveControl implements IInteractiveControl {
 			
 		}*/
 		/*add to album Photo class*/
+		
 		IAlbum temp=album1.get(index);
 		//how can I access the photos? Once I get the photo..
 		/*String user, String photoId, String fileName*/
@@ -726,6 +727,8 @@ public class InteractiveControl implements IInteractiveControl {
 		for (int i=0; i<model.getUser(userId).getAlbums().size(); i++){
 			IAlbum temp= albums.get(i);
 			List<IPhoto> photoList=temp.getPhotoList();
+			InteractiveControl.PhotoCompareForNames comparePower=new InteractiveControl.PhotoCompareForNames();
+			Collections.sort(photoList, comparePower);
 			/*Collections.binarySearch(this.peopleTags, personName);*/
 			int index=Collections.binarySearch(photoList, photoId);
 				if(index>=0){
@@ -779,12 +782,13 @@ public class InteractiveControl implements IInteractiveControl {
 		albumNames=albumNames+"\n";
 		String locationTagz="";
 		String evenMore="";
-		if(!(editMe.getLocationTag().equals(""))){
+		if(!(editMe.getLocationTag()==null|| editMe.getLocationTag().isEmpty())){
 			locationTagz="<Location>:<"+editMe.getLocationTag()+">\n";
 		}
+		System.out.println(editMe.getPeopleTags().size());
 			for (int i=0;i<editMe.getPeopleTags().size();i++){
 				evenMore=evenMore+"<Name of People>:<"+editMe.getPeopleTags().get(i)+">\n";
-			
+				System.out.println("I came here");
 			}
 			/*contains more tagsz*/
 			String success="Photo file name: <"+photoId+">\n"+albumNames+"Date: <"+editMe.getDate()+">\nCaption: <"+editMe.getCaption()+">\n";
@@ -840,6 +844,7 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public void getPhotosByTag(String tagType, String tagValue, String ori) {
+		tagValue=tagValue.replace("\"","");
 		/*Assuming that it's by albums only*/
 		List <IAlbum> getMe=model.getUser(userId).getAlbums();
 		String validPhotos="";
@@ -884,19 +889,23 @@ public class InteractiveControl implements IInteractiveControl {
 			}
 		}
 		else{
-			
+			System.out.println(tagValue);
 			for (int i=0; i<getMe.size();i++){
 				IAlbum temp=getMe.get(i);
 				List <IPhoto> getPhotos=temp.getPhotoList();
 				for(int j=0; j<getPhotos.size(); j++){
 					List<String> tagz=getPhotos.get(j).getPeopleTags();
-					if((getPhotos.get(j).getLocationTag().equals(tagValue))){
-						albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
-						validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDate()+">\n";
+					if(!(getPhotos.get(j).getLocationTag()==null|| getPhotos.get(j).getLocationTag().isEmpty())){
+						if((getPhotos.get(j).getLocationTag().equals(tagValue))){
+							albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
+							validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDate()+">\n";
 					
 						
+						}
 					}
+					
 					if(tagz.contains(tagValue)){
+						System.out.println(tagValue);
 						albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
 						validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDate()+">\n";
 					}
