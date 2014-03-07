@@ -99,4 +99,10 @@ public interface IPhotoAdminModel {
 	 * @return Last modification date of the photo file or null if it doesn't exist.
 	 */
 	public Date photoFileDate(String fileName);
+	
+	/**
+	 * @param fileName Name of the file to retrieve the date of.
+	 * @return A string that represents the date.
+	 */
+	public String photoFileDateString(String fileName);
 }

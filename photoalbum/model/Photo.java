@@ -22,7 +22,7 @@ public class Photo implements IPhoto {
 	
 	@Override
 	public int compareTo(String o) {
-		return this.photoId.compareTo(o);
+		return this.fileName.compareTo(o);
 	}
 
 	@Override

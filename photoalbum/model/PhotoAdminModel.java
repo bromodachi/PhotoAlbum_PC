@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,19 +19,22 @@ import java.util.UUID;
 
 public class PhotoAdminModel implements IPhotoAdminModel {
 	
-//	public static void main(String[] args) {
-//		String testUser = "TestUser";
-//		PhotoAdminModel model = new PhotoAdminModel();
-//		model.writeUser(testUser);
-//		System.out.println("TestUser created");
-//	}
+	public static void main(String[] args) {
+		String testUser = "TestUser";
+		PhotoAdminModel model = new PhotoAdminModel();
+		model.loadPreviousSession();
+		model.saveCurrentSession();
+		List<String> users = model.getUserIDs();
+		for(String s : users) {
+			System.out.println("UserId: " + s);
+		}
+	}
 	
 	private String database;
-	private String lastSessionLocation = "./data/lastSession.stat";
 	private List<IUser> users;
 	
 	public PhotoAdminModel() {
-		this.database = "../data/";
+		this.database = "data/";
 		this.users = new ArrayList<IUser>();
 	}
 	
@@ -80,14 +84,12 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		if(index < 0) return;
 		IUser user = this.users.get(index);
 		try {
-			if(user.equals(userId)) {
+			if(user.getUserId().equals(userId)) {
 				FileOutputStream fileOut = new FileOutputStream(database + user.getUserId());
 				ObjectOutputStream out = new ObjectOutputStream(fileOut);
 				out.writeObject(user);
 				out.close();
 				fileOut.close();
-			} else {
-				System.out.println("There is no user to write to storage.");
 			}
 		} catch(IOException i) {
 			System.out.println("Failed to write user to storage from memory.");
@@ -117,30 +119,25 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public void loadPreviousSession() {
-		File dir = new File(database);
-		for(File child : dir.listFiles()) {
-			try{
-				FileInputStream fileIn = new FileInputStream(child.getAbsoluteFile());
-				ObjectInputStream in = new ObjectInputStream(fileIn);
-				User user = (User)in.readObject();
-				this.users.add(user);
-				in.close();
-				fileIn.close();
-			} catch (Exception i) {
-				
+		try {
+			File dir = new File(database);
+			for(File child : dir.listFiles()) {
+					FileInputStream fileIn = new FileInputStream(child.getAbsoluteFile());
+					ObjectInputStream in = new ObjectInputStream(fileIn);
+					User user = (User)in.readObject();
+					this.users.add(user);
+					in.close();
+					fileIn.close();
 			}
+		} catch (Exception e) {
+			System.out.println();
 		}
 	}
 
 	@Override
 	public void saveCurrentSession() {
 		try{
-			File file = new File(lastSessionLocation);
-			if(!file.exists()) file.createNewFile();
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
 			for(IUser u : this.users) {
-				bw.write(u.getUserId());
 				this.writeUser(u.getUserId());
 			}
 		} catch (Exception i) {
@@ -198,6 +195,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		cal.set(Calendar.MILLISECOND, 0);
 		return cal.getTime();
 	}
+	
 
 	@Override
 	public boolean userExists(String userId) {
@@ -215,5 +213,17 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		public int compare(IUser o1, IUser o2) {
 			return o1.getUserId().compareTo(o2.getUserId());
 		}
+	}
+
+	@Override
+	public String photoFileDateString(String fileName) {
+		File file = new File(database+fileName);
+		long dateRaw = file.lastModified();
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(dateRaw);
+		cal.set(Calendar.MILLISECOND, 0);
+		Date pDate = cal.getTime();
+		String sNewDate = new SimpleDateFormat("yyyy-MM-dd").format(pDate);
+		return sNewDate;
 	}
 }
