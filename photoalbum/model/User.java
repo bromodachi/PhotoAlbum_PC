@@ -2,9 +2,10 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-public class User implements IUser{
+public class User implements IUser {
 	private static final long serialVersionUID = 1L;
 	private String userId;
 	private String fullName;
@@ -19,11 +20,6 @@ public class User implements IUser{
 	@Override
 	public String getUserId() {
 		return this.userId;
-	}
-
-	@Override
-	public void setUserId(String userId) {
-		this.userId = userId;
 	}
 
 	/**
@@ -43,17 +39,11 @@ public class User implements IUser{
 
 	@Override
 	public void deleteAlbum(String albumId) {
+		Collections.sort(albumList, new AlbumComparator());
 		int index = Collections.binarySearch(albumList, albumId);
-		IAlbum album = albumList.get(index);
-		if(album.getAlbumId().equals(albumId))	albumList.remove(index);
-	}
-
-	@Override
-	public void renameAlbum(String albumId, String newAlbumName) {
-		int index = Collections.binarySearch(albumList, albumId);
-		IAlbum album = albumList.get(index);
-		if(album.getAlbumId().equals(albumId)) {
-			album.setAlbumName(newAlbumName);
+		if(index >= 0) {
+			IAlbum album = albumList.get(index);
+			if(album.getAlbumName().equals(albumId))	albumList.remove(index);
 		}
 	}
 
@@ -63,12 +53,14 @@ public class User implements IUser{
 	}
 
 	@Override
-	public String getFullUsername() {
+	public String getFullName() {
 		return fullName;
 	}
-
-	@Override
-	public void setFullUsername(String fullName) {
-		this.fullName = fullName;
+	
+	private class AlbumComparator implements Comparator<IAlbum> {
+		@Override
+		public int compare(IAlbum o1, IAlbum o2) {
+			return o1.getAlbumName().compareTo(o2.getAlbumName());
+		}
 	}
 }

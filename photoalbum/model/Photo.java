@@ -84,9 +84,9 @@ public class Photo implements IPhoto {
 	
 	@Override
 	public void personTag(String personName) {
+		Collections.sort(this.peopleTags);
 		int index = Collections.binarySearch(this.peopleTags, personName);
-		if(index < 0) return;
-		if(!this.peopleTags.get(index).equals(personName)) this.peopleTags.add(personName);
+		if(index < 0 || !this.peopleTags.get(index).equals(personName)) this.peopleTags.add(personName);
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,7 +22,27 @@ import java.util.List;
  * </p>
  */
 public interface IPhotoAdminModel {
-	public IUser addUser(String userId, String username);
+	
+	/**
+	 * A utility function to help the control figure out whether the user
+	 * exists or not, before trying to create him/her.
+	 * 
+	 * @param userId The id of the user to be checked.
+	 * @return True, if the user exists.  False, otherwise.
+	 */
+	public boolean userExists(String userId);
+	
+	/**
+	 * This function attempts to add the user, if he/she doesn't already exist
+	 * inside the database.  Otherwise, it will return the user, if he/she already exists.
+	 * If you'd like to check whether a user already has been made, use the userExists(String userId)
+	 * method.
+	 * 
+	 * @param userId The id of the user you'd like to create.
+	 * @param fullName The full name of the user to be created.
+	 * @return The user that has just been newly created or the user that already exists in the database.
+	 */
+	public IUser addUser(String userId, String fullName);
 	
 	/**
 	 * This reads users from storage into memory.  If the user does not
@@ -55,4 +76,27 @@ public interface IPhotoAdminModel {
 	 * Saves the users in the current session.
 	 */
 	public void saveCurrentSession();
+	
+	/**
+	 * @param userid This is the id of the user you'd like to retrieve the previous session for.
+	 * @return Returns the user object populated with all photos and albums from the previous session.
+	 */
+	public IUser loadPreviousUserSession(String userid);
+	
+	/**
+	 * @param user This is the user you'd like to save to storage.
+	 */
+	public void saveCurrentUserSession(IUser user);
+	
+	/**
+	 * @param fileName Name of the photo to be checked.
+	 * @return True, if the file exists.  False, otherwise.
+	 */
+	public boolean photoExists(String fileName);
+	
+	/**
+	 * @param fileName Name of the photo file to retrieve the last modification date of.
+	 * @return Last modification date of the photo file.
+	 */
+	public Date photoFileDate(String fileName);
 }

@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,19 +16,6 @@ public interface IAlbum extends Serializable, Comparable<String>{
 	/*
 	 * Required
 	 */
-	/**
-	 * Gets the album's identifier.
-	 * @return Identifier associated with the album.  This is normally a separate and unique
-	 * identifier from the associated album name.
-	 */
-	public String getAlbumId();
-	
-	/**
-	 * Sets the album's identifier.
-	 * @param id Identifier to be associated with the album.  This is normally a separate and
-	 * unique identifier from the filename associated with the photo.
-	 */
-	public void setAlbumId(String id);
 	
 	/*
 	 * Getters and Setters
@@ -37,11 +25,13 @@ public interface IAlbum extends Serializable, Comparable<String>{
 	 * @return Album name.
 	 */
 	public String getAlbumName();
+	
 	/**
 	 * Sets the album's name.
 	 * @param name Album name.
 	 */
 	public void setAlbumName(String name);
+	
 	/**
 	 * Gets the number of photos contained in the album.
 	 * @return Number of photos in album.
@@ -84,8 +74,8 @@ public interface IAlbum extends Serializable, Comparable<String>{
 	 * Recaptions a photo in the album, if it exists.  Otherwise, lets user know it already exists
 	 * and does nothing.
 	 * 
-	 * @param id Photo identifier.
+	 * @param photoId Photo identifier.
 	 * @param caption New caption.
 	 */
-	public void recaptionPhoto(String id, String caption);
+	public void recaptionPhoto(String photoId, String caption);
 }
