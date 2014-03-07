@@ -223,7 +223,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		cal.setTimeInMillis(dateRaw);
 		cal.set(Calendar.MILLISECOND, 0);
 		Date pDate = cal.getTime();
-		String sNewDate = new SimpleDateFormat("yyyy-MM-dd").format(pDate);
+		String sNewDate = new SimpleDateFormat("MM/DD/YYYY-HH:MM:SS").format(pDate);
 		return sNewDate;
 	}
 }
