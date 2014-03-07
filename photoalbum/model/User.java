@@ -22,6 +22,7 @@ public class User implements IUser {
 		return this.userId;
 	}
 
+
 	/**
 	 * @return A defensive copy of the original list to prevent the calling class from making indirect changes to the master list.
 	 */

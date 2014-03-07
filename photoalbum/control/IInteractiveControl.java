@@ -1,7 +1,9 @@
 package control;
 
 import java.util.Date;
+import java.util.List;
 
+import model.IAlbum;
 import model.IPhotoModel;
 
 /**
@@ -95,17 +97,18 @@ public interface IInteractiveControl extends IErrorControl, IPhotoControl{
 	 * @param tagValue the value that will be attached to the photo
 	 * prints a successful message once we successfully tagged the photo
 	 */
-	public <V> void addTag(String photoId, String tagType, V tagValue);
+	public void addTag(String photoId, String tagType, String tagValue);
 	/**
 	 * deletes the tag in the photo
 	 * @param photoId is the photo id we wish to delete the tag off of. If it doesn't exist, error
 	 * @param tagType is the tagtype we wish to delete. If it doesn't exist for that said photo, error.
 	 */
-	public void deleteTag(String photoId, String tagType);
+	public void deleteTag(String photoId, String tagType, String tagValue);
 	/**
 	 * prints the photo information which includes, the file name, album, date, caption, and tags
 	 * @param photoId the photo id we wish to print. If it doesn't exist, ask IEC to print error
 	 */
+	public String getPAlbumNames(List<IAlbum> albums, String photoId);
 	public void getPhotoInfo(String photoId);
 	/**
 	 * retrieves all photo from the specify start and end date
@@ -113,13 +116,13 @@ public interface IInteractiveControl extends IErrorControl, IPhotoControl{
 	 * @param end user much specify a valid date for the end, if user passes anything else like a string, error
 	 * end paramater should not be before the start date.
 	 */
-	public void getPhotosByDate(Date start, Date end);
+	public void getPhotosByDate(String start, String end);
 	/**
 	 * retrieves all photos by the tag in chronological order. Tags can  be specified with or without
 	 * their types
 	 * @param tagType the tag the user which to specify. If not, tagtype can be empty
 	 */
-	public void getPhotosByTag(String tagType);
+	public void getPhotosByTag(String tagType, String tagValue,String ori);
 	/**
 	 * No output for this method. Logs out the user.
 	 */
