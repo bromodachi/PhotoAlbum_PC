@@ -36,12 +36,13 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	
 	@Override
 	public IUser addUser(String userId, String username) {
+		Collections.sort(this.users, new UserComparator());
 		int index = Collections.binarySearch(this.users, userId);
 		IUser newUser = null;
-		if(index < 0) {
-			newUser = new User(userId, username);
-		} else if(!newUser.getUserId().equals(userId)) {
+		if(index >= 0 && newUser.getUserId().equals(userId)) {
 			newUser = this.users.get(index);
+		} else {
+			newUser = new User(userId, username);
 		}
 		return newUser;
 	}
