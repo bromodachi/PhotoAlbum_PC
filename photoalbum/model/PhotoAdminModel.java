@@ -50,13 +50,19 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public IUser getUser(String userId) {
-		Collections.sort(this.users, new UserComparator());
-		int index = Collections.binarySearch(this.users, userId);
-		if(index < 0) return null;
-		IUser user = this.users.get(index);
-		if(user.getUserId().equals(userId)) return user;
+//		Collections.sort(this.users, new UserComparator());
+//		int index = Collections.binarySearch(this.users, userId);
+//		if(index < 0)	return null;
+//		IUser user = this.users.get(index);
+//		if(user.getUserId().equals(userId)) return user;
+		
+		IUser user = null;
+		for(IUser u : this.users) {
+			if(u.getUserId().equals(userId)) return u;
+		}
+		
 		try{
-			FileInputStream fileIn = new FileInputStream(database + user.getUserId() + ".ser");
+			FileInputStream fileIn = new FileInputStream(database + user.getUserId());
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			user = (IUser)in.readObject();
 			in.close();
@@ -75,10 +81,11 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	 */
 	@Override
 	public void writeUser(String userId) {
+		Collections.sort(this.users, new UserComparator());
+		int index = Collections.binarySearch(this.users, userId);
+		if(index < 0) return;
+		IUser user = this.users.get(index);
 		try {
-			int index = Collections.binarySearch(this.users, userId);
-			if(index < 0) return;
-			IUser user = this.users.get(index);
 			if(user.equals(userId)) {
 				FileOutputStream fileOut = new FileOutputStream(database + user.getUserId());
 				ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -95,6 +102,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public void deleteUser(String userId) {
+		Collections.sort(this.users, new UserComparator());
 		int index = Collections.binarySearch(this.users, userId);
 		IUser user = this.users.get(index);
 		if(user.equals(userId)) {
