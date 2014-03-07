@@ -38,7 +38,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	private List<IUser> users;
 	
 	public PhotoAdminModel() {
-		this.userdatabase = "data/";
+		this.userdatabase = "data/users/";
 		this.users = new ArrayList<IUser>();
 	}
 	
