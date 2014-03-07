@@ -17,20 +17,9 @@ public interface IUser extends Serializable, Comparable<String>{
 	public String getUserId();
 	
 	/**
-	 * Sets the user's identifier. 
-	 * @param albumId Identifier to be associated with the user.
-	 */
-	public void setUserId(String albumId);
-	
-	/**
 	 * @return Returns the full name of the user.
 	 */
-	public String getFullUsername();
-	
-	/**
-	 * @param username Sets the full name of the user.
-	 */
-	public void setFullUsername(String username);
+	public String getFullName();
 	
 	/**
 	 * Gets a list of albums.
@@ -52,11 +41,4 @@ public interface IUser extends Serializable, Comparable<String>{
 	 * @param albumId Identifier of the album to be deleted from this user's collection of albums.
 	 */
 	public void deleteAlbum(String albumId);
-	
-	/**
-	 * Renames an album in the user's collection.
-	 * @param albumId
-	 * @param newAlbumName
-	 */
-	public void renameAlbum(String albumId, String newAlbumName);
 }
