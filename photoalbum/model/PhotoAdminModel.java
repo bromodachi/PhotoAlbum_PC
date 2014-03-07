@@ -126,10 +126,8 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 				this.users.add(user);
 				in.close();
 				fileIn.close();
-			} catch (IOException i) {
-				System.out.println("Failed to read user from storage to memory.");
-			} catch(ClassNotFoundException c) {
-				System.out.println("Failed to read user due to a non-existence of class definition.");
+			} catch (Exception i) {
+				
 			}
 		}
 	}
@@ -145,8 +143,8 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 				bw.write(u.getUserId());
 				this.writeUser(u.getUserId());
 			}
-		} catch (IOException i) {
-			System.out.println("Could not save current session.");
+		} catch (Exception i) {
+			System.out.println();
 		}
 	}
 
@@ -164,12 +162,8 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 					fileIn.close();
 					return user;
 				}
-			} catch (IOException i) {
-				System.out.println("Failed to read user from storage to memory.");
-			} catch(ClassNotFoundException c) {
-				System.out.println("Failed to read user due to a non-existence of class definition.");
 			} catch(Exception e) {
-				System.out.println("Something went horribly wrong when I tried to load the previous session.");
+				System.out.println();
 			}
 		}
 		return null;
@@ -184,20 +178,20 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(user.getUserId());
 			this.writeUser(user.getUserId());
-		} catch (IOException i) {
-			System.out.println("Could not save current session.");
+		} catch (Exception e) {
+			System.out.println();
 		}
 	}
 
 	@Override
 	public boolean photoExists(String fileName) {
-		File file = new File(fileName);
+		File file = new File(database+fileName);
 		return file.exists();
 	}
 
 	@Override
 	public Date photoFileDate(String fileName) {
-		File file = new File(fileName);
+		File file = new File(database+fileName);
 		long dateRaw = file.lastModified();
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(dateRaw);

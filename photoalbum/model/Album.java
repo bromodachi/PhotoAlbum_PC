@@ -32,12 +32,14 @@ public class Album implements IAlbum{
 
 	@Override
 	public void addPhoto(IPhoto photo) {
+		Collections.sort(this.photoList, new PhotoComparator());
 		int index = Collections.binarySearch(this.photoList, photo.getPhotoID());
 		if(!this.photoList.get(index).getPhotoID().equals(photo.getPhotoID()))	this.photoList.add(photo);
 	}
 
 	@Override
 	public void deletePhoto(String id) {
+		Collections.sort(this.photoList, new PhotoComparator());
 		int index = Collections.binarySearch(this.photoList, id);
 		if(this.photoList.get(index).getPhotoID().equals(id))	this.photoList.remove(index);
 	}
@@ -57,7 +59,7 @@ public class Album implements IAlbum{
 	@Override
 	public List<IPhoto> getPhotoList() {
 		ArrayList<IPhoto> defensiveCopy = new ArrayList<IPhoto>();
-		Collections.copy(defensiveCopy, this.photoList);
+		defensiveCopy.addAll(this.photoList);
 		return defensiveCopy;
 	}
 	
