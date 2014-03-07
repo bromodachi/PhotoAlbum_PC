@@ -50,6 +50,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public IUser getUser(String userId) {
+		Collections.sort(this.users, new UserComparator());
 		int index = Collections.binarySearch(this.users, userId);
 		if(index < 0) return null;
 		IUser user = this.users.get(index);
