@@ -3,7 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 public class Album implements IAlbum{
@@ -34,21 +33,21 @@ public class Album implements IAlbum{
 	public void addPhoto(IPhoto photo) {
 		Collections.sort(this.photoList, new PhotoComparator());
 		int index = Collections.binarySearch(this.photoList, photo.getPhotoID());
-		if(index >= 0 && this.photoList.get(index).getPhotoID().equals(photo.getPhotoID()))	this.photoList.add(photo);
+		if(index >= 0 && this.photoList.get(index).getFileName().equals(photo.getFileName()))	this.photoList.add(photo);
 	}
 
 	@Override
-	public void deletePhoto(String id) {
+	public void deletePhoto(String fileName) {
 		Collections.sort(this.photoList, new PhotoComparator());
-		int index = Collections.binarySearch(this.photoList, id);
-		if(index >= 0 && this.photoList.get(index).getPhotoID().equals(id))	this.photoList.remove(index);
+		int index = Collections.binarySearch(this.photoList, fileName);
+		if(index >= 0 && this.photoList.get(index).getFileName().equals(fileName))	this.photoList.remove(index);
 	}
 
 	@Override
 	public void recaptionPhoto(String id, String caption) {
 		Collections.sort(this.photoList, new PhotoComparator());
 		int index = Collections.binarySearch(this.photoList, id);
-		if(index >= 0 && this.photoList.get(index).getPhotoID().equals(id))	this.photoList.get(index).setCaption(caption);
+		if(index >= 0 && this.photoList.get(index).getFileName().equals(id))	this.photoList.get(index).setCaption(caption);
 	}
 
 	@Override
@@ -66,7 +65,7 @@ public class Album implements IAlbum{
 	private class PhotoComparator implements Comparator<IPhoto> {
 		@Override
 		public int compare(IPhoto o1, IPhoto o2) {
-			return o1.getPhotoID().compareTo(o2.getPhotoID());
+			return o1.getFileName().compareTo(o2.getFileName());
 		}
 	}
 }
