@@ -18,12 +18,12 @@ import java.util.UUID;
 
 public class PhotoAdminModel implements IPhotoAdminModel {
 	
-	public static void main(String[] args) {
-		String testUser = "TestUser";
-		PhotoAdminModel model = new PhotoAdminModel();
-		model.writeUser(testUser);
-		System.out.println("TestUser created");
-	}
+//	public static void main(String[] args) {
+//		String testUser = "TestUser";
+//		PhotoAdminModel model = new PhotoAdminModel();
+//		model.writeUser(testUser);
+//		System.out.println("TestUser created");
+//	}
 	
 	private String database;
 	private String lastSessionLocation = "./data/lastSession.stat";
@@ -43,6 +43,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 			newUser = this.users.get(index);
 		} else {
 			newUser = new User(userId, username);
+			this.users.add(newUser);
 		}
 		return newUser;
 	}
