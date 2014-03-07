@@ -41,7 +41,7 @@ public class Album implements IAlbum{
 	public void deletePhoto(String id) {
 		Collections.sort(this.photoList, new PhotoComparator());
 		int index = Collections.binarySearch(this.photoList, id);
-		if(this.photoList.get(index).getPhotoID().equals(id))	this.photoList.remove(index);
+		if(index >= 0 && this.photoList.get(index).getPhotoID().equals(id))	this.photoList.remove(index);
 	}
 
 	@Override
