@@ -93,7 +93,7 @@ public class AdminControl implements IAdministerControl {
 	}
 	}*/
 	public void run(String[] args) {
-		
+		model.loadPreviousSession();
 		/*BELOW iS JUST FOR SAKE OF EASE FOR ME WIL NOT BE INCLUDED IN FINAL*/
 		String cmd ="";
 		while(!cmd.equals("logout")) {
@@ -107,7 +107,8 @@ public class AdminControl implements IAdministerControl {
 			if(tokens.length == 3){	
 				tokens[1]=tokens[1].replace("\"","");
 				tokens[2]=tokens[2].replace("\"","");
-				this.addUser(tokens[1], tokens[2]);}
+				this.addUser(tokens[1], tokens[2]);
+			}
 			else{
 				String error="Error: <Incorrect Format>";
 				setErrorMessage(error);
@@ -115,7 +116,7 @@ public class AdminControl implements IAdministerControl {
 			}				//	throw new IllegalArgumentException(); //TODO Place proper adduser error message.
 			break;
 		case "deleteuser":
-			if(args.length >= 2)	this.deleteUser(args[1]);
+			if(tokens.length == 2)	this.deleteUser(tokens[1]);
 			else{					
 				String error="Error: <Incorrect Format>";
 				setErrorMessage(error);
@@ -131,6 +132,8 @@ public class AdminControl implements IAdministerControl {
 			control.setInteractiveModel(model);
 			control.run(userId);*/
 			break;
+		case "logout":
+			continue;
 		default:
 			String errMsg = "Error: <Please enter a valid command.>";
 			setErrorMessage(errMsg);
@@ -138,6 +141,7 @@ public class AdminControl implements IAdministerControl {
 			break;
 	}
 		}
+		model.saveCurrentSession();
 	}
 
 	@Override
@@ -150,7 +154,7 @@ public class AdminControl implements IAdministerControl {
 		// TODO Auto-generated method stub
 		String success="";
 		for(int i=0; i<model.getUserIDs().size();i++){
-			success=success+"<"+model.getUserIDs()+">\n";
+			success=success+"<"+model.getUserIDs().get(i)+">\n";
 		}
 		setErrorMessage(success);
 		showError();
@@ -182,6 +186,8 @@ public class AdminControl implements IAdministerControl {
 		}
 		model.deleteUser(id);
 		String msg="deleted user <"+id+">";
+		setErrorMessage(msg);
+		showError();
 	}
 
 	@Override
@@ -193,8 +199,8 @@ public class AdminControl implements IAdministerControl {
 			showError();
 		}
 		/*IPhoto is missing constructor*/
-		IPhotoAdminModel modelz =new PhotoAdminModel();
-		InteractiveControl user=new InteractiveControl(id, modelz, this.view);
+		//IPhotoAdminModel modelz =new PhotoAdminModel();
+		InteractiveControl user=new InteractiveControl(id, this.model, this.view);
 		user.run(id);
 	}
 	public boolean verifyUser(String id){
