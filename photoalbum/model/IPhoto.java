@@ -92,5 +92,5 @@ public interface IPhoto extends Serializable, Comparable<String>{
 	/**
 	 * @param personName The name of a person to remove the tag in the photo.
 	 */
-	public void removePersonTag(String personName);
+	public boolean removePersonTag(String personName);
 }
