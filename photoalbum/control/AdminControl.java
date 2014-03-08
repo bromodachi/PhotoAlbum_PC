@@ -108,8 +108,7 @@ public class AdminControl implements IAdministerControl {
 				tokens[1]=tokens[1].replace("\"","");
 				tokens[2]=tokens[2].replace("\"","");
 				this.addUser(tokens[1], tokens[2]);
-			}
-			else{
+			} else	{
 				String error="Error: Incorrect Format";
 				setErrorMessage(error);
 				showError();
@@ -141,7 +140,7 @@ public class AdminControl implements IAdministerControl {
 			showError();
 			break;
 		}
-		model.saveCurrentSession();
+		this.model.saveCurrentSession();
 	}
 
 	@Override
@@ -168,7 +167,9 @@ public class AdminControl implements IAdministerControl {
 			String error="user "+id+" already exists with name "+name;
 			setErrorMessage(error);
 			showError();
+			return;
 		}
+		this.model.addUser(id, name);
 		String msg="created user "+id+" with name " +name;
 		setErrorMessage(msg);
 		showError();
