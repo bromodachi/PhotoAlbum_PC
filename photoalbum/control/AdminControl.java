@@ -7,7 +7,9 @@ import java.util.Iterator;
 
 import simpleview.CmdView;
 import model.IPhotoAdminModel;
+import model.IUser;
 import model.PhotoAdminModel;
+import model.User;
 
 /**
  * @author Conrado Uraga
@@ -94,10 +96,8 @@ public class AdminControl implements IAdministerControl {
 	}*/
 	public void run(String[] args) {
 		model.loadPreviousSession();
-		/*BELOW iS JUST FOR SAKE OF EASE FOR ME WIL NOT BE INCLUDED IN FINAL*/
 		String cmd ="";
-		while(!cmd.equals("logout")) {
-			String[] tokens= readCommand();
+		String[] tokens = args;
 		cmd =tokens[0];
 		switch(cmd) {
 		case "listusers":
@@ -110,7 +110,7 @@ public class AdminControl implements IAdministerControl {
 				this.addUser(tokens[1], tokens[2]);
 			}
 			else{
-				String error="Error: <Incorrect Format>";
+				String error="Error: Incorrect Format";
 				setErrorMessage(error);
 				showError();
 			}				//	throw new IllegalArgumentException(); //TODO Place proper adduser error message.
@@ -118,7 +118,7 @@ public class AdminControl implements IAdministerControl {
 		case "deleteuser":
 			if(tokens.length == 2)	this.deleteUser(tokens[1]);
 			else{					
-				String error="Error: <Incorrect Format>";
+				String error="Error: Incorrect Format";
 				setErrorMessage(error);
 				showError();
 				//throw new IllegalArgumentException();
@@ -133,13 +133,13 @@ public class AdminControl implements IAdministerControl {
 			control.run(userId);*/
 			break;
 		case "logout":
-			continue;
+			//continue;
+			break;
 		default:
-			String errMsg = "Error: <Please enter a valid command.>";
+			String errMsg = "Error: Please enter a valid command.";
 			setErrorMessage(errMsg);
 			showError();
 			break;
-	}
 		}
 		model.saveCurrentSession();
 	}
@@ -151,10 +151,9 @@ public class AdminControl implements IAdministerControl {
 
 	@Override
 	public void listUsers() {
-		// TODO Auto-generated method stub
 		String success="";
-		for(int i=0; i<model.getUserIDs().size();i++){
-			success=success+"<"+model.getUserIDs().get(i)+">\n";
+		for(int i=0; i < model.getUserIDs().size();i++){
+			success=success+model.getUserIDs().get(i)+"\n";
 		}
 		setErrorMessage(success);
 		showError();
@@ -166,12 +165,11 @@ public class AdminControl implements IAdministerControl {
 	public void addUser(String id, String name) {
 		if(verifyUser(id)){
 			/**/
-			String error="user <"+id+"> already exists with name <"+name+">";
+			String error="user "+id+" already exists with name "+name;
 			setErrorMessage(error);
 			showError();
 		}
-		model.addUser(id, name);
-		String msg="created user <"+id+"> with name <" +name+">";
+		String msg="created user "+id+" with name " +name;
 		setErrorMessage(msg);
 		showError();
 	}
@@ -180,12 +178,12 @@ public class AdminControl implements IAdministerControl {
 	public void deleteUser(String id) {
 		if(!verifyUser(id)){
 			/**/
-			String error="user <"+id+"> does not exist";
+			String error="user "+id+" does not exist";
 			setErrorMessage(error);
 			showError();
 		}
 		model.deleteUser(id);
-		String msg="deleted user <"+id+">";
+		String msg="deleted user "+id;
 		setErrorMessage(msg);
 		showError();
 	}

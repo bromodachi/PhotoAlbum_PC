@@ -18,27 +18,11 @@ import java.util.List;
 import java.util.UUID;
 
 public class PhotoAdminModel implements IPhotoAdminModel {
-	
-	public static void main(String[] args) {
-		System.out.println("Running...");
-		String testUser = "TestUser";
-		String testUser2 = "TestUser2";
-		PhotoAdminModel model = new PhotoAdminModel();
-//		model.addUser(testUser, "testUser");
-//		model.addUser(testUser2, "testUser2");
-		model.loadPreviousSession();
-		//model.saveCurrentSession();
-		List<String> users = model.getUserIDs();
-		for(String s : users) {
-			System.out.println("UserId: " + s);
-		}
-	}
-	
 	private String userdatabase;
 	private List<IUser> users;
 	
 	public PhotoAdminModel() {
-		this.userdatabase = "C:\\Users\\cau19\\Downloads\\data\\users\\";
+		this.userdatabase = "../data/users/";
 		this.users = new ArrayList<IUser>();
 	}
 	
@@ -48,7 +32,12 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		int index = Collections.binarySearch(this.users, userId);
 		IUser newUser = null;
 		if(index >= 0) {
-			if(this.users.get(index).getUserId().equals(userId)) newUser = this.users.get(index);
+			if(this.users.get(index).getUserId().equals(userId)) {
+				return this.users.get(index);
+			} else {
+				newUser = new User(userId, username);
+				this.users.add(newUser);
+			}
 		} else {
 			newUser = new User(userId, username);
 			this.users.add(newUser);
@@ -141,11 +130,12 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	@Override
 	public void saveCurrentSession() {
 		try{
-			for(IUser u : this.users) {
+			for(int i = 0; i < this.users.size(); i++) {
+				IUser u = this.users.get(i);
 				this.writeUser(u.getUserId());
 			}
 		} catch (Exception i) {
-			System.out.println();
+			System.out.println("Could not create a user.");
 		}
 	}
 
