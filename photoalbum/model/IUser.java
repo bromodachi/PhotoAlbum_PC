@@ -42,3 +42,4 @@ public interface IUser extends Serializable, Comparable<String>{
 	 */
 	public void deleteAlbum(String albumId);
 }
+
