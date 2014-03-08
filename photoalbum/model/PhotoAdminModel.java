@@ -38,7 +38,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	private List<IUser> users;
 	
 	public PhotoAdminModel() {
-		this.userdatabase = "data/users/";
+		this.userdatabase = "C:\\Users\\cau19\\Downloads\\data\\users\\";
 		this.users = new ArrayList<IUser>();
 	}
 	
@@ -105,7 +105,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		Collections.sort(this.users, new UserComparator());
 		int index = Collections.binarySearch(this.users, userId);
 		IUser user = this.users.get(index);
-		if(user.equals(userId)) {
+		if(user.getUserId().equals(userId)) {
 			this.users.remove(index);
 			File file = new File(userdatabase + userId + ".ser");
 			file.delete();
@@ -227,7 +227,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		cal.setTimeInMillis(dateRaw);
 		cal.set(Calendar.MILLISECOND, 0);
 		Date pDate = cal.getTime();
-		String sNewDate = new SimpleDateFormat("MM/DD/YYYY-HH:MM:SS").format(pDate);
+		String sNewDate = new SimpleDateFormat("MM/dd/yyyy-HH:MM:SS").format(pDate);
 		return sNewDate;
 	}
 }
