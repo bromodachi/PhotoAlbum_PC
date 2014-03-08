@@ -121,7 +121,6 @@ public class InteractiveControl implements IInteractiveControl {
 				tokens[1]=tokens[1].replace("<", "");
 				tokens[1]=tokens[1].replace(">", "");
 				tokens[1]=tokens[1].replace("\"","");
-				System.out.println("testing: "+tokens[1]);
 				deleteAlbum(tokens[1]);
 				break;
 			case "listAlbums":
@@ -153,7 +152,6 @@ public class InteractiveControl implements IInteractiveControl {
 					break;
 				}
 				while(i!=4){
-					System.out.println(i);
 					tokens[i]=tokens[i].replace("\"","");
 					tokens[i]=tokens[i].replace("<", "");
 					tokens[i]=tokens[i].replace(">", "");
@@ -208,10 +206,23 @@ public class InteractiveControl implements IInteractiveControl {
 					tokens[i]=tokens[i].replace(">", "");
 					i++;
 				}
-				splitMe=tokens[2];
-				splitting=splitMe.split(":");
-				
-				addTag(tokens[1], splitting[0], splitting[1]);
+				if((tokens[2].contains(":"))){
+					splitMe=tokens[2];
+					splitting=splitMe.split(":");
+					if((splitting[0].equals("person")|| splitting[0].equals("location"))){
+						addTag(tokens[1], splitting[0], splitting[1]);
+						break;
+					}
+					String error="Error: <Incorrect Format>";
+					setErrorMessage(error);
+					showError();
+					break;
+		}
+		/*public void addPhoto(String albumId, String photoFileName,
+	String photoCaption)*/
+					String error2="Error: <Incorrect Format>";
+				setErrorMessage(error2);
+				showError();
 				break;
 			case "deleteTag":
 				if(tokens.length>3 ||tokens.length<3){
@@ -266,9 +277,9 @@ public class InteractiveControl implements IInteractiveControl {
 					break;
 				}
 					String cpy=tokens[1];
-					tokens[1].replace("\"","");
-					tokens[1].replace("<", "");
-					tokens[1].replace(">", "");
+					tokens[1]=tokens[1].replace("\"","");
+					tokens[1]=tokens[1].replace("<", "");
+					tokens[1]=tokens[1].replace(">", "");
 					if(tokens[1].contains(":")){
 						splitMe=tokens[1];
 						splitting=splitMe.split(":");
@@ -276,7 +287,7 @@ public class InteractiveControl implements IInteractiveControl {
 						break;
 					}
 					else{
-						if(tokens[1].equals("people")|| tokens[1].equals("location")){
+						if(tokens[1].equals("person")|| tokens[1].equals("location")){
 							getPhotosByTag(tokens[1], "", cpy);
 						break;
 						}
@@ -302,10 +313,10 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public void createAlbum(String name) {
-		if(model.getUser(userId)==null){
+		/*if(model.getUser(userId)==null){
 			System.out.println("yes");
 			return;
-		}
+		}*/
 		List<IAlbum> album=model.getUser(userId).getAlbums();
 		InteractiveControl.AlbumCompare comparePower=new InteractiveControl.AlbumCompare();
 		Collections.sort(album, comparePower);
@@ -488,12 +499,14 @@ public class InteractiveControl implements IInteractiveControl {
 		InteractiveControl.AlbumCompare comparePower=new InteractiveControl.AlbumCompare();
 		Collections.sort(album1, comparePower);
 		int index=Collections.binarySearch(album1, albumIdSrc);
+		/*else if(!this.photoList.get(index).getFileName().equals(photo.getFileName())) {
+			this.photoList.add(photo);
+		}*/
 		if(index<0){
 			String error="album does not exist for user <"+userId+">:\n<"+albumIdSrc+">";
 			setErrorMessage(error);
 			showError();
 			return;
-			
 		}
 		IAlbum source=album1.get(index);
 		index=Collections.binarySearch(album1, albumIdDest);
@@ -544,6 +557,8 @@ public class InteractiveControl implements IInteractiveControl {
 			return;
 		}
 		IAlbum source=model.getUser(userId).getAlbums().get(index);
+		InteractiveControl.PhotoCompareForNames comparePower2=new InteractiveControl.PhotoCompareForNames();
+		Collections.sort(source.getPhotoList(), comparePower2);
 		index=Collections.binarySearch(source.getPhotoList(), photoId);
 		if(index<0){
 			String error="Photo <"+photoId+"> does not exist in <"+albumId+">";
@@ -563,6 +578,7 @@ public class InteractiveControl implements IInteractiveControl {
 		/*in case photo doesn't exist*/
 		List<IAlbum> albums=model.getUser(userId).getAlbums();
 		IPhoto getMe=null;
+		//System.out.println(photoId);
 		outerLoop:
 		for (int i=0; i<model.getUser(userId).getAlbums().size(); i++){
 			IAlbum temp= albums.get(i);
@@ -573,6 +589,8 @@ public class InteractiveControl implements IInteractiveControl {
 					editMe=photoList.get(index);
 					break outerLoop;
 				}*/
+			InteractiveControl.PhotoCompareForNames comparePower2=new InteractiveControl.PhotoCompareForNames();
+			Collections.sort(photoList, comparePower2);
 					int index=Collections.binarySearch(photoList, photoId);
 				if(index>=0){
 					getMe=photoList.get(index);
@@ -614,7 +632,7 @@ public class InteractiveControl implements IInteractiveControl {
 				showError();	
 				return;
 			}
-		case "people":
+		case "person":
 			if(getMe.getPeopleTags().contains(tagValue)){
 				String error="Tag already exists for <"+photoId+"> <"+tagType+">:<"+tagValue+">";
 				setErrorMessage(error);
@@ -659,6 +677,8 @@ public class InteractiveControl implements IInteractiveControl {
 			IAlbum temp= albums.get(i);
 			List<IPhoto> photoList=temp.getPhotoList();
 			/*Collections.binarySearch(this.peopleTags, personName);*/
+			InteractiveControl.PhotoCompareForNames comparePower2=new InteractiveControl.PhotoCompareForNames();
+			Collections.sort(photoList, comparePower2);
 			int index=Collections.binarySearch(photoList, photoId);
 				if(index>=0){
 					editMe=photoList.get(index);
@@ -684,14 +704,22 @@ public class InteractiveControl implements IInteractiveControl {
 			}
 			else{
 				String temp=editMe.getLocationTag();
+				if(temp.equals(tagValue)){
 				editMe.setLocationTag("");
 				String success="Deleted tag:\n<"+photoId+"> <"+tagType+">:<"+temp+">";
 				setErrorMessage(success);
 				showError();
-				return;
+				return;}
+				else{
+					String error="Tag does not exist for <"+editMe.getFileName()+"> <"+tagType+">:<"+tagValue+">";
+					setErrorMessage(error);
+					showError();
+					return;
+					
+				}
 			}
 			/*maybe change below*/
-			case"people":
+			case"person":
 				
 			if((editMe.getPeopleTags().isEmpty())|| (!editMe.getPeopleTags().contains(tagValue))){
 			/*replace tagtype by appropriate value*/
@@ -701,11 +729,18 @@ public class InteractiveControl implements IInteractiveControl {
 				return;
 			}
 			else{
-				editMe.removePersonTag(tagValue);
+				if(editMe.removePersonTag(tagValue)){
 				String success="Deleted tag:\n<"+photoId+"> <"+tagType+">:<"+tagValue+">";
 				setErrorMessage(success);
 				showError();
 				return;
+				}
+				else{
+					String error="Tag does not exist for <"+editMe.getFileName()+"> <"+tagType+">:<"+tagValue+">";
+					setErrorMessage(error);
+					showError();
+					return;
+				}
 			
 			}
 			default:
@@ -759,6 +794,7 @@ public class InteractiveControl implements IInteractiveControl {
 			showError();	
 			return;
 		}*/
+	//	System.out.println(photoId);
 		List<IAlbum> albums=model.getUser(userId).getAlbums();
 		IPhoto editMe=null;
 		String albumNames="";
@@ -773,7 +809,7 @@ public class InteractiveControl implements IInteractiveControl {
 				if(index>=0){
 					if(first==0){
 					albumNames=albumNames+"Album: <"+temp.getAlbumName()+">";
-					editMe=temp.getPhotoList().get(index);
+					editMe=photoList.get(index);
 					first=1;
 					}
 					else{
@@ -784,8 +820,9 @@ public class InteractiveControl implements IInteractiveControl {
 				
 		}
 		if(editMe==null){
-			System.out.println(photoId);
-			System.out.println("yes");
+			String error="Error: <Photo doesn't exist>";
+			setErrorMessage(error);
+			showError();
 			return;
 		}
 		albumNames=albumNames+"\n";
@@ -794,13 +831,13 @@ public class InteractiveControl implements IInteractiveControl {
 		if(!(editMe.getLocationTag()==null|| editMe.getLocationTag().isEmpty())){
 			locationTagz="<Location>:<"+editMe.getLocationTag()+">\n";
 		}
-		System.out.println(editMe.getPeopleTags().size());
+		//System.out.println(editMe.getPeopleTags().size());
 			for (int i=0;i<editMe.getPeopleTags().size();i++){
 				evenMore=evenMore+"<Name of People>:<"+editMe.getPeopleTags().get(i)+">\n";
-				System.out.println("I came here");
+		//		System.out.println("I came here");
 			}
 			/*contains more tagsz*/
-			String success="Photo file name: <"+photoId+">\n"+albumNames+"Date: <"+editMe.getDateString()+">\nCaption: <"+editMe.getCaption()+">\n";
+			String success="Photo file name: <"+editMe.getFileName()+">\n"+albumNames+"Date: <"+editMe.getDateString()+">\nCaption: <"+editMe.getCaption()+">\n";
 				success=success+locationTagz+evenMore;
 				setErrorMessage(success);
 				showError();
@@ -820,13 +857,28 @@ public class InteractiveControl implements IInteractiveControl {
 			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 			dateFormat.setLenient(false);
 			begin = dateFormat.parse(start);
-			endz = dateFormat.parse(start);
+			endz = dateFormat.parse(end);
 			}
 			catch (ParseException e) {
 			  String error="Error: <Invalid date for one of inputs>";
 			  setErrorMessage(error);
 			  showError();
+			  return;
 			}
+		if(begin.after(endz)){
+			String error="Error: <Invalid dates! Your start is after your end>";
+			 setErrorMessage(error);
+			 showError();
+			 return;
+		}
+		/*I don't need the this if but I'm going to keep it
+		 * to grind your gears*/
+		if(endz.before(begin)){
+			String error="Error: <Invalid dates! Your end date is before your start>";
+			 setErrorMessage(error);
+			 showError();
+			 return;
+		}
 		String listPhotos="";
 		List<IAlbum> album1=model.getUser(userId).getAlbums();
 		String success="";
@@ -835,7 +887,8 @@ public class InteractiveControl implements IInteractiveControl {
 		for(int i=0; i<album1.size();i++){
 			IAlbum temp=album1.get(i);
 			List<IPhoto> photoList=temp.getPhotoList();
-		//	Collections.sort(photoList, comparePower);
+			InteractiveControl.PhotoCompare comparePower=new InteractiveControl.PhotoCompare();
+			Collections.sort(photoList, comparePower);
 			for(int j=0; j<photoList.size();j++){
 				if(photoList.get(j).getDate().after(begin) && photoList.get(j).getDate().before(endz)){
 					/* getPAlbumNames(List<IAlbum> albums, String photoId)*/
@@ -844,7 +897,7 @@ public class InteractiveControl implements IInteractiveControl {
 				}
 			}
 		}
-		success="Photos for user <user id> in range <"+userId+"> in range <"+start+"> to <"+end+">:\n"+listPhotos;
+		success="Photos for user <"+userId+"> in range <"+start+"> to <"+end+">:\n"+listPhotos;
 		setErrorMessage(success);
 		showError();
 		
@@ -860,6 +913,7 @@ public class InteractiveControl implements IInteractiveControl {
 		String albumNames="";
 		String success="";
 		String listPhotos="";
+	//	System.out.println("test: "+tagType);
 		List <IPhoto> tempValid=new ArrayList<IPhoto>();
 		if(tagType.equals("location")){
 			for (int i=0; i<getMe.size();i++){
@@ -891,14 +945,15 @@ public class InteractiveControl implements IInteractiveControl {
 			IAlbum temp=getMe.get(i);
 			List <IPhoto> getPhotos=temp.getPhotoList();
 				for(int j=0; j<getPhotos.size(); j++){
+					if(!(getPhotos.get(j).getPeopleTags().isEmpty())){
 					albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
 					validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDateString()+">\n";
-				
+					}
 				}
 			}
 		}
 		else{
-			System.out.println(tagValue);
+	//		System.out.println(tagValue);
 			for (int i=0; i<getMe.size();i++){
 				IAlbum temp=getMe.get(i);
 				List <IPhoto> getPhotos=temp.getPhotoList();
@@ -914,7 +969,7 @@ public class InteractiveControl implements IInteractiveControl {
 					}
 					
 					if(tagz.contains(tagValue)){
-						System.out.println(tagValue);
+		//				System.out.println(tagValue);
 						albumNames=getPAlbumNames((getMe), getPhotos.get(j).getFileName());
 						validPhotos=validPhotos+"<"+getPhotos.get(j).getCaption()+"> - Album: <"+albumNames+"- Date: <"+getPhotos.get(j).getDateString()+">\n";
 					}
