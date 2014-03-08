@@ -117,6 +117,7 @@ public interface IInteractiveControl extends IErrorControl{
 	 * No output for this method. Logs out the user.
 	 */
 	public void logout();
+	public void recaptionPhoto(String photoId, String recaption);
 
 	String[] readCommand();
 }
