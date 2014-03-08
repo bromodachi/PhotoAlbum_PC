@@ -91,14 +91,15 @@ public class Photo implements IPhoto {
 	}
 	
 	@Override
-	public void removePersonTag(String personName) {
+	public boolean removePersonTag(String personName) {
 		Collections.sort(this.peopleTags);
 		int index = Collections.binarySearch(this.peopleTags, personName);
-		if(index >= 0 && this.peopleTags.get(index).equals(personName)) this.peopleTags.remove(index);
+		if(index >= 0 && this.peopleTags.get(index).equals(personName)){ this.peopleTags.remove(index); return true;}
+		else{return false;}
 	}
 
 	@Override
 	public String getDateString() {
-		return new SimpleDateFormat("MM/DD/YYYY-HH:MM:SS").format(this.photoDate);
+		return new SimpleDateFormat("MM/dd/yyyy-HH:MM:SS").format(this.photoDate);
 	}
 }
