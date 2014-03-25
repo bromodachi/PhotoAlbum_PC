@@ -3,6 +3,7 @@ package control;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.Iterator;
 
 import simpleview.CmdView;
@@ -32,12 +33,12 @@ public class AdminControl implements IAdministerControl {
 	public void setErrorMessage(String msg) {
 		// TODO Auto-generated method stub
 		/*should be passing it through the view, I believe*/
-		view.setMessage(msg);
+		this.view.setMessage(msg);
 	}
 
 	@Override
 	public void showError() {
-		view.showMessage();
+		this.view.showMessage();
 
 	}
 
@@ -95,7 +96,7 @@ public class AdminControl implements IAdministerControl {
 	}
 	}*/
 	public void run(String[] args) {
-		model.loadPreviousSession();
+		this.model.loadPreviousSession();
 		String cmd ="";
 		String[] tokens = args;
 		cmd =tokens[0];
@@ -151,8 +152,10 @@ public class AdminControl implements IAdministerControl {
 	@Override
 	public void listUsers() {
 		String success="";
-		for(int i=0; i < model.getUserIDs().size();i++){
-			success=success+model.getUserIDs().get(i)+"\n";
+		this.model.sortUsers();
+	//	Collections.sort(this.model.getUserIDs(), this.model.UserComparator());
+		for(int i=0; i < this.model.getUserIDs().size();i++){
+			success=success+this.model.getUserIDs().get(i)+"\n";
 		}
 		setErrorMessage(success);
 		showError();
@@ -173,6 +176,7 @@ public class AdminControl implements IAdministerControl {
 		String msg="created user "+id+" with name " +name;
 		setErrorMessage(msg);
 		showError();
+		this.listUsers();
 	}
 
 	@Override
