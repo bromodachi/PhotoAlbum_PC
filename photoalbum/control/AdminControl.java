@@ -3,7 +3,6 @@ package control;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.Iterator;
 
 import simpleview.CmdView;
@@ -33,12 +32,12 @@ public class AdminControl implements IAdministerControl {
 	public void setErrorMessage(String msg) {
 		// TODO Auto-generated method stub
 		/*should be passing it through the view, I believe*/
-		this.view.setMessage(msg);
+		view.setMessage(msg);
 	}
 
 	@Override
 	public void showError() {
-		this.view.showMessage();
+		view.showMessage();
 
 	}
 
@@ -96,7 +95,7 @@ public class AdminControl implements IAdministerControl {
 	}
 	}*/
 	public void run(String[] args) {
-		this.model.loadPreviousSession();
+		model.loadPreviousSession();
 		String cmd ="";
 		String[] tokens = args;
 		cmd =tokens[0];
@@ -152,10 +151,8 @@ public class AdminControl implements IAdministerControl {
 	@Override
 	public void listUsers() {
 		String success="";
-		this.model.sortUsers();
-		//Collections.sort(this.model.getUserIDs(), this.model.UserComparator());
-		for(int i=0; i < this.model.getUserIDs().size();i++){
-			success=success+this.model.getUserIDs().get(i)+"\n";
+		for(int i=0; i < model.getUserIDs().size();i++){
+			success=success+model.getUserIDs().get(i)+"\n";
 		}
 		setErrorMessage(success);
 		showError();
