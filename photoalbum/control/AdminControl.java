@@ -153,7 +153,7 @@ public class AdminControl implements IAdministerControl {
 	public void listUsers() {
 		String success="";
 		this.model.sortUsers();
-	//	Collections.sort(this.model.getUserIDs(), this.model.UserComparator());
+		//Collections.sort(this.model.getUserIDs(), this.model.UserComparator());
 		for(int i=0; i < this.model.getUserIDs().size();i++){
 			success=success+this.model.getUserIDs().get(i)+"\n";
 		}

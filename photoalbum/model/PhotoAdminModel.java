@@ -106,6 +106,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	public void sortUsers(){
 		Collections.sort(this.users, new UserComparator());
 	}
+	
 	@Override
 	public void deleteUser(String userId) {
 		Collections.sort(this.users, new UserComparator());

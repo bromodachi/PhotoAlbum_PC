@@ -105,4 +105,6 @@ public interface IPhotoAdminModel {
 	 * @return A string that represents the date.
 	 */
 	public String photoFileDateString(String fileName);
+
+	public void sortUsers();
 }
