@@ -23,7 +23,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	
 	public PhotoAdminModel() {
 		//System.getProperty("...\\workspace\\photoAlbum\\"); //<- this also works for me
-		this.userdatabase = System.getProperty("user.dir");
+		this.userdatabase = System.getProperty("...\\src\\data\\");
 		this.users = new ArrayList<IUser>();
 	}
 	
@@ -73,26 +73,14 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	 */
 	@Override
 	public void writeUser(String userId) {
-		try{
-		FileOutputStream f_out = new FileOutputStream("user.data");
-		ObjectOutputStream obj_out = new
-				ObjectOutputStream (f_out);
-		for (int i=0; i<this.users.size();i++){
-			obj_out.writeObject ( users.get(i));
-			
-		}
-		f_out.close();
-		}catch(IOException i) {
-			System.out.println("Failed to write user to storage from memory.");
-		}
-		
-		/*Collections.sort(this.users, new UserComparator());
+		Collections.sort(this.users, new UserComparator());
 		int index = Collections.binarySearch(this.users, userId);
 		if(index < 0) return;
 		IUser user = this.users.get(index);
 		try {
 			if(user.getUserId().equals(userId)) {
-				FileOutputStream fileOut = new FileOutputStream(userdatabase + user.getUserId());
+	//			System.out.println("Svaing");
+				FileOutputStream fileOut = new FileOutputStream("user.data");
 				ObjectOutputStream out = new ObjectOutputStream(fileOut);
 				out.writeObject(user);
 				out.close();
@@ -100,13 +88,9 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 			}
 		} catch(IOException i) {
 			System.out.println("Failed to write user to storage from memory.");
-		}*/
+		}
 	}
 
-	public void sortUsers(){
-		Collections.sort(this.users, new UserComparator());
-	}
-	
 	@Override
 	public void deleteUser(String userId) {
 		Collections.sort(this.users, new UserComparator());
@@ -128,49 +112,58 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		return userStrings;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void loadPreviousSession() {
 		try {
-			FileInputStream saveFile=new FileInputStream("user.data");
-			ObjectInputStream save=new ObjectInputStream(saveFile);
-			this.users=(ArrayList<IUser>) save.readObject();
-	        save.close();
-			}
-		 catch (Exception e) {
-			System.out.println();
+					FileInputStream fileIn = new FileInputStream("user.data");
+					ObjectInputStream in = new ObjectInputStream(fileIn);
+					User user = (User)in.readObject();
+					this.users.add(user);
+					Collections.sort(this.users, new UserComparator());
+					in.close();
+					fileIn.close();
 			
+		} catch (Exception e) {
+			System.out.println();
 		}
 	}
-	
 
 	@Override
 	public void saveCurrentSession() {
 		try{
-			FileOutputStream f_out = new FileOutputStream("user.data");
-			ObjectOutputStream obj_out = new
-					ObjectOutputStream (f_out);
-				obj_out.writeObject ( this.users);
-			f_out.close();
-			}catch(IOException i) {
-				System.out.println("Failed to write user to storage from memory.");
+			for(int i = 0; i < this.users.size(); i++) {
+				IUser u = this.users.get(i);
+				this.writeUser(u.getUserId());
 			}
-			}
+		} catch (Exception i) {
+			System.out.println("Could not create a user.");
+		}
+	}
 
 	@Override
 	public IUser loadPreviousUserSession(String userid) {
-		/*FileInputStream saveFile=new FileInputStream("user.dat");
-			ObjectInputStream save=new ObjectInputStream(saveFile);
-			this.users=(ArrayList<IUser>) save.readObject();
-	        save.close();*/
-	        return null;
+		File dir = new File(userdatabase);
+		for(File child : dir.listFiles()) {
+			try{
+					FileInputStream fileIn = new FileInputStream("user.data");
+					ObjectInputStream in = new ObjectInputStream(fileIn);
+					User user = (User)in.readObject();
+					this.users.add(user);
+					in.close();
+					fileIn.close();
+					return user;
+			} catch(Exception e) {
+				System.out.println();
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public void saveCurrentUserSession(IUser user) {
 		try{
 			File file = new File(user.getUserId());
-			if(!file.exists()) {file.createNewFile();}
+			if(!file.exists()) file.createNewFile();
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(user.getUserId());
