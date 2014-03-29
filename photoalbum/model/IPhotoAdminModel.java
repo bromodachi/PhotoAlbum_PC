@@ -106,5 +106,5 @@ public interface IPhotoAdminModel {
 	 */
 	public String photoFileDateString(String fileName);
 
-	public void sortUsers();
+	//public void sortUsers();
 }
