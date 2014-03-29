@@ -15,13 +15,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
-public class PhotoAdminModel implements IPhotoAdminModel {
+public class PhotoAdminModel2 implements IPhotoAdminModel {
 	private String userdatabase;
 	private List<IUser> users;
 	
-	public PhotoAdminModel() {
-		this.userdatabase = "";
+	public PhotoAdminModel2() {
+		//System.getProperty("...\\workspace\\photoAlbum\\"); //<- this also works for me
+		this.userdatabase = System.getProperty("user.dir");
 		this.users = new ArrayList<IUser>();
 	}
 	
@@ -84,22 +86,27 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 			System.out.println("Failed to write user to storage from memory.");
 		}
 		
+		/*Collections.sort(this.users, new UserComparator());
 		int index = Collections.binarySearch(this.users, userId);
 		if(index < 0) return;
 		IUser user = this.users.get(index);
 		try {
 			if(user.getUserId().equals(userId)) {
-				FileOutputStream fileOut = new FileOutputStream("data/users/user.data");
+				FileOutputStream fileOut = new FileOutputStream(userdatabase + user.getUserId());
 				ObjectOutputStream out = new ObjectOutputStream(fileOut);
-				out.writeObject(users);
+				out.writeObject(user);
 				out.close();
 				fileOut.close();
 			}
 		} catch(IOException i) {
 			System.out.println("Failed to write user to storage from memory.");
-		}
+		}*/
 	}
 
+	public void sortUsers(){
+		Collections.sort(this.users, new UserComparator());
+	}
+	
 	@Override
 	public void deleteUser(String userId) {
 		Collections.sort(this.users, new UserComparator());
@@ -121,55 +128,49 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		return userStrings;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void loadPreviousSession() {
 		try {
-					FileInputStream fileIn = new FileInputStream("data/users/user.data");
-					ObjectInputStream in = new ObjectInputStream(fileIn);
-					this.users = (List<IUser>)in.readObject();
-					Collections.sort(this.users, new UserComparator());
-					in.close();
-					fileIn.close();
-			
-		} catch (Exception e) {
+			FileInputStream saveFile=new FileInputStream("user.data");
+			ObjectInputStream save=new ObjectInputStream(saveFile);
+			this.users=(ArrayList<IUser>) save.readObject();
+	        save.close();
+			}
+		 catch (Exception e) {
 			System.out.println();
+			
 		}
 	}
+	
 
 	@Override
 	public void saveCurrentSession() {
 		try{
-			for(int i = 0; i < this.users.size(); i++) {
-				IUser u = this.users.get(i);
-				this.writeUser(u.getUserId());
+			FileOutputStream f_out = new FileOutputStream("user.data");
+			ObjectOutputStream obj_out = new
+					ObjectOutputStream (f_out);
+				obj_out.writeObject ( this.users);
+			f_out.close();
+			}catch(IOException i) {
+				System.out.println("Failed to write user to storage from memory.");
 			}
-		} catch (Exception i) {
-			System.out.println("Could not create a user.");
-		}
-	}
+			}
 
 	@Override
 	public IUser loadPreviousUserSession(String userid) {
-		File dir = new File(userdatabase);
-
-			try{
-					FileInputStream fileIn = new FileInputStream("data/users/user.data");
-					ObjectInputStream in = new ObjectInputStream(fileIn);
-					this.users = (List<IUser>)in.readObject();
-					in.close();
-					fileIn.close();
-			//		return user;
-			} catch(Exception e) {
-				System.out.println();
-			}
-		return null;
+		/*FileInputStream saveFile=new FileInputStream("user.dat");
+			ObjectInputStream save=new ObjectInputStream(saveFile);
+			this.users=(ArrayList<IUser>) save.readObject();
+	        save.close();*/
+	        return null;
 	}
 
 	@Override
 	public void saveCurrentUserSession(IUser user) {
 		try{
 			File file = new File(user.getUserId());
-			if(!file.exists()) file.createNewFile();
+			if(!file.exists()) {file.createNewFile();}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(user.getUserId());
@@ -181,7 +182,7 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 
 	@Override
 	public boolean photoExists(String fileName) {
-		File file = new File("data/" + fileName);
+		File file = new File(fileName);
 		return file.exists();
 	}
 
