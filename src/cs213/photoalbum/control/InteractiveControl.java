@@ -22,7 +22,8 @@ import cs213.photoalbum.model.IAlbum;
 import cs213.photoalbum.model.IPhoto;
 import cs213.photoalbum.model.IPhotoAdminModel;
 import cs213.photoalbum.model.Photo;
-import cs213.photoalbum.simpleview.CmdView;
+import cs213.photoalbum.view.CmdView;
+import cs213.photoalbum.view.UserAlbum;
 
 /**
  * @author Conrado Uraga
@@ -31,12 +32,13 @@ import cs213.photoalbum.simpleview.CmdView;
 public class InteractiveControl implements IInteractiveControl {
 	private IPhotoAdminModel model;
 	private String userId;
-	private CmdView view;
+	private UserAlbum view;
 	
-	public InteractiveControl(String userId, IPhotoAdminModel model, CmdView view) {
+	public InteractiveControl(String userId, IPhotoAdminModel model) {
 		this.userId = userId;
 		this.model = model;
-		this.view =view;
+		this.view=new UserAlbum(this, this.model);
+		view.initUI();
 	}
 	class PhotoCompare implements Comparator<IPhoto>{
 		public int compare(IPhoto x, IPhoto y){
@@ -59,14 +61,13 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public void setErrorMessage(String msg) {
-		view.setMessage(msg);
+		//view.setMessage(msg);
 
 	}
 
 	@Override
 	public void showError() {
-		view.showMessage();
-
+		//view.showMessage();
 	}
 
 	@Override
@@ -350,12 +351,39 @@ public class InteractiveControl implements IInteractiveControl {
 		/*create new album, add it to the user's album list*/
 		Album addMe = new Album(name);
 		model.getUser(userId).addAlbum(addMe);
+		view.addElementToVector(name);
 		String success="created album for user "+userId+":\n"+name+"";
 		setErrorMessage(success);
 		showError();
 	}
 
 	@Override
+	public void renameAlbum(String formal, String id){
+		List<IAlbum> album=model.getUser(userId).getAlbums();
+		InteractiveControl.AlbumCompare comparePower=new InteractiveControl.AlbumCompare();
+		Collections.sort(album, comparePower);
+		int index=Collections.binarySearch(album, formal);
+		if(index<0){
+			String error="album does not exist for user "+userId+":\n"+id+"";
+			setErrorMessage(error);
+			System.out.println(error);
+			showError();
+			return;
+		}
+		int checker=Collections.binarySearch(album, id);
+		if(checker>=0){
+			String error="album does not exist for user "+userId+":\n"+id+"";
+			setErrorMessage(error);
+			System.out.println(error);
+			showError();
+			return;
+		}
+		System.out.println("test in control");
+		IAlbum editAlbum=album.get(index);
+		editAlbum.setAlbumName(id);
+		int deleteIndex=view.getIndex();
+		view.renameAlbumInVector(deleteIndex, id);
+	}
 	public void deleteAlbum(String id) {
 		// TODO Auto-generated method stub
 		/*Collections.binarySearch(this.peopleTags, personName);*/
@@ -379,6 +407,9 @@ public class InteractiveControl implements IInteractiveControl {
 		model.getUser(userId).deleteAlbum(id);
 		String msg="deleted album from user "+userId+":\n"+id+"";
 		setErrorMessage(msg);
+		int deleteIndex=view.getIndex();
+		System.out.println("test in method");
+		view.deleteElementFromVector(deleteIndex);
 		showError();
 		return;
 

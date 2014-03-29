@@ -10,7 +10,7 @@ import cs213.photoalbum.model.IPhotoAdminModel;
 import cs213.photoalbum.model.IUser;
 import cs213.photoalbum.model.PhotoAdminModel;
 import cs213.photoalbum.model.User;
-import cs213.photoalbum.simpleview.CmdView;
+import cs213.photoalbum.view.CmdView;
 
 /**
  * @author Conrado Uraga
@@ -201,7 +201,7 @@ public class AdminControl implements IAdministerControl {
 		}
 		/*IPhoto is missing constructor*/
 		//IPhotoAdminModel modelz =new PhotoAdminModel();
-		InteractiveControl user=new InteractiveControl(id, this.model, this.view);
+		InteractiveControl user=new InteractiveControl(id, this.model);
 		user.run(id);
 	}
 	public boolean verifyUser(String id){

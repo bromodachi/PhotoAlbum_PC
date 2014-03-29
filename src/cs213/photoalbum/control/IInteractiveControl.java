@@ -120,4 +120,6 @@ public interface IInteractiveControl extends IErrorControl{
 	public void recaptionPhoto(String photoId, String recaption);
 
 	String[] readCommand();
+
+	void renameAlbum(String formal, String id);
 }
