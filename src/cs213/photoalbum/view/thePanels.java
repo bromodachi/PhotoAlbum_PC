@@ -43,6 +43,7 @@ public class thePanels extends JPanel {
 				e1.printStackTrace();
 				}*/
 	}
+	
 	public void createPanel(String name){
 		this.setLayout(new GridBagLayout());
 		this.setPreferredSize(new Dimension(380, 150));
@@ -81,8 +82,8 @@ public class thePanels extends JPanel {
 	        
 			this.add(lastUpdated, gbc);
 			invalidate();
-		       validate();
-				} catch (IOException e1) {
+			validate();
+		} catch (IOException e1) {
 				
 				e1.printStackTrace();
 				}

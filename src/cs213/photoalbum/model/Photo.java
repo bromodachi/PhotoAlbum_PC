@@ -6,7 +6,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class Photo implements IPhoto {
+import javax.swing.Icon;
+import javax.swing.JLabel;
+
+public class Photo extends JLabel implements IPhoto {
 	private static final long serialVersionUID = 1L;
 	private String photoId;
 	private String fileName;
@@ -14,13 +17,23 @@ public class Photo implements IPhoto {
 	private Date photoDate;
 	private String locationTag;
 	private ArrayList<String> peopleTags;
+	private Icon myOriginalPhoto;
+	private Icon myResized;
 
-	public Photo(String photoId, String fileName) {
+	public Photo(String photoId, String fileName, Icon image, Icon ori) {
+		super(image);
+		this.myResized=image;
+		this.myOriginalPhoto=ori;
 		this.photoId = photoId;
 		this.fileName = fileName;
 		this.peopleTags = new ArrayList<String>();
 	}
 	
+	public Photo() {
+		// TODO Auto-generated constructor stub
+		super();
+	}
+
 	@Override
 	public int compareTo(String o) {
 		return this.fileName.compareTo(o);
@@ -81,6 +94,18 @@ public class Photo implements IPhoto {
 		ArrayList<String> defensiveCopy = new ArrayList<String>();
 		defensiveCopy.addAll(this.peopleTags);
 		return defensiveCopy;
+	}
+	public Icon getPhoto(){
+		return myOriginalPhoto;
+	}
+	public Icon getResized(){
+		return myResized;
+	}
+	public void setPhoto(Icon setMe){
+		myOriginalPhoto=setMe;
+	}
+	public void setResized(Icon setMe){
+		myResized=setMe;
 	}
 	
 	@Override

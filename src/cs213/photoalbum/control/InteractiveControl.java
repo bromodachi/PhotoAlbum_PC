@@ -17,13 +17,18 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
+import javax.swing.JFrame;
+
 import cs213.photoalbum.model.Album;
 import cs213.photoalbum.model.IAlbum;
 import cs213.photoalbum.model.IPhoto;
 import cs213.photoalbum.model.IPhotoAdminModel;
 import cs213.photoalbum.model.Photo;
+import cs213.photoalbum.view.AlbumGui;
 import cs213.photoalbum.view.CmdView;
 import cs213.photoalbum.view.UserAlbum;
+import cs213.photoalbum.view.movePhotoDialog;
+import cs213.photoalbum.view.recaptionDialog;
 
 /**
  * @author Conrado Uraga
@@ -33,12 +38,13 @@ public class InteractiveControl implements IInteractiveControl {
 	private IPhotoAdminModel model;
 	private String userId;
 	private UserAlbum view;
+	private AlbumGui photoListGui;
 	
 	public InteractiveControl(String userId, IPhotoAdminModel model) {
 		this.userId = userId;
 		this.model = model;
 		this.view=new UserAlbum(this, this.model);
-		view.initUI();
+		view.initUI(model.getUser(userId).getAlbums());
 	}
 	class PhotoCompare implements Comparator<IPhoto>{
 		public int compare(IPhoto x, IPhoto y){
@@ -350,8 +356,9 @@ public class InteractiveControl implements IInteractiveControl {
 		/*addAlbum(IAlbum album);*/
 		/*create new album, add it to the user's album list*/
 		Album addMe = new Album(name);
+		addMe.createPanel(name);
 		model.getUser(userId).addAlbum(addMe);
-		view.addElementToVector(name);
+		view.addElementToVector(addMe);
 		String success="created album for user "+userId+":\n"+name+"";
 		setErrorMessage(success);
 		showError();
@@ -381,8 +388,8 @@ public class InteractiveControl implements IInteractiveControl {
 		System.out.println("test in control");
 		IAlbum editAlbum=album.get(index);
 		editAlbum.setAlbumName(id);
-		int deleteIndex=view.getIndex();
-		view.renameAlbumInVector(deleteIndex, id);
+	//	int deleteIndex=view.getIndex();
+		view.renameAlbumInVector();
 	}
 	public void deleteAlbum(String id) {
 		// TODO Auto-generated method stub
@@ -530,7 +537,7 @@ public class InteractiveControl implements IInteractiveControl {
 		//how can I access the photos? Once I get the photo..
 		/*String user, String photoId, String fileName*/
 	//	String uniqueID = UUID.randomUUID().toString();
-		Photo addMe=new Photo(userId, photoFileName);
+		Photo addMe = new Photo(userId, photoFileName, null, null);
 		addMe.setDate(model.photoFileDate(photoFileName));
 		addMe.setCaption(photoCaption);
 		IAlbum objectiveAlbum=album1.get(index);
@@ -624,6 +631,7 @@ public class InteractiveControl implements IInteractiveControl {
 		IPhoto moveMe= source.getPhotoList().get(index);
 		destination.addPhoto(moveMe);
 		source.deletePhoto(photoId);
+		photoListGui.deleteElementFromVector(photoListGui.getIndex());
 		String success= "Moved photo "+photoId+":\n"+photoId+" - From album "+albumIdSrc+" to album "+albumIdDest+"";
 		setErrorMessage(success);
 		showError();
@@ -632,27 +640,34 @@ public class InteractiveControl implements IInteractiveControl {
 	@Override
 	public void removePhoto(String albumId, String photoId) {
 		List<IAlbum> album1=model.getUser(userId).getAlbums();
-		//InteractiveControl.AlbumCompare comparePower=new InteractiveControl.AlbumCompare();
+		InteractiveControl.AlbumCompare comparePower=new InteractiveControl.AlbumCompare();
+		Collections.sort(album1, comparePower);
 	//	Album temp=new Album("", id);
+		System.out.println(albumId);
 		int index=Collections.binarySearch(album1, albumId);
 		if(index<0){
 			String error="album does not exist for user "+userId+":\n"+albumId+"";
 			setErrorMessage(error);
 			showError();
+			System.out.println("here");
 			return;
 		}
-		IAlbum source=model.getUser(userId).getAlbums().get(index);
+		IAlbum source=album1.get(index);
+		System.out.println(source.getAlbumName());
 		InteractiveControl.PhotoCompareForNames comparePower2=new InteractiveControl.PhotoCompareForNames();
-		Collections.sort(source.getPhotoList(), comparePower2);
-		index=Collections.binarySearch(source.getPhotoList(), photoId);
+		List<IPhoto> thePhotos=source.getPhotoList();
+		Collections.sort(thePhotos, comparePower2);
+		index=Collections.binarySearch(thePhotos, photoId);
 		if(index<0){
 			String error="Photo "+photoId+" does not exist in "+albumId+"";
 			setErrorMessage(error);
 			showError();
+			System.out.println("here 2\n"+photoId);
 			return;
 		}
 		/*I wonder if I can even do this..*/
 		source.deletePhoto(photoId);
+		photoListGui.deleteElementFromVector(photoListGui.getIndex());
 		String success= "Removed photo:\n"+photoId+" - From album "+albumId+"";
 		setErrorMessage(success);
 		showError();
@@ -1101,5 +1116,46 @@ public class InteractiveControl implements IInteractiveControl {
 	@Override
 	public void logout() {
 		model.saveCurrentSession();
+	}
+	public void callRecaptionGui(Photo photo){
+		JFrame frame=new JFrame();
+		recaptionDialog test=new recaptionDialog(frame, true);
+		if(test.getBoolean()==true){
+			recaptionPhoto(photo.getFileName(), test.getCaption());
+		}
+		
+	}
+	public void callMoveGui(IAlbum source, Photo photo){
+		/*movePhoto(String albumIdSrc, String albumIdDest, String photoId)*/
+		/*JFrame frame, boolean modal, String source, java.util.List<IAlbum> list,Photo toMove*/
+		JFrame frame=new JFrame();
+		List <IAlbum> getMe=model.getUser(userId).getAlbums();
+		InteractiveControl.AlbumCompare comparePower=new InteractiveControl.AlbumCompare();
+		Collections.sort(getMe, comparePower);
+		movePhotoDialog moving=new movePhotoDialog(frame, true, source.getAlbumName(), getMe, photo);
+		if(moving.getBoolean()==true){
+			movePhoto(source.getAlbumName(), moving.getDest(), photo.getFileName());
+			
+			
+		}
+	}
+	public void changeGui(IAlbum letsGo){
+		view.hideMe();
+		this.photoListGui=new AlbumGui(this, this.model, letsGo);
+		photoListGui.initUI(letsGo.getPhotoList());
+	}
+	public void changeGuiBack(){
+		photoListGui.die();
+		//if(photoListGui)
+		if(!photoListGui.getVector().isEmpty()){
+			Photo setMe=(Photo)photoListGui.getVector().get(0);
+			System.out.println(setMe.getFileName()+"here "+photoListGui.getVector().size());
+			view.setPic(setMe);
+		}
+		else if(photoListGui.getVector().isEmpty()){
+			//set the pic to the default image
+		}
+		photoListGui=null;
+		view.showMe();
 	}
 }

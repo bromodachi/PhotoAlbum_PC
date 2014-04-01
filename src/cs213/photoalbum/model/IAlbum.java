@@ -78,4 +78,8 @@ public interface IAlbum extends Serializable, Comparable<String>{
 	 * @param caption New caption.
 	 */
 	public void recaptionPhoto(String photoId, String caption);
+
+	public void setIcon(Photo setMe);
+
+	public void setPic(Photo setMe);
 }

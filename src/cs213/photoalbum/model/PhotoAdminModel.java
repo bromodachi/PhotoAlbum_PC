@@ -101,6 +101,11 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 	}
 
 	@Override
+	public void sortUsers(){
+		Collections.sort(this.users, new UserComparator());
+	}
+
+	@Override
 	public void deleteUser(String userId) {
 		Collections.sort(this.users, new UserComparator());
 		int index = Collections.binarySearch(this.users, userId);
@@ -225,4 +230,5 @@ public class PhotoAdminModel implements IPhotoAdminModel {
 		String sNewDate = new SimpleDateFormat("MM/dd/yyyy-HH:MM:SS").format(pDate);
 		return sNewDate;
 	}
+
 }
