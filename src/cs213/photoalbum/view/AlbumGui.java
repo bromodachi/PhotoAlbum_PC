@@ -1,5 +1,6 @@
 package cs213.photoalbum.view;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -7,12 +8,11 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +21,6 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -39,9 +38,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import cs213.photoalbum.control.IInteractiveControl;
 import cs213.photoalbum.control.InteractiveControl;
-import cs213.photoalbum.model.Album;
 import cs213.photoalbum.model.IAlbum;
 import cs213.photoalbum.model.IPhoto;
 import cs213.photoalbum.model.IPhotoAdminModel;
@@ -58,6 +55,7 @@ public class AlbumGui {
     private JButton recaption;
     private JButton addTag;
     private JButton deleteTag;
+    private JButton deleteLocationTag;
     private JButton backToAlbums;
     private JFrame frame;
     private JPanel buttonsPhoto;
@@ -70,6 +68,7 @@ public class AlbumGui {
     private JLabel date;
     private JLabel caption;
     private JList tagz;
+    private JLabel locationTag;
     private JPanel buttonsInfo;
     int getIndex;
     ImageIcon picLabel;
@@ -77,6 +76,12 @@ public class AlbumGui {
 	private IPhotoAdminModel model;
 	private InteractiveControl control;
 	private IAlbum currentAlbum;
+	private Date begin=null;
+	private Date endz=null;
+	private int getTagIndex;
+	private int numberOfPhotos;
+	private BufferedImage myPicture400;
+	
 	/*Have a class the extends the JLabels so we can remove them*/
 	public  AlbumGui(InteractiveControl controller, IPhotoAdminModel modelz, IAlbum album){
     	this.model=modelz;
@@ -103,7 +108,15 @@ public class AlbumGui {
     }
     public void initUI(List<IPhoto> list){
     	frame = new JFrame("default name");
-    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    //	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	frame.addWindowListener( new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+            	control.changeGuiBack();
+            	control.logout();
+                System.exit(0);
+            }
+        } );
     	frame.setLayout(new GridBagLayout());
     	JLabel label = new JLabel("Photos");
     	add = new JButton("Add");
@@ -120,18 +133,38 @@ public class AlbumGui {
         photoInfo.setLayout(new BoxLayout(photoInfo,BoxLayout.PAGE_AXIS));
         photoInfo.setBorder(BorderFactory.createTitledBorder("[Photo Info]"));
         listInfo=new JLabel();
+        BufferedImage myPicture;
+		try {
+//			System.out.println("delete element here?");
+			String path= System.getProperty("user.dir");
+	//		System.out.println(path+"\\photo\\default.jpg");
+		//	myPicture = ImageIO.read(new File("C:\\Users\\User\\workspace\\photoAlbum\\vlcsnap-2014-01-26-22h22m21s223.png"));
+			myPicture = ImageIO.read(new File(path+"\\photo\\default.png"));
+			System.out.println(path+"\\photo\\default.png");
+			BufferedImage reSized=resizeImage(myPicture, 1, 400,400);
+			listInfo.setIcon(new ImageIcon(reSized));
+		} catch (IOException e) {
+			System.out.println("or here?");
+			// TODO Auto-generated catch block
+		}
         buttonsInfo=new JPanel();
         buttonsInfo.add(addTag);
         buttonsInfo.add(deleteTag);
         
         photoInfo.add(listInfo);
+        locationTag=new JLabel("No location tag yet");
+        
         date=new JLabel("No Date");
         caption=new JLabel("No Caption");
         photoInfo.add(date);
         photoInfo.add(caption);
         recaption=new JButton("Recaption");
+        deleteLocationTag=new JButton("Delete Location Tag");
         recaption.setEnabled(false);
         photoInfo.add(recaption);
+        photoInfo.add(locationTag);
+        deleteLocationTag.setEnabled(false);
+        photoInfo.add(deleteLocationTag);
         vector=new <Photo>DefaultListModel();
 		jlwi= new JListWithImage(vector);
 		tagz=new JList();
@@ -141,17 +174,29 @@ public class AlbumGui {
 					remove.setEnabled(false);
 					move.setEnabled(false);
 					recaption.setEnabled(false);
+					deleteTag.setEnabled(false);
+				}
+				if(!vector.isEmpty()){
+					
+			//		deleteTag.setEnabled(true);
+					Photo test=(Photo)vector.get(getIndex);
+					if(!test.getPeopleTags().isEmpty()){
+						getTagIndex=tagz.getSelectedIndex();
+						deleteTag.setEnabled(true);
+					}
+					else{
+						deleteTag.setEnabled(false);
+					}
 				}
 			}
 		}
 			
 		);
-		photoInfo.add(buttonsInfo);
 		TitledBorder title;
-		title = BorderFactory.createTitledBorder("[Tags]");
+		title = BorderFactory.createTitledBorder("[People Tags]");
 		title.setTitleJustification(TitledBorder.CENTER);
 		tagz.setBorder(BorderFactory.createTitledBorder(title));
-		photoInfo.add(tagz);
+//		photoInfo.add(tagz);
 		jlwi.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		jlwi.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		jlwi.setVisibleRowCount(-1);
@@ -174,13 +219,28 @@ public class AlbumGui {
 					String date1=test.getDateString();
 					date.setText(date1);
 					System.out.println(test.getFileName());
+					System.out.println("TESTING: "+currentAlbum +test.getCaption());
 					if(test.getCaption()!=null && !test.getCaption().isEmpty()){
 						caption.setText(test.getCaption());
+						}else{
+							caption.setText("No Caption for this Photo");
+						}
+					if(test.getLocationTag()!=null && !test.getLocationTag().isEmpty()){
+						locationTag.setText(test.getLocationTag());
+						deleteLocationTag.setEnabled(true);
 						}
 					else{
-						caption.setText("No Caption for this Photo");
+						locationTag.setText("No current location for this tag. Add one?");
+						deleteLocationTag.setEnabled(false);
 					}
+					
 					tagz.setListData(test.getPeopleTags().toArray());
+					if(test.getPeopleTags().isEmpty()){
+						deleteTag.setEnabled(false);
+					}
+					else{
+						deleteTag.setEnabled(true);
+					}
 					
 					
 				//	System.out.println(test.getCaption());
@@ -192,6 +252,28 @@ public class AlbumGui {
 		}
 			
 		);
+		jlwi.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel tagListPanel = new JPanel(null);
+        tagListPanel.setPreferredSize(new Dimension(200, 200));
+        JScrollPane scrollPaneTag = new JScrollPane(tagz);
+        scrollPaneTag.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPaneTag.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPaneTag.setBounds(50, 50, 150, 150);
+      //  scrollPane.setMinimumSize(new Dimension(200, 200));
+        scrollPaneTag.setPreferredSize(new Dimension(200, 200));
+        tagListPanel.add(scrollPaneTag);
+        tagListPanel.setAlignmentX( Component.CENTER_ALIGNMENT );
+        photoInfo.add( tagListPanel);
+        photoInfo.add(buttonsInfo);
+		/*JPanel tagListPanel = new JPanel(null);
+        tagListPanel.setPreferredSize(new Dimension(200, 520));
+        JScrollPane scrollPaneTag = new JScrollPane(tagz);
+        scrollPaneTag.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPaneTag.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPaneTag.setBounds(50, 50, 150, 150);
+      //  scrollPane.setMinimumSize(new Dimension(200, 200));
+        scrollPaneTag.setPreferredSize(new Dimension(200, 200));
+        tagListPanel.add(scrollPaneTag);*/
         buttonsPhoto.add(add);
         buttonsPhoto.add(remove);
         buttonsPhoto.add(move);
@@ -207,6 +289,9 @@ public class AlbumGui {
 		recaption.addActionListener(new ButtonListener()); 
 		addTag.addActionListener(new ButtonListener()); 
 		backToAlbums.addActionListener(new ButtonListener()); 
+		deleteTag.setEnabled(false);
+		deleteTag.addActionListener(new ButtonListener()); 
+		deleteLocationTag.addActionListener(new ButtonListener()); 
 		frame.add(label, gbc);
 		JPanel contentPane = new JPanel(null);
         contentPane.setPreferredSize(new Dimension(500, 500));
@@ -219,6 +304,7 @@ public class AlbumGui {
         contentPane.add(scrollPane);
         if(!list.isEmpty()){
         	for(int i=0; i<list.size();i++){
+        		numberOfPhotos++;
         		vector.addElement(list.get(i));
         		jlwi.setListData(vector.toArray());  
         	//	mainPanel.add(jlwi);
@@ -249,8 +335,12 @@ public class AlbumGui {
 		gbc.gridx = 2;
 		gbc.gridy = 2;
 	//	frame.add(buttonsInfo, gbc);
-		frame.setSize(1200,700);
+		frame.setSize(1200,900);
     	frame.setVisible(true);
+    }
+    public void updateTagList(){
+    	Photo test=(Photo)vector.get(getIndex);
+    	tagz.setListData(test.getPeopleTags().toArray());
     }
     public void deleteElementFromVector(int i){
     	vector.remove(i);
@@ -265,18 +355,27 @@ public class AlbumGui {
 			try {
 				caption.setText("No Photos");
 				date.setText("No Photos");
-				System.out.println("delete element here?");
-				myPicture = ImageIO.read(new File("C:\\Users\\User\\workspace\\photoAlbum\\vlcsnap-2014-01-26-22h22m21s223.png"));
+//				System.out.println("delete element here?");
+				String path= System.getProperty("user.dir");
+		//		System.out.println(path+"\\photo\\default.jpg");
+			//	myPicture = ImageIO.read(new File("C:\\Users\\User\\workspace\\photoAlbum\\vlcsnap-2014-01-26-22h22m21s223.png"));
+				myPicture = ImageIO.read(new File(path+"\\photo\\default.png"));
+				System.out.println(path+"\\photo\\default.png");
 				BufferedImage reSized=resizeImage(myPicture, 1, 400,400);
 				listInfo.setIcon(new ImageIcon(reSized));
+				numberOfPhotos=0;
 			} catch (IOException e) {
 				System.out.println("or here?");
 				// TODO Auto-generated catch block
 				return;
 			}
 		}
+        numberOfPhotos--;
         System.out.println("I came here"+i);
         photos.revalidate();
+    }
+    public void setLocationTagLabel(String value){
+    	locationTag.setText(value);
     }
     private class ButtonListener implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
@@ -289,6 +388,11 @@ public class AlbumGui {
     			        "JPG, PNG, & GIF Images", "jpg", "gif", "png");
     			    chooser.setFileFilter(filter);
     			    file=chooser.getSelectedFile();
+    			    if(file==null){
+    			    	
+    			    	//stupid fix
+    			    	return;
+    			    }
     				BufferedImage myPicture = ImageIO.read(file);
     				BufferedImage myPictureForInfo=resizeImage(myPicture, 1, 400,400);
     				BufferedImage reSized=resizeImage(myPicture, 1, 140,140);
@@ -307,17 +411,38 @@ public class AlbumGui {
     				System.out.println(test.getBoolean());
     				System.out.println(chooser.getSelectedFile().getName());
     				if(test.getBoolean()==true){
-    					currentAlbum.addPhoto(re);
+    					/*String albumId, String photoFileName,
+			String photoCaption*/
+    					boolean yes=currentAlbum.addPhoto(re);
+    					if(yes==true){
+    						re=(Photo) control.checkIfiExistAlready(re);
     					vector.addElement(re);
     					jlwi.setListData(vector.toArray());
     					jlwi.setSelectedValue(re, true);
     					//		photos.add(jlwi);
     					System.out.println("test");
+    				/*	if(begin==null && endz==null){
+    						begin=re.getDate();
+    					}
+    					if(re.getDate().after(begin)){
+    						endz=re.getDate();
+    					}
+    					if(re.getDate().before(begin)){
+    						begin=re.getDate();
+    					}*/
+    					/*photoList.get(j).getDate().after(begin) && photoList.get(j).getDate().before(endz)*/
     					photos.revalidate();
+    					numberOfPhotos++;
+    					}
+    					else{
+    						JButton showTextButton=new JButton();
+							String error="Photo already exits for you!!";
+							JOptionPane.showMessageDialog(showTextButton,error);
+    					}
     				}
     			} catch (IOException e1) {
 				
-				e1.printStackTrace();
+				return;
 				}
     	}
     		else if(source==remove){
@@ -335,12 +460,10 @@ public class AlbumGui {
 					}
     		}
     		else if(source==addTag){
-    			JFrame testz=new JFrame();
-    			Photo thePhoto=(Photo)vector.get(getIndex);
-    			addTag test=new addTag(testz, true, thePhoto);
-    			if(test.getBoolean()==true){
-    				tagz.setListData(thePhoto.getPeopleTags().toArray());
-					photoInfo.revalidate();
+    			if(getIndex!=-1){
+					Photo test=(Photo) vector.get(getIndex);
+					System.out.println("Testing"+test.getFileName()+getIndex+currentAlbum.getAlbumName());
+					control.callTagGui( test);
 				}
     			
     		}
@@ -351,11 +474,92 @@ public class AlbumGui {
 					control.callMoveGui(currentAlbum, test);
 				}
     		}
+    		else if(source==deleteTag){
+    			if(getIndex!=-1){
+					Photo test=(Photo) vector.get(getIndex);
+					if(getTagIndex!=-1){
+						/*deleteTag(String photoId, String tagType, String tagValue)*/
+						String tagValue=test.getPeopleTags().get(getTagIndex);
+						control.deleteTag(test.getFileName(), "person",tagValue);
+					}
+				//	control.callMoveGui(currentAlbum, test);
+				}
+    		}
+    		else if(source==deleteLocationTag){
+    			Photo test=(Photo) vector.get(getIndex);
+				if(getTagIndex!=-1){
+					/*deleteTag(String photoId, String tagType, String tagValue)*/
+					String tagValue=test.getLocationTag();
+					System.out.println("testing what is the tag: "+tagValue);
+					control.deleteTag(test.getFileName(), "location",tagValue);
+					deleteLocationTag.setEnabled(false);
+				}
+    			
+    		}
     		else if(source==backToAlbums){
     			control.changeGuiBack();
     		}
     }
    }
+    
+    public void tryAgain(){
+    	try {
+			JFileChooser chooser = new JFileChooser();
+			chooser.showOpenDialog(null);
+		    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+		        "JPG, PNG, & GIF Images", "jpg", "gif", "png");
+		    chooser.setFileFilter(filter);
+		    file=chooser.getSelectedFile();
+		    if(file==null){
+		    	tryAgain();
+		    	
+		    	//stupid fix
+		    	return;
+		    }
+			BufferedImage myPicture = ImageIO.read(file);
+			BufferedImage myPictureForInfo=resizeImage(myPicture, 1, 400,400);
+			BufferedImage reSized=resizeImage(myPicture, 1, 140,140);
+			picLabel = new ImageIcon(myPictureForInfo);
+			//(String photoId, String fileName, Icon image)
+			re = new Photo(currentAlbum.getAlbumName(),chooser.getSelectedFile().getName(), new ImageIcon(reSized), picLabel);
+			/*vector=new <JLabels>DefaultListModel();
+			 * jlwi= new JListWithImage(vector);*/
+			long dateRaw=file.lastModified();
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(dateRaw);
+			cal.set(Calendar.MILLISECOND, 0);
+			re.setDate(cal.getTime());
+			JFrame testz=new JFrame();
+			addPhoto test=new addPhoto(testz, re, true);
+			System.out.println(test.getBoolean());
+			System.out.println(chooser.getSelectedFile().getName());
+			if(test.getBoolean()==true){
+				re=(Photo) control.checkIfiExistAlready(re);
+				currentAlbum.addPhoto(re);
+				vector.addElement(re);
+				jlwi.setListData(vector.toArray());
+				jlwi.setSelectedValue(re, true);
+				//		photos.add(jlwi);
+				System.out.println("test");
+				/*if(begin==null && endz==null){
+					begin=re.getDate();
+				}
+				if(re.getDate().after(begin)){
+					endz=re.getDate();
+				}
+				if(re.getDate().before(begin)){
+					begin=re.getDate();
+				}*/
+				/*photoList.get(j).getDate().after(begin) && photoList.get(j).getDate().before(endz)*/
+				numberOfPhotos++;
+				photos.revalidate();
+			}
+		} catch (IOException e1) {
+		
+			tryAgain();
+		}
+    	
+    }
     public BufferedImage resizeImage(BufferedImage originalImage, int type, int IMG_WIDTH, int IMG_HEIGHT){
     	BufferedImage resizedImage = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, type);
     	Graphics2D g = resizedImage.createGraphics();
@@ -379,6 +583,19 @@ public class AlbumGui {
     public int getIndex(){
     	return getIndex;
     }
+    public int getNumOfPhotos(){
+    	return numberOfPhotos;
+    }
+    public void setLocationTagBackToNull(){
+    	locationTag.setText("No current location for this tag. Add one?");
+    }
+    public void setDeleteLocationButton(boolean b) {
+		// TODO Auto-generated method stub
+    	deleteLocationTag.setEnabled(b);
+	}
+    public void setDeleteTagButton(boolean b){
+    	deleteTag.setEnabled(b);
+    }
 	 public static void main(String[] args) {
 	        try {
 	            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -398,6 +615,7 @@ public class AlbumGui {
 	            e.printStackTrace();
 	        }
 	    }
+	
 	
 
 }

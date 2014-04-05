@@ -86,6 +86,7 @@ public interface IInteractiveControl extends IErrorControl{
 	 * to be printed
 	 * @param tagValue the value that will be attached to the photo
 	 * prints a successful message once we successfully tagged the photo
+	 * @return 
 	 */
 	public void addTag(String photoId, String tagType, String tagValue);
 	/**

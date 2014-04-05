@@ -18,6 +18,7 @@ import cs213.photoalbum.model.Photo;
 
 
 public class movePhotoDialog extends JDialog{
+	private static final long serialVersionUID = 1L;
 	private JPanel mainPanel;
 	private boolean success;
 	private JLabel currentAlbum;

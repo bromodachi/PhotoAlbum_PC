@@ -9,6 +9,7 @@ import javax.swing.ListCellRenderer;
 
 
 public class JListWithImage extends JList {
+	private static final long serialVersionUID = 1L;
 	public JListWithImage(DefaultListModel vector) { 
 		   setCellRenderer(new CustomCellRenderer()); 
 		   }

@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 
 
 public class recaptionDialog extends JDialog {
+	private static final long serialVersionUID = 1L;
 	private JPanel mainPanel;
 	private boolean success;
 	private JTextField info = new JTextField();

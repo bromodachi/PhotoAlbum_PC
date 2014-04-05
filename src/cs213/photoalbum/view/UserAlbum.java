@@ -6,49 +6,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
-import java.util.Vector;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.List;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Graphics2D; 
 
-import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
-import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import cs213.photoalbum.control.InteractiveControl;
@@ -56,7 +30,6 @@ import cs213.photoalbum.model.IAlbum;
 import cs213.photoalbum.model.IPhotoAdminModel;
 import cs213.photoalbum.model.Photo;
 
-import java.awt.Graphics2D; 
 
 public class UserAlbum  {
 	private int i;
@@ -95,7 +68,14 @@ public class UserAlbum  {
     
     public void initUI(java.util.List<IAlbum> list) {
         frame = new JFrame(UserAlbum.class.getSimpleName());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  //      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.addWindowListener( new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+            	control.logout();
+                System.exit(0);
+            }
+        } );
         frame.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         mainPanel=new JPanel();
@@ -139,6 +119,8 @@ public class UserAlbum  {
 					IAlbum test=(IAlbum)vector.get(getIndex);
 					System.out.println(test.getAlbumName());
 			//		test.renameAlbum("kodomo");
+					delete.setEnabled(true);
+					rename.setEnabled(true);
 					}
 				
 				}
@@ -181,18 +163,30 @@ public class UserAlbum  {
         frame.add(buttonPanel, gbc);
      //   frame.add(delete, BorderLayout.SOUTH);
         frame.setSize(600,600);
+        if(!list.isEmpty()){
+        	for(int i=0; i<list.size();i++){
+        		vector.addElement(list.get(i));
+        		jlwi.setListData(vector.toArray());  
+        		mainPanel.add(jlwi);
+     //   		delete.setEnabled(true);
+     //			rename.setEnabled(true);
+        		mainPanel.revalidate();
+        	}
+        }
         frame.setVisible(true);
         
     }
     
     
-    public void addElementToVector(String name){
-    		thePanels newPanel = new thePanels(name);
+    public void addElementToVector(IAlbum newPanel){
+    		/*thePanels newPanel = new thePanels(name);
         	newPanel.createPanel(name);
-        	newPanel.setName(name);
+        	newPanel.setName(name);*/
         	vector.addElement(newPanel);
              jlwi.setListData(vector.toArray());
              jlwi.setSelectedValue(0, true);
+             delete.setEnabled(true);
+ 			rename.setEnabled(true);
              mainPanel.add(jlwi);
              mainPanel.revalidate();
     	
@@ -245,10 +239,14 @@ public class UserAlbum  {
 					}
     		} else if (source == rename) {
     			if(getIndex!=-1){
-    				setName = (String)JOptionPane.showInputDialog("Enter input");
-					IAlbum test=(IAlbum) vector.get(getIndex);
-					System.out.println("Rename: "+test.getAlbumName()+getIndex);
-					control.renameAlbum(test.getAlbumName(),setName);
+    		//		setName = (String)JOptionPane.showInputDialog("Enter input");
+					IAlbum testz=(IAlbum) vector.get(getIndex);
+					JFrame frame=new JFrame();
+	    			renameAlbum test=new renameAlbum(frame, true, testz.getAlbumName());
+			//		System.out.println("Rename: "+test.getAlbumName()+getIndex);
+		    			if(test.getBoolean()==true){
+		    				control.renameAlbum(testz.getAlbumName(),test.getName());
+		    			}
 					}
     		}
     		else if(source==logout){
@@ -300,4 +298,11 @@ public class UserAlbum  {
 		setAlbum.setPic(setMe);
 		
 	}
+
+	public void setDefault(ImageIcon imageIcon) {
+		IAlbum setAlbum=(IAlbum)vector.get(getIndex);
+		setAlbum.setDefault(imageIcon);
+		
+	}
+
 }
