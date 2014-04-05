@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 
 
 public class thePanels extends JPanel {
+	private static final long serialVersionUID = 1L;
 	int i;
 	private String name;
 	private JLabel albumName;
@@ -24,24 +25,6 @@ public class thePanels extends JPanel {
 	public thePanels(String nam){
 		super();
 		this.name=nam;
-		/*newPanel = new JPanel();
-        newPanel.setPreferredSize(new Dimension(380, 100));
-        try {
-			BufferedImage myPicture = ImageIO.read(new File("C:\\Users\\User\\Pictures\\vlcsnap-2014-01-26-22h22m21s223.png"));
-			BufferedImage reSized=resizeImage(myPicture, 1, 100,100);
-			JLabel picLabel = new JLabel(new ImageIcon(myPicture));
-			JLabel re = new JLabel(new ImageIcon(reSized));
-			
-			newPanel.add(re);
-			i++;
-			JLabel albumName = new JLabel("Default Name"+i);
-			newPanel.add(albumName);
-			dateRange= new JLabel("3-28-2014");
-			lastUpdated= new JLabel("3-28-2014");
-				} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				}*/
 	}
 	
 	public void createPanel(String name){

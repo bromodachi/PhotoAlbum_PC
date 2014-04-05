@@ -7,12 +7,17 @@ import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,6 +28,7 @@ public class Album extends JPanel  implements IAlbum{
 	private ArrayList<IPhoto> photoList;
 	private JLabel dateRange;
 	private JLabel lastUpdated;
+	private JLabel numOfPhotos;
 	JLabel picLabel;
 	JLabel re;
 	
@@ -35,8 +41,14 @@ public class Album extends JPanel  implements IAlbum{
 		this.setLayout(new GridBagLayout());
 		this.setPreferredSize(new Dimension(380, 150));
 		GridBagConstraints gbc = new GridBagConstraints();
+		
 		try {
-			BufferedImage myPicture = ImageIO.read(new File("C:\\Users\\User\\workspace\\photoAlbum\\vlcsnap-2014-01-26-22h22m21s223.png"));
+			//new File(default.jpg).getName()
+			String path= System.getProperty("user.dir");
+			System.out.println(path);
+		//	path=new File("default.png").getAbsoluteFile();
+		//	System.out.println(new File("default.png").getAbsoluteFile());
+			BufferedImage myPicture = ImageIO.read(new File(path+"\\photo\\default.png"));
 			BufferedImage reSized=resizeImage(myPicture, 1, 100,100);
 			this.picLabel = new JLabel(new ImageIcon(myPicture));
 			this.re = new JLabel(new ImageIcon(reSized));
@@ -68,6 +80,14 @@ public class Album extends JPanel  implements IAlbum{
 	        gbc.gridheight = 2;
 	        
 			this.add(lastUpdated, gbc);
+			numOfPhotos=new JLabel("# of Photos: 0");
+			gbc.anchor=GridBagConstraints.SOUTHEAST;
+	        gbc.gridx = 3;
+	        gbc.gridy = 3;
+	        gbc.weightx = 0.33;
+	        gbc.weighty = 0.5;
+	        gbc.gridheight = 2;
+	        this.add(numOfPhotos, gbc);
 			invalidate();
 			validate();
 		} catch (IOException e1) {
@@ -98,15 +118,18 @@ public class Album extends JPanel  implements IAlbum{
 	}
 
 	@Override
-	public void addPhoto(IPhoto photo) {
+	public boolean addPhoto(IPhoto photo) {
 		Collections.sort(this.photoList, new PhotoComparator());
 		int index = Collections.binarySearch(this.photoList, photo.getFileName());
 		if(index < 0) {
 			this.photoList.add(photo);
+			return true;
 		}
 		else if(!this.photoList.get(index).getFileName().equals(photo.getFileName())) {
 			this.photoList.add(photo);
+			return true;
 		}
+		return false;
 	}
 
 	@Override
@@ -142,11 +165,26 @@ public class Album extends JPanel  implements IAlbum{
 		}
 	}
 	
-	@Override
+	public void setDateRange(Date numeroUno, Date numeroDos){
+		String first=new SimpleDateFormat("MM/dd/yyyy").format(numeroUno);
+		String Second=new SimpleDateFormat("MM/dd/yyyy").format(numeroDos);
+		dateRange.setText(first+"-"+Second);
+	}
+	public void setOldestPhoto(Date meSoOld){
+		String first=new SimpleDateFormat("MM/dd/yyyy").format(meSoOld);
+		lastUpdated.setText("Oldest Photo: "+first);
+	}
+	
+	public void updateNumOfPhotos(int i){
+		/*numOfPhotos=new JLabel("Number of Photos: 0");*/
+		numOfPhotos.setText(" # of Photos: "+i);
+	}
 	public void setPic(Photo setMe){
 		this.re.setIcon(setMe.getResized());
 	}
-	
+	public void setDefault(ImageIcon setMe){
+		this.re.setIcon(setMe);
+	}
 	public static BufferedImage resizeImage(BufferedImage originalImage, int type, int IMG_WIDTH, int IMG_HEIGHT){
     	BufferedImage resizedImage = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, type);
     	Graphics2D g = resizedImage.createGraphics();
@@ -160,4 +198,5 @@ public class Album extends JPanel  implements IAlbum{
 		// TODO Auto-generated method stub
 		
 	}
+
 }

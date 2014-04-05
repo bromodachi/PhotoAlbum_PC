@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+
 /**
  * @author Mark Labrador
  * <p>
@@ -49,8 +51,9 @@ public interface IAlbum extends Serializable, Comparable<String>{
 	 * photo is added.
 	 * 
 	 * @param photo Photo to be added.
+	 * @return 
 	 */
-	public void addPhoto(IPhoto photo);
+	public boolean addPhoto(IPhoto photo);
 	
 	/**
 	 * Deletes a photo in the album, if it exists.  Otherwise, lets user know it already exists 
@@ -82,4 +85,12 @@ public interface IAlbum extends Serializable, Comparable<String>{
 	public void setIcon(Photo setMe);
 
 	public void setPic(Photo setMe);
+
+	public void setDateRange(Date begin, Date endz);
+
+	public void setOldestPhoto(Date endz);
+
+	public void updateNumOfPhotos(int numOfPhotos);
+
+	public void setDefault(ImageIcon imageIcon);
 }

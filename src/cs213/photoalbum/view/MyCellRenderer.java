@@ -8,7 +8,9 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 class MyCellRenderer extends JLabel implements ListCellRenderer<Object> {
-    public MyCellRenderer() {
+	private static final long serialVersionUID = 1L;
+
+	public MyCellRenderer() {
         setOpaque(true);
     }
 
