@@ -22,15 +22,14 @@ public class Photo extends JLabel implements IPhoto {
 
 	public Photo(String photoId, String fileName, Icon image, Icon ori) {
 		super(image);
-		this.myResized=image;
-		this.myOriginalPhoto=ori;
+		this.myResized = image;
+		this.myOriginalPhoto = ori;
 		this.photoId = photoId;
 		this.fileName = fileName;
 		this.peopleTags = new ArrayList<String>();
 	}
-	
+
 	public Photo() {
-		// TODO Auto-generated constructor stub
 		super();
 	}
 
@@ -78,53 +77,63 @@ public class Photo extends JLabel implements IPhoto {
 	public void setDate(Date photoDate) {
 		this.photoDate = photoDate;
 	}
-	
+
 	@Override
 	public String getLocationTag() {
 		return this.locationTag;
 	}
-	
+
 	@Override
 	public void setLocationTag(String locationTag) {
 		this.locationTag = locationTag;
 	}
-	
+
 	@Override
 	public List<String> getPeopleTags() {
 		ArrayList<String> defensiveCopy = new ArrayList<String>();
 		defensiveCopy.addAll(this.peopleTags);
 		return defensiveCopy;
 	}
-	public Icon getPhoto(){
+
+	public Icon getPhoto() {
 		return myOriginalPhoto;
 	}
-	public Icon getResized(){
+
+	public Icon getResized() {
 		return myResized;
 	}
-	public void setPhoto(Icon setMe){
-		myOriginalPhoto=setMe;
+
+	public void setPhoto(Icon setMe) {
+		myOriginalPhoto = setMe;
 	}
-	public void setResized(Icon setMe){
-		myResized=setMe;
+
+	public void setResized(Icon setMe) {
+		myResized = setMe;
 	}
-	
+
 	@Override
 	public void personTag(String personName) {
 		Collections.sort(this.peopleTags);
 		int index = Collections.binarySearch(this.peopleTags, personName);
-		if(index < 0 || !this.peopleTags.get(index).equals(personName)) this.peopleTags.add(personName);
+		if (index < 0 || !this.peopleTags.get(index).equals(personName))
+			this.peopleTags.add(personName);
 	}
-	
+
 	@Override
 	public boolean removePersonTag(String personName) {
 		Collections.sort(this.peopleTags);
 		int index = Collections.binarySearch(this.peopleTags, personName);
-		if(index >= 0 && this.peopleTags.get(index).equals(personName)){ this.peopleTags.remove(index); return true;}
-		else{return false;}
+		if (index >= 0 && this.peopleTags.get(index).equals(personName)) {
+			this.peopleTags.remove(index);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public String getDateString() {
-		return new SimpleDateFormat("MM/dd/yyyy-HH:MM:SS").format(this.photoDate);
+		return new SimpleDateFormat("MM/dd/yyyy-HH:MM:SS")
+				.format(this.photoDate);
 	}
 }

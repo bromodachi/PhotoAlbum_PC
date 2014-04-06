@@ -1,139 +1,68 @@
 package cs213.photoalbum.control;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.Iterator;
-
 import cs213.photoalbum.model.IPhotoAdminModel;
-import cs213.photoalbum.model.IUser;
-import cs213.photoalbum.model.PhotoAdminModel;
-import cs213.photoalbum.model.User;
-import cs213.photoalbum.view.CmdView;
+import cs213.photoalbum.view.AdminView;
+import cs213.photoalbum.view.UserAlbum;
 
 /**
  * @author Conrado Uraga
- *
+ * 
  */
-public class AdminControl implements IAdministerControl {
+public class AdminControl implements IAdminControl {
 	private IPhotoAdminModel model;
-	private CmdView view;
+	private AdminView view;
 
-	public AdminControl() {
-		this.model = null; //TODO Set default admin model.
-	}
-	
-	public AdminControl(IPhotoAdminModel model, CmdView view) {
+	public AdminControl(IPhotoAdminModel model, AdminView view) {
 		this.model = model;
-		this.view=view;
+		this.view = view;
 	}
 	
-	@Override
-	public void setErrorMessage(String msg) {
-		// TODO Auto-generated method stub
-		/*should be passing it through the view, I believe*/
-		view.setMessage(msg);
+	/**
+	 * @author Mark Labrador
+	 * <p>
+	 * Startups the administrative program.
+	 * </p>
+	 */
+	public void run() {
+		model.loadPreviousSession();
+		//TODO Show view.
+		model.saveCurrentSession();
 	}
 
-	@Override
-	public void showError() {
-		view.showMessage();
-
-	}
-
-	@Override
-	public String[] readCommand() {
-		String [] arg=null;
-		try{
-		BufferedReader input=new BufferedReader(new InputStreamReader(System.in));
-		String output=input.readLine();
-		arg=output.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-		return arg;
-		}catch (IOException e){
-			return arg;
-		}
-	}
-	
-	@Override
-	/* Original public void run(String[] args) {
-		//TODO Add additional validation checking on the args: length of list per command.
-		String cmd = args[0];
-		switch(cmd) {
-		case "listusers":
-			this.listUsers();
-			break;
-		case "adduser":
-			if(args.length >= 3)	this.addUser(args[1], args[2]);
-			else{
-				String error="Error: <Incorrect Format>";
-				setErrorMessage(error);
-				showError();
-			}				//	throw new IllegalArgumentException(); //TODO Place proper adduser error message.
-			break;
-		case "deleteuser":
-			if(args.length >= 2)	this.deleteUser(args[1]);
-			else{					
-				String error="Error: <Incorrect Format>";
-				setErrorMessage(error);
-				showError();
-				//throw new IllegalArgumentException();
-				} //TODO Place proper deleteuser error message.
-			break;
-		case "login":
-			String userId = args[1];
-			login(userId);
-			/*IPhotoModel model = null; //TODO Create the model by passing it through the constructor
-			IInteractiveControl control = null; //TODO Instantiate the control.
-			control.setInteractiveModel(model);
-			control.run(userId);
-			break;
-		default:
-			String errMsg = "Error: <Please enter a valid command.>";
-			setErrorMessage(errMsg);
-			showError();
-			break;
-	}
-	}*/
 	public void run(String[] args) {
 		model.loadPreviousSession();
-		String cmd ="";
+		String cmd = "";
 		String[] tokens = args;
-		cmd =tokens[0];
-		switch(cmd) {
+		cmd = tokens[0];
+		switch (cmd) {
 		case "listusers":
 			this.listUsers();
 			break;
 		case "adduser":
-			if(tokens.length == 3){	
-				tokens[1]=tokens[1].replace("\"","");
-				tokens[2]=tokens[2].replace("\"","");
+			if (tokens.length == 3) {
+				tokens[1] = tokens[1].replace("\"", "");
+				tokens[2] = tokens[2].replace("\"", "");
 				this.addUser(tokens[1], tokens[2]);
-			} else	{
-				String error="Error: Incorrect Format";
+			} else {
+				String error = "Error: Incorrect Format";
 				setErrorMessage(error);
 				showError();
-			}				//	throw new IllegalArgumentException(); //TODO Place proper adduser error message.
+			}
 			break;
 		case "deleteuser":
-			if(tokens.length == 2)	this.deleteUser(tokens[1]);
-			else{					
-				String error="Error: Incorrect Format";
+			if (tokens.length == 2)
+				this.deleteUser(tokens[1]);
+			else {
+				String error = "Error: Incorrect Format";
 				setErrorMessage(error);
 				showError();
-				//throw new IllegalArgumentException();
-				} //TODO Place proper deleteuser error message.
+			}
 			break;
 		case "login":
 			String userId = tokens[1];
 			login(userId);
-			/*IPhotoModel model = null; //TODO Create the model by passing it through the constructor
-			IInteractiveControl control = null; //TODO Instantiate the control.
-			control.setInteractiveModel(model);
-			control.run(userId);*/
 			break;
 		case "logout":
-			//continue;
 			break;
 		default:
 			String errMsg = "Error: Please enter a valid command.";
@@ -151,27 +80,25 @@ public class AdminControl implements IAdministerControl {
 
 	@Override
 	public void listUsers() {
-		String success="";
-		for(int i=0; i < model.getUserIDs().size();i++){
-			success=success+model.getUserIDs().get(i)+"\n";
+		String success = "";
+		for (int i = 0; i < model.getUserIDs().size(); i++) {
+			success = success + model.getUserIDs().get(i) + "\n";
 		}
 		setErrorMessage(success);
 		showError();
-		
-		
+
 	}
 
 	@Override
 	public void addUser(String id, String name) {
-		if(verifyUser(id)){
-			/**/
-			String error="user "+id+" already exists with name "+name;
+		if (verifyUser(id)) {
+			String error = "user " + id + " already exists with name " + name;
 			setErrorMessage(error);
 			showError();
 			return;
 		}
 		this.model.addUser(id, name);
-		String msg="created user "+id+" with name " +name;
+		String msg = "created user " + id + " with name " + name;
 		setErrorMessage(msg);
 		showError();
 		this.listUsers();
@@ -179,32 +106,18 @@ public class AdminControl implements IAdministerControl {
 
 	@Override
 	public void deleteUser(String id) {
-		if(!verifyUser(id)){
-			/**/
-			String error="user "+id+" does not exist";
+		if (!verifyUser(id)) {
+			String error = "user " + id + " does not exist";
 			setErrorMessage(error);
 			showError();
 		}
 		model.deleteUser(id);
-		String msg="deleted user "+id;
+		String msg = "deleted user " + id;
 		setErrorMessage(msg);
 		showError();
 	}
 
-	@Override
-	public void login(String id) {
-		if(!verifyUser(id)){
-			/**/
-			String error="user <"+id+"> does not exist";
-			setErrorMessage(error);
-			showError();
-		}
-		/*IPhoto is missing constructor*/
-		//IPhotoAdminModel modelz =new PhotoAdminModel();
-		InteractiveControl user=new InteractiveControl(id, this.model);
-		user.run(id);
-	}
-	public boolean verifyUser(String id){
+	public boolean verifyUser(String id) {
 		return model.getUserIDs().contains(id);
 	}
 }
