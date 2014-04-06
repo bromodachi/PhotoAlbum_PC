@@ -10,7 +10,7 @@ public class User implements IUser {
 	private String userId;
 	private String fullName;
 	private ArrayList<IAlbum> albumList;
-	
+
 	public User(String userId, String fullName) {
 		this.userId = userId;
 		this.fullName = fullName;
@@ -22,9 +22,9 @@ public class User implements IUser {
 		return this.userId;
 	}
 
-
 	/**
-	 * @return A defensive copy of the original list to prevent the calling class from making indirect changes to the master list.
+	 * @return A defensive copy of the original list to prevent the calling
+	 *         class from making indirect changes to the master list.
 	 */
 	@Override
 	public List<IAlbum> getAlbums() {
@@ -42,9 +42,10 @@ public class User implements IUser {
 	public void deleteAlbum(String albumId) {
 		Collections.sort(albumList, new AlbumComparator());
 		int index = Collections.binarySearch(albumList, albumId);
-		if(index >= 0) {
+		if (index >= 0) {
 			IAlbum album = albumList.get(index);
-			if(album.getAlbumName().equals(albumId))	albumList.remove(index);
+			if (album.getAlbumName().equals(albumId))
+				albumList.remove(index);
 		}
 	}
 
@@ -57,7 +58,7 @@ public class User implements IUser {
 	public String getFullName() {
 		return fullName;
 	}
-	
+
 	private class AlbumComparator implements Comparator<IAlbum> {
 		@Override
 		public int compare(IAlbum o1, IAlbum o2) {
@@ -65,4 +66,3 @@ public class User implements IUser {
 		}
 	}
 }
-
