@@ -14,17 +14,6 @@ import cs213.photoalbum.model.IPhotoModel;
  *         </p>
  */
 public interface IAdminControl extends IControl {
-
-	/**
-	 * This method provides a hook to enter the program. This should be
-	 * implemented such that triggering of the program can occur without having
-	 * to recreate the control object.
-	 * 
-	 * @param args
-	 *            Normally command-line arguments
-	 */
-	public void run(String[] args);
-
 	/**
 	 * @param model
 	 *            Admin specific set of methods for interacting with the model.
@@ -47,8 +36,11 @@ public interface IAdminControl extends IControl {
 	 *            an error to IErrorControl.
 	 * @param password
 	 *            The password to be associated with the user.
+	 * @param userimg
+	 *            The file path to the user's image.
 	 */
-	public void addUser(String username, String fullname, String password);
+	public void addUser(String username, String fullname, String password,
+			String userimg);
 
 	/**
 	 * delete the user off the list by passing an id

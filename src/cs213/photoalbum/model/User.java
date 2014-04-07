@@ -7,27 +7,32 @@ import java.util.List;
 
 public class User implements IUser {
 	private static final long serialVersionUID = 1L;
-	private String userId;
-	private String fullName;
+	private String username;
+	private String fullname;
 	private String password;
-	private String imgPath = "data/photos/default.png";
+	private String imgPath = IPhotoModel.defaultUserImgPath;
 	private ArrayList<IAlbum> albumList;
 	
-	public User(String userId, String fullName, String password) {
-		this.userId = userId;
-		this.fullName = fullName;
+	public User(String userId, String fullname, String password) {
+		this.username = userId;
+		this.fullname = fullname;
 		this.password = password;
 		this.albumList = new ArrayList<IAlbum>();
 	}
 	
-	public User(String userId, String fullName, String password, String imgPath) {
-		this(userId, fullName, password);
+	public User(String userId, String fullname, String password, String imgPath) {
+		this(userId, fullname, password);
 		if(!imgPath.isEmpty()) this.imgPath = imgPath;
 	}
 
 	@Override
 	public String getUsername() {
-		return this.userId;
+		return this.username;
+	}
+	
+	@Override
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	@Override
@@ -41,12 +46,12 @@ public class User implements IUser {
 	}
 	
 	@Override
-	public String getUserImg() {
+	public String getUserImgPath() {
 		return this.imgPath;
 	}
 	
 	@Override
-	public void setUserImg(String imgPath) {
+	public void setUserImgPath(String imgPath) {
 		if(!imgPath.isEmpty()) this.imgPath = imgPath;
 	}
 
@@ -79,12 +84,17 @@ public class User implements IUser {
 
 	@Override
 	public int compareTo(String o) {
-		return this.userId.compareTo(o);
+		return this.username.compareTo(o);
 	}
 
 	@Override
 	public String getFullname() {
-		return fullName;
+		return fullname;
+	}
+	
+	@Override
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
 	}
 
 	private class AlbumComparator implements Comparator<IAlbum> {

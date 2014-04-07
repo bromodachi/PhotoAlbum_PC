@@ -11,9 +11,9 @@ import javax.swing.event.DocumentListener;
  * 
  *         First view the user see upon starting the application.
  */
-public abstract class LoginView extends JFrame implements IErrorView{
+public abstract class LoginView extends JFrame implements IErrorView {
 	private static final long serialVersionUID = 1L;
-	
+
 	public LoginView() {
 		this.setMinimumSize(new Dimension(400, 230));
 		this.setResizable(false);
@@ -54,6 +54,13 @@ public abstract class LoginView extends JFrame implements IErrorView{
 	 *            Username to be displayed in the Username field.
 	 */
 	public abstract void setUsername(String username);
+
+	/**
+	 * @param password
+	 *            Password associated with the user. This class is used
+	 *            primarily to clear the password field.
+	 */
+	public abstract void setPassword(String password);
 
 	/**
 	 * @return Current password in the password field.

@@ -1,5 +1,6 @@
 package cs213.photoalbum.model;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +23,8 @@ import java.util.List;
  *         </p>
  */
 public interface IPhotoModel {
+	public static final String defaultUserImgPath = "bin" + File.separator
+			+ "data" + File.separator + "app" + File.separator + "default.png";
 
 	/**
 	 * A utility function to help the control figure out whether the user exists
@@ -45,10 +48,13 @@ public interface IPhotoModel {
 	 *            The full name of the user to be created.
 	 * @param password
 	 *            The password to be associated with this user.
+	 * @param userimg
+	 *            The file path to the user's image.
 	 * @return The user that has just been newly created or the user that
 	 *         already exists in the database.
 	 */
-	public IUser addUser(String username, String fullName, String password);
+	public IUser addUser(String username, String fullName, String password,
+			String userimg);
 
 	/**
 	 * This reads users from storage into memory. If the user does not exist,
@@ -60,13 +66,19 @@ public interface IPhotoModel {
 	public IUser getUser(String username);
 
 	/**
-	 * This writes a user from memory into storage. If the user does not exist,
-	 * this should do nothing.
+	 * <p>
+	 * The function will check for existence on the old username and new
+	 * username.
+	 * </p>
 	 * 
-	 * @param username
-	 *            Identifier of the desired user.
+	 * @param oldUsername
+	 *            Username of the user to be altered.
+	 * @param newUsername
+	 *            Username the user's name is to be changed to.
+	 * @return True, if the username was successfully changed. False, if
+	 *         newUsername already exists or user does not exist.
 	 */
-	public void writeUser(String username);
+	public boolean changeUsername(String oldUsername, String newUsername);
 
 	/**
 	 * This deletes a user in storage. If current user is in memory, this should
@@ -142,5 +154,11 @@ public interface IPhotoModel {
 	 */
 	public String getDefaultUserImgPath();
 
-	public void sortUsers();
+	/**
+	 * Sorts the current userlist.
+	 * 
+	 * @return Sorted defensive copy of the current list of users available in
+	 *         the model.
+	 */
+	public List<IUser> sortedUsers();
 }

@@ -151,6 +151,11 @@ public class LoginUI extends LoginView {
 	public char[] getPassword() {
 		return this.password.getPassword();
 	}
+	
+	@Override
+	public void setPassword(String password) {
+		this.password.setText(password);
+	}
 
 	@Override
 	public void enableUsernameUI() {

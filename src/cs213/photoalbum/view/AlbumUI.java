@@ -134,9 +134,9 @@ public class AlbumUI {
 		BufferedImage myPicture;
 		try {
 			//TODO Verify the images are pulling from the correct path using the File.separator string. 
-			String path = System.getProperty("user.dir");
-			myPicture = ImageIO.read(new File(path + "\\photo\\default.png"));
-			System.out.println(path + "\\photo\\default.png");
+			//String path = System.getProperty("user.dir");
+			myPicture = ImageIO.read(new File(IPhotoModel.defaultUserImgPath));
+			//System.out.println(path + "\\photo\\default.png");
 			BufferedImage reSized = resizeImage(myPicture, 1, 400, 400);
 			listInfo.setIcon(new ImageIcon(reSized));
 		} catch (IOException e) {

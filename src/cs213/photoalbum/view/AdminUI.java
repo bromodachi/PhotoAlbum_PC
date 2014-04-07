@@ -26,8 +26,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.Border;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 
+import cs213.photoalbum.model.IPhotoModel;
 import cs213.photoalbum.model.IUser;
 
 public class AdminUI extends AdminView {
@@ -38,6 +41,8 @@ public class AdminUI extends AdminView {
 	private JPanel userManagementControls;
 	private JPanel userInformationControls;
 
+	private JLabel errorLbl;
+	private JLabel errorMsg;
 	private JLabel userlistLbl;
 	private JLabel userInfoLbl;
 	private JLabel usernameInfoLbl;
@@ -59,16 +64,15 @@ public class AdminUI extends AdminView {
 	private JButton applyBtn;
 	private JButton cancelBtn;
 	private JButton changeImgBtn;
-
-	//TODO Add error controls.
+	
+	private Border defaultBorder;
+	private Border errorBorder;
 
 	private int iis;
-	private String defaultUserImgPath;
 
-	public AdminUI(String defaultUserImgPath) {
-		this.defaultUserImgPath = defaultUserImgPath;
+	public AdminUI() {
 		setup();
-		defaultState();
+		setDefaultState();
 	}
 
 	private void setup() {
@@ -81,6 +85,8 @@ public class AdminUI extends AdminView {
 		this.userManagementControls = new JPanel();
 		this.userInformationControls = new JPanel();
 
+		this.errorLbl = new JLabel("Error");
+		this.errorMsg = new JLabel();
 		this.userlistLbl = new JLabel(
 				"<html><body><font size=\"5\">Users</font></body></html>");
 		this.userInfoLbl = new JLabel(
@@ -103,6 +109,9 @@ public class AdminUI extends AdminView {
 		this.applyBtn = new JButton("Apply");
 		this.cancelBtn = new JButton("Cancel");
 		this.changeImgBtn = new JButton("Change Image...");
+		
+		this.defaultBorder = this.userInformation.getBorder();
+		this.errorBorder = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.red), defaultBorder);
 
 		/* User Management Panel */
 		this.userManagement.setLayout(new GridBagLayout());
@@ -166,9 +175,28 @@ public class AdminUI extends AdminView {
 		uic.anchor = GridBagConstraints.WEST;
 		this.userInformation.add(userInfoLbl, uic);
 
+		/*Error Message*/
+		uic.gridx = 0;
+		uic.gridy++;
+		uic.weightx = 0;
+		uic.weighty = 0;
+		uic.gridwidth = 1;
+		uic.fill = GridBagConstraints.NONE;
+		uic.anchor = GridBagConstraints.EAST;
+		this.userInformation.add(errorLbl, uic);
+		
+		uic.gridx = 1;
+		
+		uic.weightx = 1;
+		uic.weighty = 0;
+		uic.gridwidth = 1;
+		uic.fill = GridBagConstraints.HORIZONTAL;
+		uic.anchor = GridBagConstraints.CENTER;
+		this.userInformation.add(errorMsg, uic);
+		
 		/* Username Field Label */
 		uic.gridx = 0;
-		uic.gridy = 1;
+		uic.gridy++;
 		uic.weightx = 0;
 		uic.weighty = 0;
 		uic.gridwidth = 1;
@@ -178,7 +206,7 @@ public class AdminUI extends AdminView {
 
 		/* Username Field */
 		uic.gridx = 1;
-		uic.gridy = 1;
+		
 		uic.weightx = 1;
 		uic.weighty = 0;
 		uic.gridwidth = 1;
@@ -188,7 +216,7 @@ public class AdminUI extends AdminView {
 
 		/* Full Name Field Label */
 		uic.gridx = 0;
-		uic.gridy = 2;
+		uic.gridy++;
 		uic.weightx = 0;
 		uic.weighty = 0;
 		uic.gridwidth = 1;
@@ -198,7 +226,7 @@ public class AdminUI extends AdminView {
 
 		/* Full Name Field */
 		uic.gridx = 1;
-		uic.gridy = 2;
+		//uic.gridy = 2;
 		uic.weightx = 1;
 		uic.weighty = 0;
 		uic.gridwidth = 1;
@@ -208,7 +236,7 @@ public class AdminUI extends AdminView {
 
 		/* Password Field Label */
 		uic.gridx = 0;
-		uic.gridy = 3;
+		uic.gridy++;
 		uic.weightx = 0;
 		uic.weighty = 0;
 		uic.gridwidth = 1;
@@ -218,7 +246,7 @@ public class AdminUI extends AdminView {
 
 		/* Password Field */
 		uic.gridx = 1;
-		uic.gridy = 3;
+		//uic.gridy = 3;
 		uic.weightx = 1;
 		uic.weighty = 0;
 		uic.gridwidth = 1;
@@ -228,7 +256,7 @@ public class AdminUI extends AdminView {
 
 		/* Repeat Password Field Label */
 		uic.gridx = 0;
-		uic.gridy = 4;
+		uic.gridy++;
 		uic.weightx = 0;
 		uic.weighty = 0;
 		uic.gridwidth = 1;
@@ -238,7 +266,7 @@ public class AdminUI extends AdminView {
 
 		/* Repeat Password Field */
 		uic.gridx = 1;
-		uic.gridy = 4;
+		//uic.gridy = 4;
 		uic.weightx = 1;
 		uic.weighty = 0;
 		uic.gridwidth = 1;
@@ -248,7 +276,7 @@ public class AdminUI extends AdminView {
 
 		/* User Information Section Controls Panel */
 		uic.gridx = 1;
-		uic.gridy = 5;
+		uic.gridy++;
 		uic.weightx = 0;
 		uic.weighty = 0;
 		uic.gridwidth = 1;
@@ -304,10 +332,23 @@ public class AdminUI extends AdminView {
 		rootc.gridx = 2;
 		this.add(this.userImgInformation, rootc);
 	}
-	
-	private void defaultState() {
+
+	@Override
+	public void setDefaultState() {
+		/*Reset*/
 		this.hideError();
+		this.clearUserList();
+		this.clearCurrUsername();
+		this.clearCurrFullname();
+		this.clearCurrPassword();
+		this.clearRepeatCurrPassword();
+		this.resetCurrUserImgControl();
+		
+		/*Enable*/
 		this.enableNewUserControl();
+		this.enableUserList();
+		
+		/*Disable*/
 		this.disableDelUserControl();
 		this.disableCurrUsername();
 		this.disableCurrFullname();
@@ -321,87 +362,28 @@ public class AdminUI extends AdminView {
 
 	@Override
 	public boolean isError() {
-		// TODO Check for an error in the administrator's UI.
-		return false;
+		return this.isCurrUsernameError() || this.isCurrFullnameError() || this.isPasswordError() || this.isRepeatPasswordError() || this.errorMsg.isVisible();
 	}
 
 	@Override
 	public void showError(String errorMsg) {
-		// TODO Show the error in the administrator's UI.
-
+		this.errorLbl.setVisible(true);
+		this.errorMsg.setText(errorMsg);
+		this.errorMsg.setVisible(true);
 	}
 
 	@Override
 	public void hideError() {
-		// TODO Hide the error in the administrator's UI.
-
-	}
-
-	@Override
-	public void setUserList(List<IUser> users) {
-		for (IUser u : users) {
-			this.userlistModel.addElement(u);
-		}
-	}
-
-	@Override
-	public String getSelectedUsername() {
-		//TODO Retrieve the currently selected user.  Returns null, if no user is selected.
-		return null;
-	}
-
-	@Override
-	public void setSelectedUsername(String username) {
-		//TODO Select the user in the list with the current username.
-	}
-
-	@Override
-	public String getSelectedUserImg() {
-		// TODO Retrieve the current user's image.
-		return null;
-	}
-
-	@Override
-	public void setSelectedUserImg(String img_path) {
-		// TODO Set the image of the currently selected user.
-
+		this.errorLbl.setVisible(false);
+		this.errorMsg.setText("");
+		this.errorMsg.setVisible(false);
+		this.hideCurrUsernameError();
+		this.hideCurrFullnameError();
+		this.hidePasswordError();
+		this.hideRepeatPasswordError();
 	}
 	
-	@Override
-	public void enableNewUserControl() {
-		this.newUserBtn.setEnabled(true);
-	}
-	
-	@Override
-	public void disableNewUserControl() {
-		this.newUserBtn.setEnabled(false);
-	}
-	
-	@Override
-	public void enableDelUserControl() {
-		this.delUserBtn.setEnabled(true);
-	}
-	
-	@Override
-	public void disableDelUserControl() {
-		this.delUserBtn.setEnabled(false);
-	}
-
-	@Override
-	public void registerUserListSelection(ListSelectionListener userListSL) {
-		// TODO Event registration for selecting users.
-	}
-
-	@Override
-	public void registerNewUserAction(ActionListener newUserAL) {
-		this.newUserBtn.addActionListener(newUserAL);
-	}
-
-	@Override
-	public void registerDelUserAction(ActionListener delUserAL) {
-		this.delUserBtn.addActionListener(delUserAL);
-	}
-
+	/*Username*/
 	@Override
 	public String getCurrUsername() {
 		return this.usernameInfo.getText();
@@ -421,7 +403,34 @@ public class AdminUI extends AdminView {
 	public void disableCurrUsername() {
 		this.usernameInfo.setEnabled(false);
 	}
+	
+	@Override
+	public void clearCurrUsername() {
+		this.hideCurrUsernameError();
+		this.usernameInfo.setText("");
+	}
+	
+	@Override
+	public void registerCurrUsernameDocument(DocumentListener usernameDL) {
+		this.usernameInfo.getDocument().addDocumentListener(usernameDL);
+	}
+	
+	@Override
+	public boolean isCurrUsernameError() {
+		return this.usernameInfo.getBorder().equals(errorBorder);
+	}
+	
+	@Override
+	public void showCurrUsernameError() {
+		this.usernameInfo.setBorder(errorBorder);
+	}
 
+	@Override
+	public void hideCurrUsernameError() {
+		this.usernameInfo.setBorder(defaultBorder);
+	}
+	
+	/*Full Name*/
 	@Override
 	public String getCurrFullname() {
 		return this.fullnameInfo.getText();
@@ -441,7 +450,34 @@ public class AdminUI extends AdminView {
 	public void disableCurrFullname() {
 		this.fullnameInfo.setEnabled(false);
 	}
+	
+	@Override
+	public void clearCurrFullname() {
+		this.hideCurrFullnameError();
+		this.fullnameInfo.setText("");
+	}
+	
+	@Override
+	public void registerCurrFullnameDocument(DocumentListener fullnameDL) {
+		this.fullnameInfo.getDocument().addDocumentListener(fullnameDL);
+	}
+	
+	@Override
+	public boolean isCurrFullnameError() {
+		return this.fullnameInfo.getBorder().equals(errorBorder);
+	}
 
+	@Override
+	public void showCurrFullnameError() {
+		this.fullnameInfo.setBorder(errorBorder);
+	}
+	
+	@Override
+	public void hideCurrFullnameError() {
+		this.fullnameInfo.setBorder(defaultBorder);
+	}
+	
+	/*Password*/	
 	@Override
 	public char[] getCurrPassword() {
 		return this.passwordInfo.getPassword();
@@ -466,7 +502,28 @@ public class AdminUI extends AdminView {
 	public void disableCurrPassword() {
 		this.passwordInfo.setEnabled(false);
 	}
+	
+	@Override
+	public void registerCurrPasswordDocument(DocumentListener passwordDL) {
+		this.passwordInfo.getDocument().addDocumentListener(passwordDL);
+	}
+	
+	@Override
+	public boolean isPasswordError() {
+		return this.passwordInfo.getBorder().equals(errorBorder);
+	}
+	
+	@Override
+	public void showPasswordError() {
+		this.passwordInfo.setBorder(errorBorder);
+	}
 
+	@Override
+	public void hidePasswordError() {
+		this.passwordInfo.setBorder(defaultBorder);
+	}
+
+	/*Repeat Password*/
 	@Override
 	public char[] getRepeatCurrPassword() {
 		return this.repeatPasswordInfo.getPassword();
@@ -490,6 +547,115 @@ public class AdminUI extends AdminView {
 	@Override
 	public void disableRepeatCurrPassword() {
 		this.repeatPasswordInfo.setEnabled(false);
+	}
+	
+	@Override
+	public void registerRepeatPasswordDocument(DocumentListener repeatPasswordDL) {
+		this.repeatPasswordInfo.getDocument().addDocumentListener(repeatPasswordDL);
+	}
+	
+	@Override
+	public boolean isRepeatPasswordError() {
+		return this.repeatPasswordInfo.getBorder().equals(errorBorder);
+	}
+	
+	@Override
+	public void showRepeatPasswordError() {
+		this.repeatPasswordInfo.setBorder(errorBorder);
+	}
+
+	@Override
+	public void hideRepeatPasswordError() {
+		this.repeatPasswordInfo.setBorder(defaultBorder);
+	}
+	
+	@Override
+	public void setUserList(List<IUser> users) {
+		for (IUser u : users) {
+			this.userlistModel.addElement(u);
+		}
+	}
+
+	@Override
+	public void clearUserList() {
+		this.userlistModel.clear();
+	}
+	
+	@Override
+	public void enableUserList() {
+		this.userlist.setEnabled(true);
+	}
+	
+	@Override
+	public void disableUserList() {
+		this.userlist.clearSelection();
+		this.userlist.setEnabled(false);
+	}
+
+	/*Selected User*/
+	@Override
+	public String getSelectedUsername() {
+		return this.userlist.getSelectedValue() != null ? this.userlist
+				.getSelectedValue().getUsername() : "";
+	}
+
+	@Override
+	public void setSelectedUsername(String username) {
+		if (this.userlist.getSelectedValue() != null)
+			this.userlist.getSelectedValue().setUsername(username);
+	}
+	
+	@Override
+	public void deleteSelectedUser() {
+		if(this.userlist.getSelectedIndex() >= 0 && this.userlist.getSelectedValue() != null);
+			this.userlistModel.remove(this.userlist.getSelectedIndex());
+	}
+
+	@Override
+	public String getSelectedUserImg() {
+		return this.userlist.getSelectedValue() != null ? this.userlist
+				.getSelectedValue().getUserImgPath() : "";
+	}
+
+	@Override
+	public void setSelectedUserImg(String img_path) {
+		if (this.userlist.getSelectedValue() != null)
+			this.userlist.getSelectedValue().setUserImgPath(img_path);
+	}
+
+	@Override
+	public void enableNewUserControl() {
+		this.newUserBtn.setEnabled(true);
+	}
+
+	@Override
+	public void disableNewUserControl() {
+		this.newUserBtn.setEnabled(false);
+	}
+
+	@Override
+	public void enableDelUserControl() {
+		this.delUserBtn.setEnabled(true);
+	}
+
+	@Override
+	public void disableDelUserControl() {
+		this.delUserBtn.setEnabled(false);
+	}
+
+	@Override
+	public void registerUserListSelection(ListSelectionListener userListSL) {
+		this.userlist.getSelectionModel().addListSelectionListener(userListSL);
+	}
+
+	@Override
+	public void registerNewUserAction(ActionListener newUserAL) {
+		this.newUserBtn.addActionListener(newUserAL);
+	}
+
+	@Override
+	public void registerDelUserAction(ActionListener delUserAL) {
+		this.delUserBtn.addActionListener(delUserAL);
 	}
 
 	@Override
@@ -524,8 +690,7 @@ public class AdminUI extends AdminView {
 
 	@Override
 	public String getCurrUserImg() {
-		// TODO Retrieve the image path of the user from the User Image section.
-		return null;
+		return this.userlist.getSelectedValue() != null ? this.userlist.getSelectedValue().getUserImgPath() : "";
 	}
 
 	@Override
@@ -534,9 +699,11 @@ public class AdminUI extends AdminView {
 			this.imageInfo.setIcon(createIcon(img_path, iis, iis));
 		} catch (IOException e) {
 			//TODO Allow View to handle the exception.
+		} catch (Exception e) {
+			//TODO Allow View to handle the exception.
 		}
 	}
-	
+
 	@Override
 	public void enableChangeControl() {
 		this.changeImgBtn.setEnabled(true);
@@ -546,7 +713,7 @@ public class AdminUI extends AdminView {
 	public void disableChangeControl() {
 		this.changeImgBtn.setEnabled(false);
 	}
-	
+
 	@Override
 	public void enableCurrUserImgControl() {
 		this.userImgInformation.setEnabled(true);
@@ -558,12 +725,17 @@ public class AdminUI extends AdminView {
 	}
 
 	@Override
+	public void resetCurrUserImgControl() {
+		this.setCurrUserImg(IPhotoModel.defaultUserImgPath);
+	}
+
+	@Override
 	public void registerCurrUserImgAction(ActionListener userImgAL) {
 		this.changeImgBtn.addActionListener(userImgAL);
 	}
 
 	private ImageIcon createIcon(String img_path, int width, int height)
-			throws IOException {
+			throws IOException, Exception {
 		BufferedImage img = ImageIO.read(new File(img_path));
 		ImageIcon icon = new ImageIcon(img.getScaledInstance(width, height,
 				Image.SCALE_DEFAULT));
@@ -632,14 +804,14 @@ public class AdminUI extends AdminView {
 
 			try {
 				this.username.setText(value.getUsername());
-				this.userImage.setIcon(createIcon(value.getUserImg(),
+				this.userImage.setIcon(createIcon(value.getUserImgPath(),
 						this.height - offset, this.height - offset));
-			} catch (IOException e1) {
+			} catch (Exception e1) {
 				try {
 					//Try to load the default image, if the user's image does not exist.
-					this.userImage.setIcon(createIcon(defaultUserImgPath,
+					this.userImage.setIcon(createIcon(IPhotoModel.defaultUserImgPath,
 							this.height - offset, this.height - offset));
-				} catch (IOException e2) {
+				} catch (Exception e2) {
 					//Do nothing.
 				}
 			}
