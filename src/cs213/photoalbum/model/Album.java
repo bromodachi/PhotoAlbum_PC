@@ -43,7 +43,7 @@ public class Album extends JPanel implements IAlbum {
 		try {
 			String path = System.getProperty("user.dir");
 			System.out.println(path);
-			BufferedImage myPicture = ImageIO.read(new File("bin/data/photos/default.png")); //TODO Retrieve default image from the model.
+			BufferedImage myPicture = ImageIO.read(new File(IPhotoModel.defaultUserImgPath));
 			BufferedImage reSized = resizeImage(myPicture, 1, 100, 100);
 			this.picLabel = new JLabel(new ImageIcon(myPicture));
 			this.re = new JLabel(new ImageIcon(reSized));

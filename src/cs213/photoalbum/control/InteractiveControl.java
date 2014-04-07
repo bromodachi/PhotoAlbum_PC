@@ -1,5 +1,10 @@
 package cs213.photoalbum.control;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,18 +23,22 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import cs213.photoalbum.model.Album;
 import cs213.photoalbum.model.IAlbum;
 import cs213.photoalbum.model.IPhoto;
 import cs213.photoalbum.model.IPhotoModel;
 import cs213.photoalbum.model.Photo;
-import cs213.photoalbum.view.AlbumUI;
+import cs213.photoalbum.view.SingleAlbumUI;
 import cs213.photoalbum.view.AddTag;
-import cs213.photoalbum.view.UserAlbumUI;
+import cs213.photoalbum.view.AlbumCollectionUI;
 import cs213.photoalbum.view.MovePhotoDialog;
 import cs213.photoalbum.view.RecaptionDialog;
+import cs213.photoalbum.view.SlideShowUI;
 
 /**
  * @author Conrado Uraga
@@ -41,16 +50,37 @@ import cs213.photoalbum.view.RecaptionDialog;
 public class InteractiveControl implements IInteractiveControl {
 	private IPhotoModel model;
 	private String username;
-	private UserAlbumUI view;
-	private AlbumUI photoListGui;
+	private AlbumCollectionUI view;
+	private SingleAlbumUI singlealbumview;
+	private SlideShowUI slideshow;
 	private Date begin = null;
 	private Date endz = null;
 
-	public InteractiveControl(String username, IPhotoModel model, UserAlbumUI view) {
+	public InteractiveControl(String username, IPhotoModel model,
+			AlbumCollectionUI view) {
 		this.username = username;
 		this.model = model;
-		this.view = new UserAlbumUI();
+		this.view = view;
 		this.view.setInteractiveControl(this);
+		setup();
+	}
+
+	/**
+	 * @author Mark Labrador
+	 */
+	private void setup() {
+		this.view.registerFrameWindowListener(new WindowAdapter() { //TODO Open original login window after closing.
+					@Override
+					public void windowClosing(WindowEvent e) {
+						model.saveCurrentSession();
+					}
+
+					@Override
+					public void windowClosed(WindowEvent e) {
+						model.saveCurrentSession();
+					}
+				});
+
 	}
 
 	class PhotoCompare implements Comparator<IPhoto> {
@@ -98,248 +128,10 @@ public class InteractiveControl implements IInteractiveControl {
 			return arg;
 		}
 	}
-	
+
 	@Override
 	public void run() {
 		view.initUI(model.getUser(username).getAlbums());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see control.IInteractiveControl#run(java.lang.String)
-	 * 
-	 * This implementation makes this method the primary entry point for the
-	 * interactive control.
-	 */
-	public void runOld() {
-		String splitMe;
-		String[] splitting;
-		String cmd = "";
-		int i = 1;
-		while (!cmd.equals("logout")) {
-			String[] tokens = readCommand();
-			cmd = tokens[0];
-			i = 1;
-			switch (cmd) {
-			case "createAlbum":
-				if (tokens.length > 2 || tokens.length < 2) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				/* replace with proper command. th */
-				tokens[1] = tokens[1].replace("\"", "");
-				createAlbum(tokens[1]);
-				break;
-			case "deleteAlbum":
-				if (tokens.length > 2 || tokens.length < 2) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				tokens[1] = tokens[1].replace("<", "");
-				tokens[1] = tokens[1].replace(">", "");
-				tokens[1] = tokens[1].replace("\"", "");
-				deleteAlbum(tokens[1]);
-				break;
-			case "listAlbums":
-				if (tokens.length > 1 || tokens.length < 1) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				listAlbums();
-				break;
-			case "listPhotos":
-				if (tokens.length > 2 || tokens.length < 2) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				tokens[1] = tokens[1].replace("<", "");
-				tokens[1] = tokens[1].replace(">", "");
-				tokens[1] = tokens[1].replace("\"", "");
-				listPhotos(tokens[1]);
-				break;
-			case "addPhoto":
-				if (tokens.length > 4 || tokens.length < 4) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				while (i != 4) {
-					tokens[i] = tokens[i].replace("\"", "");
-					tokens[i] = tokens[i].replace("<", "");
-					tokens[i] = tokens[i].replace(">", "");
-					i++;
-				}
-				addPhoto(tokens[3], tokens[1], tokens[2]);
-				break;
-			case "movePhoto":
-				if (tokens.length > 4 || tokens.length < 4) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				while (i != 4) {
-					tokens[i] = tokens[i].replace("\"", "");
-					tokens[i] = tokens[i].replace("<", "");
-					tokens[i] = tokens[i].replace(">", "");
-					i++;
-				}
-				movePhoto(tokens[2], tokens[3], tokens[1]);
-				break;
-			case "removePhoto":
-				if (tokens.length > 3 || tokens.length < 3) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				while (i != 3) {
-					tokens[i] = tokens[i].replace("\"", "");
-					tokens[i] = tokens[i].replace("<", "");
-					tokens[i] = tokens[i].replace(">", "");
-					i++;
-				}
-				removePhoto(tokens[2], tokens[1]);
-				break;
-			case "addTag":
-				if (tokens.length > 3 || tokens.length < 3) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				while (i != 3) {
-					tokens[i] = tokens[i].replace("\"", "");
-					tokens[i] = tokens[i].replace("<", "");
-					tokens[i] = tokens[i].replace(">", "");
-					i++;
-				}
-				if ((tokens[2].contains(":"))) {
-					splitMe = tokens[2];
-					splitting = splitMe.split(":");
-					if ((splitting[0].equals("person") || splitting[0]
-							.equals("location"))) {
-						addTag(tokens[1], splitting[0], splitting[1]);
-						break;
-					}
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				String error2 = "Error: Incorrect Format";
-				setErrorMessage(error2);
-				showError();
-				break;
-			case "deleteTag":
-				if (tokens.length > 3 || tokens.length < 3) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				while (i != 3) {
-					tokens[i] = tokens[i].replace("\"", "");
-					tokens[i] = tokens[i].replace("<", "");
-					tokens[i] = tokens[i].replace(">", "");
-					i++;
-				}
-				splitMe = tokens[2];
-				splitting = splitMe.split(":");
-				deleteTag(tokens[1], splitting[0], splitting[1]);
-				break;
-			case "listPhotoInfo":
-				if (tokens.length > 2 || tokens.length < 2) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				tokens[1] = tokens[1].replace("<", "");
-				tokens[1] = tokens[1].replace(">", "");
-				tokens[1] = tokens[1].replace("\"", "");
-				getPhotoInfo(tokens[1]);
-				break;
-			case "getPhotosByDate":
-				if (tokens.length > 3 || tokens.length < 3) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				while (i != 3) {
-					tokens[i] = tokens[i].replace("\"", "");
-					tokens[i] = tokens[i].replace("<", "");
-					tokens[i] = tokens[i].replace(">", "");
-					i++;
-				}
-				getPhotosByDate(tokens[1], tokens[2]);
-				break;
-			case "recaption":
-				if (tokens.length > 3 || tokens.length < 3) {
-					String error = "Error: <Incorrect Format>";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				while (i != 3) {
-					tokens[i] = tokens[i].replace("\"", "");
-					tokens[i] = tokens[i].replace("<", "");
-					tokens[i] = tokens[i].replace(">", "");
-					i++;
-				}
-				recaptionPhoto(tokens[1], tokens[2]);
-				break;
-
-			case "getPhotosByTag":
-				if (tokens.length > 2 || tokens.length < 2) {
-					String error = "Error: Incorrect Format";
-					setErrorMessage(error);
-					showError();
-					break;
-				}
-				String cpy = tokens[1];
-				tokens[1] = tokens[1].replace("\"", "");
-				tokens[1] = tokens[1].replace("<", "");
-				tokens[1] = tokens[1].replace(">", "");
-				if (tokens[1].contains(":")) {
-					splitMe = tokens[1];
-					System.out.println("yes");
-					splitting = splitMe.split(":");
-					getPhotosByTag(splitting[0], splitting[1], cpy);
-					break;
-				} else {
-					if (tokens[1].equals("person")
-							|| tokens[1].equals("location")) {
-						getPhotosByTag(tokens[1], "", cpy);
-						break;
-					}
-					getPhotosByTag("", tokens[1], cpy);
-					break;
-				}
-
-			case "logout":
-
-				continue;
-			default:
-				String error = "Error: Incorrect input. Try again";
-				setErrorMessage(error);
-				showError();
-				break;
-			}
-			//TODO Implement a condition-based statement to trigger the appropriate command.
-		}
-		logout();
 	}
 
 	@Override
@@ -362,7 +154,8 @@ public class InteractiveControl implements IInteractiveControl {
 		addMe.createPanel(name);
 		model.getUser(username).addAlbum(addMe);
 		view.addElementToVector(addMe);
-		String success = "created album for user " + username + ":\n" + name + "";
+		String success = "created album for user " + username + ":\n" + name
+				+ "";
 		setErrorMessage(success);
 		showError();
 	}
@@ -524,7 +317,7 @@ public class InteractiveControl implements IInteractiveControl {
 						+ " caption has been renamed to:\n"
 						+ editMe.getCaption() + "\n";
 				setErrorMessage(success);
-				photoListGui.setCaption(reName);
+				singlealbumview.setCaption(reName);
 				showError();
 			}
 		}
@@ -538,13 +331,13 @@ public class InteractiveControl implements IInteractiveControl {
 		String success = "Photo " + photoId + " caption has been renamed to:\n"
 				+ editMe.getCaption() + "\n";
 		setErrorMessage(success);
-		photoListGui.setCaption(reName);
+		singlealbumview.setCaption(reName);
 		showError();
 		return;
 
 	}
 
-	public IPhoto checkIfiExistAlready(Photo addMe) {
+	public IPhoto photoExistsInAlbum(Photo addMe) {
 		List<IAlbum> album1 = model.getUser(username).getAlbums();
 		IPhoto getMe = null;
 		for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
@@ -561,14 +354,14 @@ public class InteractiveControl implements IInteractiveControl {
 			break;
 		}
 		if (getMe != null) {
-			System.out.println("here");
+			System.out.println("here"); //TODO Remove aux.
 			addMe.setDate(getMe.getDate());
 			addMe.setCaption(getMe.getCaption());
 			addMe.setLocationTag(getMe.getLocationTag());
 			addMe.getPeopleTags().addAll(getMe.getPeopleTags());
 			return getMe;
 		} else {
-			System.out.println("adfasdf here");
+			System.out.println("adfasdf here"); //TODO Handle error on GUI.
 			return getMe;
 		}
 	}
@@ -618,7 +411,7 @@ public class InteractiveControl implements IInteractiveControl {
 		IPhoto moveMe = thePhotos.get(index);
 		destination.addPhoto(moveMe);
 		source.deletePhoto(photoId);
-		photoListGui.deleteElementFromVector(photoListGui.getIndex());
+		singlealbumview.deleteElementFromVector(singlealbumview.getIndex());
 		String success = "Moved photo " + photoId + ":\n" + photoId
 				+ " - From album " + albumIdSrc + " to album " + albumIdDest
 				+ "";
@@ -657,7 +450,7 @@ public class InteractiveControl implements IInteractiveControl {
 		}
 		/* I wonder if I can even do this.. */
 		source.deletePhoto(photoId);
-		photoListGui.deleteElementFromVector(photoListGui.getIndex());
+		singlealbumview.deleteElementFromVector(singlealbumview.getIndex());
 		String success = "Removed photo:\n" + photoId + " - From album "
 				+ albumId + "";
 		setErrorMessage(success);
@@ -672,7 +465,8 @@ public class InteractiveControl implements IInteractiveControl {
 		boolean working = false;
 		/* for only the current photo */
 		/* below if for all the photos */
-		outerLoop: for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
+		outerLoop: for (int i = 0; i < model.getUser(username).getAlbums()
+				.size(); i++) {
 			IAlbum temp = albums.get(i);
 			List<IPhoto> photoList = temp.getPhotoList();
 			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
@@ -689,7 +483,7 @@ public class InteractiveControl implements IInteractiveControl {
 								+ tagType + ":" + tagValue + "";
 						setErrorMessage(success);
 						showError();
-						photoListGui.setLocationTagLabel(tagValue);
+						singlealbumview.setLocationTagLabel(tagValue);
 						working = true;
 						break;
 					} else if (!check.isEmpty()) {
@@ -735,7 +529,7 @@ public class InteractiveControl implements IInteractiveControl {
 							+ ":" + tagValue + "";
 					setErrorMessage(success2);
 					showError();
-					photoListGui.updateTagList();
+					singlealbumview.updateTagList();
 					break;
 				default:
 					String error = "Error: Not a real tag";
@@ -762,7 +556,8 @@ public class InteractiveControl implements IInteractiveControl {
 
 		/* for all */
 		IPhoto editMe = null;
-		outerLoop: for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
+		outerLoop: for (int i = 0; i < model.getUser(username).getAlbums()
+				.size(); i++) {
 			IAlbum temp = albums.get(i);
 			List<IPhoto> photoList = temp.getPhotoList();
 			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
@@ -788,7 +583,7 @@ public class InteractiveControl implements IInteractiveControl {
 									+ tagType + ":" + tempz + "";
 							setErrorMessage(success);
 							showError();
-							photoListGui.setLocationTagBackToNull();
+							singlealbumview.setLocationTagBackToNull();
 							break;
 						} else {
 							String error = "Tag does not exist for "
@@ -816,7 +611,7 @@ public class InteractiveControl implements IInteractiveControl {
 									+ tagType + ":" + tagValue + "";
 							setErrorMessage(success);
 							showError();
-							photoListGui.updateTagList();
+							singlealbumview.updateTagList();
 							break;
 						} else {
 							String error = "Tag does not exist for "
@@ -1001,7 +796,6 @@ public class InteractiveControl implements IInteractiveControl {
 		String validPhotos = "";
 		String albumNames = "";
 		String success = "";
-		String listPhotos = "";
 		List<IPhoto> tempValid = new ArrayList<IPhoto>();
 		if (tagType.equals("location")) {
 			if (!(tagValue.isEmpty())) {
@@ -1045,8 +839,8 @@ public class InteractiveControl implements IInteractiveControl {
 						+ " - Album: " + albumNames + "- Date: "
 						+ tempValid.get(j).getDateString() + "\n";
 			}
-			success = "Photos for user " + username + " with tags " + ori + ":\n"
-					+ validPhotos;
+			success = "Photos for user " + username + " with tags " + ori
+					+ ":\n" + validPhotos;
 			setErrorMessage(success);
 			showError();
 			return;
@@ -1174,7 +968,7 @@ public class InteractiveControl implements IInteractiveControl {
 		AddTag tagMe = new AddTag(frame, true, photo);
 		if (tagMe.getBoolean() == true) {
 			if (tagMe.getTagType().equals("location")) {
-				photoListGui.setDeleteLocationButton(true);
+				singlealbumview.setDeleteLocationButton(true);
 			}
 			addTag(photo.getFileName(), tagMe.getTagType(), tagMe.getTagValue());
 
@@ -1196,42 +990,50 @@ public class InteractiveControl implements IInteractiveControl {
 		}
 	}
 
-	public void changeGui(IAlbum letsGo) {
+	/* AlbumUI is instantiated here. */
+	public void changeGui(IAlbum album) {
 		view.hideMe();
-		this.photoListGui = new AlbumUI(this, this.model, letsGo);
-		photoListGui.initUI(letsGo.getPhotoList());
+		this.singlealbumview = new SingleAlbumUI(this,
+				this.model.getUser(username), album);
+		this.slideshow = new SlideShowUI(singlealbumview.getWindow());
+		this.slideshow.registerThumbnailListSelection(new ThumbnailSelection());
+		this.singlealbumview.registerSlideShowAction(new SlideShowListener());
+		singlealbumview.initUI(album.getPhotoList());
 	}
 
+	/**
+	 * Destroys the current singlealbumview and tries to return back to the view that is a AlbumCollectionUI.
+	 */
 	public void changeGuiBack() {
-		photoListGui.die();
-		if (!photoListGui.getVector().isEmpty()) {
-			Photo setMe = (Photo) photoListGui.getVector().get(0);
+		singlealbumview.destroy();
+		if (!singlealbumview.getphotoslistModel().isEmpty()) {
+			Photo setMe = (Photo) singlealbumview.getphotoslistModel().get(0);
 			System.out.println(setMe.getFileName() + "here "
-					+ photoListGui.getVector().size());
-			getDate(photoListGui.getCurrentAlbum());
-			photoListGui.getCurrentAlbum().setDateRange(begin, endz);
-			photoListGui.getCurrentAlbum().setOldestPhoto(begin);
-			photoListGui.getCurrentAlbum().updateNumOfPhotos(
-					photoListGui.getNumOfPhotos());
-			photoListGui = null;
+					+ singlealbumview.getphotoslistModel().size());
+			getDate(singlealbumview.getCurrentAlbum());
+			singlealbumview.getCurrentAlbum().setDateRange(begin, endz);
+			singlealbumview.getCurrentAlbum().setOldestPhoto(begin);
+			singlealbumview.getCurrentAlbum().updateNumOfPhotos(
+					singlealbumview.getNumOfPhotos());
+			singlealbumview = null;
 			view.setPic(setMe);
-		} else if (photoListGui.getVector().isEmpty()) {
+		} else {
 			//set the pic to the default image
 			String path = System.getProperty("user.dir");
 			BufferedImage myPicture = null;
 			try {
-				myPicture = ImageIO
-						.read(new File("bins/data/photos/default.png")); //TODO Retrieve path from model.
+				myPicture = ImageIO.read(new File(
+						IPhotoModel.defaultUserImgPath)); //TODO Retrieve path from model.
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-			BufferedImage reSized = photoListGui.resizeImage(myPicture, 1, 100,
-					100);
+
+			BufferedImage reSized = singlealbumview.resizeImage(myPicture, 1,
+					100, 100);
 			view.setDefault(new ImageIcon(reSized));
 			view.showMe();
 		}
-		photoListGui = null;
+		singlealbumview = null;
 		view.showMe();
 	}
 
@@ -1242,7 +1044,27 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public void setUsername(String username) {
-		if(this.model.userExists(username)) this.username = username;
+		if (this.model.userExists(username))
+			this.username = username;
+	}
+	
+	private class ThumbnailSelection implements ListSelectionListener {
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			IPhoto curr = slideshow.getSelectedPhoto();
+			if(curr != null) {
+				slideshow.setMainPhoto(curr);
+			}
+		}
 	}
 
+	private class SlideShowListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			slideshow.setDefaultState();
+			slideshow.setThumbnails(singlealbumview.getCurrentAlbum()
+					.getPhotoList());
+			slideshow.setVisible(true);
+		}
+	}
 }

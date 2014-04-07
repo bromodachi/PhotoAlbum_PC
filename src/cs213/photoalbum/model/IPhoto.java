@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.Icon;
+
 /**
  * @author Mark Labrador
  *         <p>
@@ -104,4 +106,12 @@ public interface IPhoto extends Serializable, Comparable<String> {
 	 *            The name of a person to remove the tag in the photo.
 	 */
 	public boolean removePersonTag(String personName);
+
+	public Icon getPhoto();
+
+	public Icon getResized();
+
+	public void setPhoto(Icon setMe);
+
+	public void setResized(Icon setMe);
 }

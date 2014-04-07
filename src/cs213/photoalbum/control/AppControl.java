@@ -2,6 +2,7 @@ package cs213.photoalbum.control;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -16,22 +17,18 @@ import cs213.photoalbum.view.AdminUI;
 import cs213.photoalbum.view.AdminView;
 import cs213.photoalbum.view.LoginView;
 import cs213.photoalbum.view.LoginUI;
-import cs213.photoalbum.view.UserAlbumUI;
+import cs213.photoalbum.view.AlbumCollectionUI;
 
 /**
  * @author Mark Labrador
- * 
+ *         <p>
  *         Entry-Point for the application.
+ *         </p>
  */
 public class AppControl implements IControl {
 	public static void main(String[] args) {
 		LoginView view = new LoginUI();
 		IPhotoModel model = new PhotoModel();
-//		model.loadPreviousSession();
-//		model.addUser("test1", "tester1", "testpass");
-//		model.addUser("test2", "tester2", "testpass");
-//		model.addUser("test3", "tester3", "testpass");
-//		model.saveCurrentSession();
 		AppControl app = new AppControl(view, model);
 		app.run();
 	}
@@ -64,86 +61,18 @@ public class AppControl implements IControl {
 		this.view.registerUsernameDocument(state);
 		this.view.registerPasswordDocument(state);
 		this.view.registerLoginAction(acceptState);
-		this.view.addWindowListener(new WindowListener() {
-
-			@Override
-			public void windowOpened(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowClosing(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowClosed(WindowEvent e) {
-				model.saveCurrentSession();
-			}
-
-			@Override
-			public void windowIconified(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowActivated(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-				//Do nothing.
-			}
-			
-		});
+		this.view.addWindowListener(new ReturnToLogin());
 
 		/*
 		 * The user must have the option to login to the application again
 		 * whether this be the administrator again or as a general user.
 		 */
-		this.adminView.addWindowListener(new WindowListener() {
-			@Override
-			public void windowOpened(WindowEvent e) {
-				//Do nothing.
-			}
-
+		this.adminView.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				view.setUsername("");
 				view.setVisible(true);
 			}
-
-			@Override
-			public void windowClosed(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowIconified(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowActivated(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-				//Do nothing.
-			}
-
 		});
 	}
 
@@ -162,8 +91,20 @@ public class AppControl implements IControl {
 		} else {
 			IUser currUser = this.model.getUser(username);
 			if (currUser != null && currUser.getPassword().equals(password)) {
+				final AlbumCollectionUI userView = new AlbumCollectionUI();
+				userView.registerFrameWindowListener(new ReturnToLogin());
+				userView.registerLogoutAction(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						model.saveCurrentSession();
+						userView.destroy();
+						view.setUsername("");
+						view.setPassword("");
+						view.setVisible(true);
+					}
+				});
 				InteractiveControl user = new InteractiveControl(username,
-						this.model, new UserAlbumUI());
+						this.model, userView);
 				this.view.setVisible(false);
 				user.run();
 			} else {
@@ -234,6 +175,22 @@ public class AppControl implements IControl {
 			 * enabled. Return control to user.
 			 */
 			login(view.getUsername(), new String(view.getPassword()));
+		}
+	}
+	
+	private class ReturnToLogin extends WindowAdapter {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			model.saveCurrentSession();
+			view.setDefaultState();
+			view.setVisible(true);
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			model.saveCurrentSession();
+			view.setDefaultState();
+			view.setVisible(true);
 		}
 	}
 }

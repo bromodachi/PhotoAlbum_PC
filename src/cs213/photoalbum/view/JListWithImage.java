@@ -7,6 +7,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+/**
+ * @author Conrado Uraga
+ * JList containing cells that display an image.
+ */
 public class JListWithImage extends JList {
 	private static final long serialVersionUID = 1L;
 
@@ -18,10 +22,9 @@ public class JListWithImage extends JList {
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			Component component = (Component) value;
-			component.setBackground(isSelected ? Color.blue : Color.white);
+			component.setBackground(isSelected ? Color.gray : Color.white);
 			component.setForeground(isSelected ? Color.gray : Color.gray);
 			return component;
 		}
 	}
-
 }

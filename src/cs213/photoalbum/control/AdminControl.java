@@ -2,8 +2,8 @@ package cs213.photoalbum.control;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 
 import javax.swing.JFileChooser;
@@ -20,11 +20,13 @@ import cs213.photoalbum.view.AdminView;
 /**
  * @author Mark Labrador
  * 
+ * This takes care of the administration for the user information panel.
  */
 public class AdminControl implements IAdminControl {
 	private IPhotoModel model;
 	private AdminView view;
 	private String currUserImgPath = IPhotoModel.defaultUserImgPath;
+	private String prevUsername = "";
 	private boolean isEdit = false;
 
 	public AdminControl(IPhotoModel model, AdminView view) {
@@ -37,16 +39,6 @@ public class AdminControl implements IAdminControl {
 		this.model.loadPreviousSession();
 		this.view.setCurrUserImg(this.model.getDefaultUserImgPath());
 		this.view.setUserList(this.model.getCopyOfUsers());
-		/*
-		 * TODO [DONE] New user action. 
-		 * TODO Delete user action. 
-		 * TODO [DONE] Selected user action. 
-		 * TODO Apply user information action. 
-		 * TODO [DONE] Cancel user information action. 
-		 * TODO Change user image action. 
-		 * TODO Update user information after information and image change.
-		 * TODO [DONE] Save user session before closing admin window.
-		 */
 		this.view.registerNewUserAction(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -65,6 +57,7 @@ public class AdminControl implements IAdminControl {
 		});
 
 		this.view.registerDelUserAction(new ActionListener() {
+			//TODO Select the next available user in the array.
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				isEdit = false;
@@ -79,21 +72,26 @@ public class AdminControl implements IAdminControl {
 		this.view.registerUserListSelection(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				isEdit = true;
-				IUser curr = model.getUser(view.getSelectedUsername());
-				if (curr != null) {
-					currUserImgPath = curr.getUserImgPath();
-					
-					view.setCurrUsername(curr.getUsername());
-					view.setCurrFullname(curr.getFullname());
-					view.setCurrPassword(curr.getPassword());
-					view.setRepeatCurrPassword(curr.getPassword());
-					view.setCurrUserImg(curr.getUserImgPath());
-					
-					view.enableDelUserControl();
-					view.enableCancel();
-					view.enableCurrUserImgControl();
-					view.enableChangeControl();
+				if(!view.getSelectedUsername().isEmpty()) {
+					isEdit = true; 
+					IUser curr = model.getUser(view.getSelectedUsername());
+					if (curr != null) {
+						currUserImgPath = curr.getUserImgPath();
+						prevUsername = curr.getUsername();
+						
+						view.setCurrUsername(curr.getUsername());
+						view.setCurrFullname(curr.getFullname());
+						view.setCurrPassword(curr.getPassword());
+						view.setRepeatCurrPassword(curr.getPassword());
+						view.setCurrUserImg(curr.getUserImgPath());
+						
+						view.enableDelUserControl();
+						view.enableCancel();
+						view.enableCurrUserImgControl();
+						view.enableChangeControl();
+					}
+				} else {
+					isEdit = false;
 				}
 			}
 		});
@@ -159,12 +157,7 @@ public class AdminControl implements IAdminControl {
 			}
 		});
 		
-		this.view.addWindowListener(new WindowListener() {
-			@Override
-			public void windowOpened(WindowEvent e) {
-				//Do nothing.
-			}
-
+		this.view.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				model.saveCurrentSession();
@@ -174,27 +167,6 @@ public class AdminControl implements IAdminControl {
 			public void windowClosed(WindowEvent e) {
 				model.saveCurrentSession();
 			}
-
-			@Override
-			public void windowIconified(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowActivated(WindowEvent e) {
-				//Do nothing.
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-				//Do nothing.
-			}
-			
 		});
 	}
 
@@ -216,6 +188,7 @@ public class AdminControl implements IAdminControl {
 		this.model = model;
 	}
 
+	//TODO Remove error messages below.
 	@Override
 	public void listUsers() {
 		String success = "";
@@ -308,24 +281,29 @@ public class AdminControl implements IAdminControl {
 	}
 
 	private class UserInfoAcceptance implements ActionListener {
-		//TODO Save old username information in case it's an edit of the username.
-		//TODO User cannot be admin.
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			view.hideError();
-			view.showError("<html><body><font size=\"2\" color=\"red\">Please see highlighted areas for errors.</font></body></html>");
-			if(model.userExists(view.getCurrUsername())){
-				//TODO If it is an edit, ensure the username currently in the field does not exist already.
-				if(!isEdit) {
-					view.showError("<html><body><font size=\"2\" color=\"red\">User already exists.</font></body></html>");
-				} else {
-					IUser curr = model.getUser(view.getCurrUsername());
-					curr.setUsername(view.getCurrUsername());
-					curr.setFullname(view.getCurrFullname());
-					curr.setPassword(new String(view.getCurrPassword()));
-					curr.setUserImgPath(currUserImgPath);
-					view.setDefaultState();
-					view.setUserList(model.getCopyOfUsers());
+			if(view.getCurrUsername().equals(IPhotoModel.adminUser)) {
+				view.showError("<html><body><font size=\"2\" color=\"red\">Cannot use admin user.  Try again.</font></body></html>");
+			} else if(model.userExists(view.getCurrUsername()) && !isEdit){
+				view.showError("<html><body><font size=\"2\" color=\"red\">User already exists.</font></body></html>");
+			} else if(isEdit) {
+				IUser curr = model.getUser(prevUsername);
+				if(curr != null) {
+					if(!model.userExists(view.getCurrUsername()) || prevUsername.equals(view.getCurrUsername())){
+						curr.setUsername(view.getCurrUsername());
+						curr.setFullname(view.getCurrFullname());
+						curr.setPassword(new String(view.getCurrPassword()));
+						curr.setUserImgPath(currUserImgPath);
+						view.setDefaultState();
+						view.setUserList(model.getCopyOfUsers());
+					} else if(!prevUsername.equals(view.getCurrUsername())){
+						view.showError("<html><body><font size=\"2\" color=\"red\">User already exists.</font></body></html>");
+					} else {
+						view.setDefaultState();
+						view.setUserList(model.getCopyOfUsers());
+					}
 				}
 			} else {
 				model.addUser(view.getCurrUsername(), view.getCurrFullname(), new String(view.getCurrPassword()), currUserImgPath);

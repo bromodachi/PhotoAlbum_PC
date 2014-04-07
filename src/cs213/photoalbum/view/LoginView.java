@@ -101,4 +101,9 @@ public abstract class LoginView extends JFrame implements IErrorView {
 	 * Disables the Login interface preventing any logins from taking place.
 	 */
 	public abstract void disableLoginUI();
+	
+	/**
+	 * Return form to default state.
+	 */
+	public abstract void setDefaultState();
 }

@@ -25,6 +25,11 @@ import java.util.List;
 public interface IPhotoModel {
 	public static final String defaultUserImgPath = "bin" + File.separator
 			+ "data" + File.separator + "app" + File.separator + "default.png";
+	public static final String defaultAlbumImgPath = "bin" + File.separator
+			+ "data" + File.separator + "app" + File.separator + "album.png";
+	public static final String defaultNoPhotoImgPath = "bin" + File.separator
+			+ "data" + File.separator + "app" + File.separator + "album.png";
+	public static final String adminUser = "admin";
 
 	/**
 	 * A utility function to help the control figure out whether the user exists
