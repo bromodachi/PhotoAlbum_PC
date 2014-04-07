@@ -15,7 +15,7 @@ import cs213.photoalbum.model.IAlbum;
  *         </p>
  * 
  */
-public interface IInteractiveControl extends IErrorControl {
+public interface IInteractiveControl extends IErrorControl, IControl {
 	/**
 	 * note: all errors like illegal parameters, invalid dates should be in this
 	 * format Error: <description of error>
@@ -27,7 +27,11 @@ public interface IInteractiveControl extends IErrorControl {
 	 * @param userid
 	 *            user's album we wish to run.
 	 */
-	public void run(String userid);
+	//public void run(String userid);
+	
+	public String getUsername();
+	
+	public void setUsername(String username);
 
 	/**
 	 * creates the album that is in the parameter. if the album already exists,
