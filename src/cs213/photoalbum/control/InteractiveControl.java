@@ -23,13 +23,13 @@ import javax.swing.JOptionPane;
 import cs213.photoalbum.model.Album;
 import cs213.photoalbum.model.IAlbum;
 import cs213.photoalbum.model.IPhoto;
-import cs213.photoalbum.model.IPhotoAdminModel;
+import cs213.photoalbum.model.IPhotoModel;
 import cs213.photoalbum.model.Photo;
-import cs213.photoalbum.view.AlbumGui;
-import cs213.photoalbum.view.addTag;
-import cs213.photoalbum.view.UserAlbum;
-import cs213.photoalbum.view.movePhotoDialog;
-import cs213.photoalbum.view.recaptionDialog;
+import cs213.photoalbum.view.AlbumUI;
+import cs213.photoalbum.view.AddTag;
+import cs213.photoalbum.view.UserAlbumUI;
+import cs213.photoalbum.view.MovePhotoDialog;
+import cs213.photoalbum.view.RecaptionDialog;
 
 /**
  * @author Conrado Uraga
@@ -39,19 +39,18 @@ import cs213.photoalbum.view.recaptionDialog;
  *         </p>
  */
 public class InteractiveControl implements IInteractiveControl {
-	private IPhotoAdminModel model;
-	private String userId;
-	private UserAlbum view;
-	private AlbumGui photoListGui;
+	private IPhotoModel model;
+	private String username;
+	private UserAlbumUI view;
+	private AlbumUI photoListGui;
 	private Date begin = null;
 	private Date endz = null;
 
-	public InteractiveControl(String userId, IPhotoAdminModel model, UserAlbum view) {
-		this.userId = userId;
+	public InteractiveControl(String username, IPhotoModel model, UserAlbumUI view) {
+		this.username = username;
 		this.model = model;
-		this.view = new UserAlbum();
+		this.view = new UserAlbumUI();
 		this.view.setInteractiveControl(this);
-		view.initUI(model.getUser(userId).getAlbums());
 	}
 
 	class PhotoCompare implements Comparator<IPhoto> {
@@ -99,6 +98,11 @@ public class InteractiveControl implements IInteractiveControl {
 			return arg;
 		}
 	}
+	
+	@Override
+	public void run() {
+		view.initUI(model.getUser(username).getAlbums());
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -108,11 +112,9 @@ public class InteractiveControl implements IInteractiveControl {
 	 * This implementation makes this method the primary entry point for the
 	 * interactive control.
 	 */
-	@Override
-	public void run(String userId) {
+	public void runOld() {
 		String splitMe;
 		String[] splitting;
-		this.userId = userId;
 		String cmd = "";
 		int i = 1;
 		while (!cmd.equals("logout")) {
@@ -342,12 +344,12 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public void createAlbum(String name) {
-		List<IAlbum> album = model.getUser(userId).getAlbums();
+		List<IAlbum> album = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(album, comparePower);
 		int index = Collections.binarySearch(album, name);
 		if (!(index < 0)) {
-			String error = "album exists for user " + userId + "\n";
+			String error = "album exists for user " + username + "\n";
 			setErrorMessage(error);
 			showError();
 			JButton showTextButton = new JButton();
@@ -358,21 +360,21 @@ public class InteractiveControl implements IInteractiveControl {
 		/* create new album, add it to the user's album list */
 		Album addMe = new Album(name);
 		addMe.createPanel(name);
-		model.getUser(userId).addAlbum(addMe);
+		model.getUser(username).addAlbum(addMe);
 		view.addElementToVector(addMe);
-		String success = "created album for user " + userId + ":\n" + name + "";
+		String success = "created album for user " + username + ":\n" + name + "";
 		setErrorMessage(success);
 		showError();
 	}
 
 	@Override
 	public void renameAlbum(String formal, String id) {
-		List<IAlbum> album = model.getUser(userId).getAlbums();
+		List<IAlbum> album = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(album, comparePower);
 		int index = Collections.binarySearch(album, formal);
 		if (index < 0) {
-			String error = "album does not exist for user " + userId + ":\n"
+			String error = "album does not exist for user " + username + ":\n"
 					+ id + "";
 			setErrorMessage(error);
 			System.out.println(error);
@@ -381,7 +383,7 @@ public class InteractiveControl implements IInteractiveControl {
 		}
 		int checker = Collections.binarySearch(album, id);
 		if (checker >= 0) {
-			String error = "album already exist for user " + userId + ":\n"
+			String error = "album already exist for user " + username + ":\n"
 					+ id + "";
 			setErrorMessage(error);
 			System.out.println(error);
@@ -398,19 +400,19 @@ public class InteractiveControl implements IInteractiveControl {
 	}
 
 	public void deleteAlbum(String id) {
-		List<IAlbum> album = model.getUser(userId).getAlbums();
+		List<IAlbum> album = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(album, comparePower);
 		int index = Collections.binarySearch(album, id);
 		if (index < 0) {
-			String error = "album does not exist for user " + userId + ":\n"
+			String error = "album does not exist for user " + username + ":\n"
 					+ id + "";
 			setErrorMessage(error);
 			showError();
 			return;
 		}
-		model.getUser(userId).deleteAlbum(id);
-		String msg = "deleted album from user " + userId + ":\n" + id + "";
+		model.getUser(username).deleteAlbum(id);
+		String msg = "deleted album from user " + username + ":\n" + id + "";
 		setErrorMessage(msg);
 		int deleteIndex = view.getIndex();
 		System.out.println("test in method");
@@ -423,9 +425,9 @@ public class InteractiveControl implements IInteractiveControl {
 	@Override
 	public void listAlbums() {
 		String AlbumNames = "";
-		List<IAlbum> album1 = model.getUser(userId).getAlbums();
+		List<IAlbum> album1 = model.getUser(username).getAlbums();
 		if (album1.size() == 0) {
-			String error = "No albums exist for user " + userId + "";
+			String error = "No albums exist for user " + username + "";
 			setErrorMessage(error);
 			showError();
 			return;
@@ -475,12 +477,12 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public void listPhotos(String albumId) {
-		List<IAlbum> album = model.getUser(userId).getAlbums();
+		List<IAlbum> album = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(album, comparePower);
 		int index = Collections.binarySearch(album, albumId);
 		if (index < 0) {
-			String error = "album does not exist for user " + userId + ":\n"
+			String error = "album does not exist for user " + username + ":\n"
 					+ albumId + "";
 			setErrorMessage(error);
 			showError();
@@ -507,9 +509,9 @@ public class InteractiveControl implements IInteractiveControl {
 	}
 
 	public void recaptionPhoto(String photoId, String reName) {
-		List<IAlbum> albums = model.getUser(userId).getAlbums();
+		List<IAlbum> albums = model.getUser(username).getAlbums();
 		IPhoto editMe = null;
-		for (int i = 0; i < model.getUser(userId).getAlbums().size(); i++) {
+		for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
 			IAlbum temp = albums.get(i);
 			List<IPhoto> photoList = temp.getPhotoList();
 			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
@@ -543,9 +545,9 @@ public class InteractiveControl implements IInteractiveControl {
 	}
 
 	public IPhoto checkIfiExistAlready(Photo addMe) {
-		List<IAlbum> album1 = model.getUser(userId).getAlbums();
+		List<IAlbum> album1 = model.getUser(username).getAlbums();
 		IPhoto getMe = null;
-		for (int i = 0; i < model.getUser(userId).getAlbums().size(); i++) {
+		for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
 			IAlbum temp2 = album1.get(i);
 			List<IPhoto> photoList2 = temp2.getPhotoList();
 			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
@@ -572,12 +574,12 @@ public class InteractiveControl implements IInteractiveControl {
 	}
 
 	public void movePhoto(String albumIdSrc, String albumIdDest, String photoId) {
-		List<IAlbum> album1 = model.getUser(userId).getAlbums();
+		List<IAlbum> album1 = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(album1, comparePower);
 		int index = Collections.binarySearch(album1, albumIdSrc);
 		if (index < 0) {
-			String error = "album does not exist for user " + userId + ":\n"
+			String error = "album does not exist for user " + username + ":\n"
 					+ albumIdSrc + "";
 			setErrorMessage(error);
 			System.out.println("Over here? wtf here");
@@ -587,7 +589,7 @@ public class InteractiveControl implements IInteractiveControl {
 		IAlbum source = album1.get(index);
 		index = Collections.binarySearch(album1, albumIdDest);
 		if (index < 0) {
-			String error = "album does not exist for user " + userId + ":\n"
+			String error = "album does not exist for user " + username + ":\n"
 					+ albumIdDest + "";
 			System.out.println("here");
 			setErrorMessage(error);
@@ -626,13 +628,13 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public void removePhoto(String albumId, String photoId) {
-		List<IAlbum> album1 = model.getUser(userId).getAlbums();
+		List<IAlbum> album1 = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(album1, comparePower);
 		System.out.println(albumId);
 		int index = Collections.binarySearch(album1, albumId);
 		if (index < 0) {
-			String error = "album does not exist for user " + userId + ":\n"
+			String error = "album does not exist for user " + username + ":\n"
 					+ albumId + "";
 			setErrorMessage(error);
 			showError();
@@ -665,12 +667,12 @@ public class InteractiveControl implements IInteractiveControl {
 	@Override
 	public void addTag(String photoId, String tagType, String tagValue) {
 		/* in case photo doesn't exist */
-		List<IAlbum> albums = model.getUser(userId).getAlbums();
+		List<IAlbum> albums = model.getUser(username).getAlbums();
 		IPhoto getMe = null;
 		boolean working = false;
 		/* for only the current photo */
 		/* below if for all the photos */
-		outerLoop: for (int i = 0; i < model.getUser(userId).getAlbums().size(); i++) {
+		outerLoop: for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
 			IAlbum temp = albums.get(i);
 			List<IPhoto> photoList = temp.getPhotoList();
 			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
@@ -755,12 +757,12 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public void deleteTag(String photoId, String tagType, String tagValue) {
-		List<IAlbum> albums = model.getUser(userId).getAlbums();
+		List<IAlbum> albums = model.getUser(username).getAlbums();
 		/* only for single */
 
 		/* for all */
 		IPhoto editMe = null;
-		outerLoop: for (int i = 0; i < model.getUser(userId).getAlbums().size(); i++) {
+		outerLoop: for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
 			IAlbum temp = albums.get(i);
 			List<IPhoto> photoList = temp.getPhotoList();
 			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
@@ -847,12 +849,12 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public String getPAlbumNames(List<IAlbum> album, String photoId) {
-		List<IAlbum> albums = model.getUser(userId).getAlbums();
+		List<IAlbum> albums = model.getUser(username).getAlbums();
 		IPhoto editMe = null;
 		String albumNames = "";
 		int first = 0;
 		/** iterate each album, get their names if it contains the photoId */
-		for (int i = 0; i < model.getUser(userId).getAlbums().size(); i++) {
+		for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
 			IAlbum temp = albums.get(i);
 			List<IPhoto> photoList = temp.getPhotoList();
 			InteractiveControl.PhotoCompareForNames comparePower = new InteractiveControl.PhotoCompareForNames();
@@ -879,12 +881,12 @@ public class InteractiveControl implements IInteractiveControl {
 		 * NOT DONE WITH THIS. DO SEARCH IF AN ALBUM CONTAINS A PHOTO OR NOT,
 		 * ITS NAME. MOVE stuff
 		 */
-		List<IAlbum> albums = model.getUser(userId).getAlbums();
+		List<IAlbum> albums = model.getUser(username).getAlbums();
 		IPhoto editMe = null;
 		String albumNames = "";
 		int first = 0;
 		/** iterate each album, get their names if it contains the photoId */
-		for (int i = 0; i < model.getUser(userId).getAlbums().size(); i++) {
+		for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
 			IAlbum temp = albums.get(i);
 			List<IPhoto> photoList = temp.getPhotoList();
 			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
@@ -964,7 +966,7 @@ public class InteractiveControl implements IInteractiveControl {
 			return;
 		}
 		String listPhotos = "";
-		List<IAlbum> album1 = model.getUser(userId).getAlbums();
+		List<IAlbum> album1 = model.getUser(username).getAlbums();
 		String success = "";
 		String albumNames = "";
 		for (int i = 0; i < album1.size(); i++) {
@@ -984,7 +986,7 @@ public class InteractiveControl implements IInteractiveControl {
 				}
 			}
 		}
-		success = "Photos for user " + userId + " in range " + start + " to "
+		success = "Photos for user " + username + " in range " + start + " to "
 				+ end + ":\n" + listPhotos;
 		setErrorMessage(success);
 		showError();
@@ -995,7 +997,7 @@ public class InteractiveControl implements IInteractiveControl {
 	public void getPhotosByTag(String tagType, String tagValue, String ori) {
 		tagValue = tagValue.replace("\"", "");
 		/* Assuming that it's by albums only */
-		List<IAlbum> getMe = model.getUser(userId).getAlbums();
+		List<IAlbum> getMe = model.getUser(username).getAlbums();
 		String validPhotos = "";
 		String albumNames = "";
 		String success = "";
@@ -1043,7 +1045,7 @@ public class InteractiveControl implements IInteractiveControl {
 						+ " - Album: " + albumNames + "- Date: "
 						+ tempValid.get(j).getDateString() + "\n";
 			}
-			success = "Photos for user " + userId + " with tags " + ori + ":\n"
+			success = "Photos for user " + username + " with tags " + ori + ":\n"
 					+ validPhotos;
 			setErrorMessage(success);
 			showError();
@@ -1115,7 +1117,7 @@ public class InteractiveControl implements IInteractiveControl {
 				}
 			}
 		}
-		success = "Photos for user " + userId + " with tags " + ori + ":\n"
+		success = "Photos for user " + username + " with tags " + ori + ":\n"
 				+ validPhotos;
 		setErrorMessage(success);
 		showError();
@@ -1157,7 +1159,7 @@ public class InteractiveControl implements IInteractiveControl {
 
 	public void callRecaptionGui(Photo photo) {
 		JFrame frame = new JFrame();
-		recaptionDialog test = new recaptionDialog(frame, true);
+		RecaptionDialog test = new RecaptionDialog(frame, true);
 		if (test.getBoolean() == true) {
 			recaptionPhoto(photo.getFileName(), test.getCaption());
 		}
@@ -1166,10 +1168,10 @@ public class InteractiveControl implements IInteractiveControl {
 
 	public void callTagGui(Photo photo) {
 		JFrame frame = new JFrame();
-		List<IAlbum> getMe = model.getUser(userId).getAlbums();
+		List<IAlbum> getMe = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(getMe, comparePower);
-		addTag tagMe = new addTag(frame, true, photo);
+		AddTag tagMe = new AddTag(frame, true, photo);
 		if (tagMe.getBoolean() == true) {
 			if (tagMe.getTagType().equals("location")) {
 				photoListGui.setDeleteLocationButton(true);
@@ -1182,10 +1184,10 @@ public class InteractiveControl implements IInteractiveControl {
 
 	public void callMoveGui(IAlbum source, Photo photo) {
 		JFrame frame = new JFrame();
-		List<IAlbum> getMe = model.getUser(userId).getAlbums();
+		List<IAlbum> getMe = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(getMe, comparePower);
-		movePhotoDialog moving = new movePhotoDialog(frame, true,
+		MovePhotoDialog moving = new MovePhotoDialog(frame, true,
 				source.getAlbumName(), getMe, photo);
 		if (moving.getBoolean() == true) {
 			movePhoto(source.getAlbumName(), moving.getDest(),
@@ -1196,7 +1198,7 @@ public class InteractiveControl implements IInteractiveControl {
 
 	public void changeGui(IAlbum letsGo) {
 		view.hideMe();
-		this.photoListGui = new AlbumGui(this, this.model, letsGo);
+		this.photoListGui = new AlbumUI(this, this.model, letsGo);
 		photoListGui.initUI(letsGo.getPhotoList());
 	}
 
@@ -1230,6 +1232,16 @@ public class InteractiveControl implements IInteractiveControl {
 		}
 		photoListGui = null;
 		view.showMe();
+	}
+
+	@Override
+	public String getUsername() {
+		return this.username;
+	}
+
+	@Override
+	public void setUsername(String username) {
+		if(this.model.userExists(username)) this.username = username;
 	}
 
 }

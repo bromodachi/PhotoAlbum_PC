@@ -11,7 +11,7 @@ import javax.swing.event.DocumentListener;
  * 
  *         First view the user see upon starting the application.
  */
-public abstract class LoginView extends JFrame {
+public abstract class LoginView extends JFrame implements IErrorView{
 	private static final long serialVersionUID = 1L;
 	
 	public LoginView() {
@@ -94,22 +94,4 @@ public abstract class LoginView extends JFrame {
 	 * Disables the Login interface preventing any logins from taking place.
 	 */
 	public abstract void disableLoginUI();
-
-	/**
-	 * @return True, if the form is showing an error message. Otherwise, false.
-	 */
-	public abstract boolean isError();
-
-	/**
-	 * Sets and shows the error fields with error message.
-	 * 
-	 * @param errorMsg
-	 *            Error message to be displayed to the user.
-	 */
-	public abstract void showError(String errorMsg);
-
-	/**
-	 * Clears current error message and hides the error fields.
-	 */
-	public abstract void hideError();
 }

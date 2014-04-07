@@ -15,12 +15,32 @@ public interface IUser extends Serializable, Comparable<String> {
 	 * 
 	 * @return Identifier associated with user.
 	 */
-	public String getUserId();
+	public String getUsername();
 
 	/**
 	 * @return Returns the full name of the user.
 	 */
-	public String getFullName();
+	public String getFullname();
+	
+	/**
+	 * @return Returns password associated with the user.
+	 */
+	public String getPassword();
+	
+	/**
+	 * @param password The password to be associated with the user.
+	 */
+	public void setPassword(String password);
+	
+	/**
+	 * @return Returns the path to the user's image.
+	 */
+	public String getUserImg();
+	
+	/**
+	 * @param imgPath The path to the user's image.
+	 */
+	public void setUserImg(String imgPath);
 
 	/**
 	 * Gets a list of albums.

@@ -9,17 +9,45 @@ public class User implements IUser {
 	private static final long serialVersionUID = 1L;
 	private String userId;
 	private String fullName;
+	private String password;
+	private String imgPath = "data/photos/default.png";
 	private ArrayList<IAlbum> albumList;
-
-	public User(String userId, String fullName) {
+	
+	public User(String userId, String fullName, String password) {
 		this.userId = userId;
 		this.fullName = fullName;
+		this.password = password;
 		this.albumList = new ArrayList<IAlbum>();
+	}
+	
+	public User(String userId, String fullName, String password, String imgPath) {
+		this(userId, fullName, password);
+		if(!imgPath.isEmpty()) this.imgPath = imgPath;
 	}
 
 	@Override
-	public String getUserId() {
+	public String getUsername() {
 		return this.userId;
+	}
+	
+	@Override
+	public String getPassword() {
+		return this.password;
+	}
+	
+	@Override
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	@Override
+	public String getUserImg() {
+		return this.imgPath;
+	}
+	
+	@Override
+	public void setUserImg(String imgPath) {
+		if(!imgPath.isEmpty()) this.imgPath = imgPath;
 	}
 
 	/**
@@ -55,7 +83,7 @@ public class User implements IUser {
 	}
 
 	@Override
-	public String getFullName() {
+	public String getFullname() {
 		return fullName;
 	}
 
