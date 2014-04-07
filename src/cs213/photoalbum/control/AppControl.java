@@ -10,6 +10,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import cs213.photoalbum.model.IPhotoModel;
+import cs213.photoalbum.model.IUser;
 import cs213.photoalbum.model.PhotoModel;
 import cs213.photoalbum.view.AdminUI;
 import cs213.photoalbum.view.AdminView;
@@ -26,9 +27,10 @@ public class AppControl implements IControl {
 	public static void main(String[] args) {
 		LoginView view = new LoginUI();
 		IPhotoModel model = new PhotoModel();
-		model.loadPreviousSession();
-//		model.addUser("test2", "tester3");
-//		model.addUser("test3", "tester3");
+//		model.loadPreviousSession();
+//		model.addUser("test1", "tester1", "testpass");
+//		model.addUser("test2", "tester2", "testpass");
+//		model.addUser("test3", "tester3", "testpass");
 //		model.saveCurrentSession();
 		AppControl app = new AppControl(view, model);
 		app.run();
@@ -36,13 +38,14 @@ public class AppControl implements IControl {
 
 	private IPhotoModel model;
 	private LoginView view;
+	private AdminControl admin;
 	private AdminView adminView;
 	private String adminUser = "admin";
 
 	public AppControl(LoginView view, IPhotoModel model) {
 		this.model = model;
 		this.view = view;
-		this.adminView = new AdminUI(this.model.getDefaultUserImgPath());
+
 		setup();
 	}
 
@@ -52,13 +55,53 @@ public class AppControl implements IControl {
 	}
 
 	private void setup() {
+		this.adminView = new AdminUI();
+		this.admin = new AdminControl(model, adminView);
 		this.view.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		StateListener state = new StateListener();
+
+		LoginStateListener state = new LoginStateListener();
 		AcceptanceListener acceptState = new AcceptanceListener();
 		this.view.registerUsernameDocument(state);
 		this.view.registerPasswordDocument(state);
 		this.view.registerLoginAction(acceptState);
+		this.view.addWindowListener(new WindowListener() {
+
+			@Override
+			public void windowOpened(WindowEvent e) {
+				//Do nothing.
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				//Do nothing.
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				model.saveCurrentSession();
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+				//Do nothing.
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				//Do nothing.
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+				//Do nothing.
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				//Do nothing.
+			}
+			
+		});
 
 		/*
 		 * The user must have the option to login to the application again
@@ -72,6 +115,7 @@ public class AppControl implements IControl {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
+				view.setUsername("");
 				view.setVisible(true);
 			}
 
@@ -112,16 +156,21 @@ public class AppControl implements IControl {
 	 * @param password Password associated with the user.
 	 */
 	private void login(String username, String password) {
-		this.view.setVisible(false);
 		if (username.equals(adminUser)) {
-			AdminControl admin = new AdminControl(this.model, adminView);
 			this.view.setVisible(false);
 			admin.run();
 		} else {
-			InteractiveControl user = new InteractiveControl(username,
-					this.model, new UserAlbumUI());
-			this.view.setVisible(false);
-			user.run();
+			IUser currUser = this.model.getUser(username);
+			if (currUser != null && currUser.getPassword().equals(password)) {
+				InteractiveControl user = new InteractiveControl(username,
+						this.model, new UserAlbumUI());
+				this.view.setVisible(false);
+				user.run();
+			} else {
+				this.view
+						.showError("<html><body><font size=\"2\" color=\"red\">Username/password is invalid.</font></body></html>");
+				this.view.disableLoginUI();
+			}
 		}
 	}
 
@@ -129,7 +178,7 @@ public class AppControl implements IControl {
 		return model.getUsernames().contains(id);
 	}
 
-	private class StateListener implements DocumentListener {
+	private class LoginStateListener implements DocumentListener {
 		@Override
 		public void insertUpdate(DocumentEvent e) {
 			stateChanger();
@@ -184,13 +233,7 @@ public class AppControl implements IControl {
 			 * @State 5 - Username, password, and error are the controls
 			 * enabled. Return control to user.
 			 */
-			if (model.userExists(view.getUsername())
-					|| view.getUsername().equals(adminUser)) {
-				login(view.getUsername(), new String(view.getPassword()));
-			} else {
-				view.showError("Username/password is invalid");
-				view.disableLoginUI();
-			}
+			login(view.getUsername(), new String(view.getPassword()));
 		}
 	}
 }

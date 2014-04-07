@@ -1221,10 +1221,11 @@ public class InteractiveControl implements IInteractiveControl {
 			BufferedImage myPicture = null;
 			try {
 				myPicture = ImageIO
-						.read(new File(path + "\\photo\\default.png"));
+						.read(new File("bins/data/photos/default.png")); //TODO Retrieve path from model.
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 			BufferedImage reSized = photoListGui.resizeImage(myPicture, 1, 100,
 					100);
 			view.setDefault(new ImageIcon(reSized));
