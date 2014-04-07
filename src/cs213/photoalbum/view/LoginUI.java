@@ -40,7 +40,7 @@ public class LoginUI extends LoginView {
 		setup();
 	}
 
-	private void setup() {
+	private void setup() { //TODO Set window title.
 		this.setLayout(new GridBagLayout());
 		
 		this.titleLbl = new JLabel("<html><body>"
@@ -214,5 +214,14 @@ public class LoginUI extends LoginView {
 	@Override
 	public boolean isError() {
 		return this.errorLbl.isVisible();
+	}
+	
+	@Override
+	public void setDefaultState() {
+		setUsername("");
+		setPassword("");
+		enableUsernameUI();
+		disablePasswordUI();
+		disableLoginUI();
 	}
 }

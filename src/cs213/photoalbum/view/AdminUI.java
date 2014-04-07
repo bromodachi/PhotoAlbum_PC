@@ -32,6 +32,7 @@ import javax.swing.event.ListSelectionListener;
 
 import cs213.photoalbum.model.IPhotoModel;
 import cs213.photoalbum.model.IUser;
+import cs213.photoalbum.model.PhotoModel;
 
 public class AdminUI extends AdminView {
 	private static final long serialVersionUID = 1L;
@@ -75,7 +76,7 @@ public class AdminUI extends AdminView {
 		setDefaultState();
 	}
 
-	private void setup() {
+	private void setup() { //TODO Set window title.
 		this.iis = 180;
 		this.setLayout(new GridBagLayout());
 
@@ -696,7 +697,7 @@ public class AdminUI extends AdminView {
 	@Override
 	public void setCurrUserImg(String img_path) {
 		try {
-			this.imageInfo.setIcon(createIcon(img_path, iis, iis));
+			this.imageInfo.setIcon(PhotoModel.createIcon(img_path, iis, iis));
 		} catch (IOException e) {
 			//TODO Allow View to handle the exception.
 		} catch (Exception e) {
@@ -734,13 +735,7 @@ public class AdminUI extends AdminView {
 		this.changeImgBtn.addActionListener(userImgAL);
 	}
 
-	private ImageIcon createIcon(String img_path, int width, int height)
-			throws IOException, Exception {
-		BufferedImage img = ImageIO.read(new File(img_path));
-		ImageIcon icon = new ImageIcon(img.getScaledInstance(width, height,
-				Image.SCALE_DEFAULT));
-		return icon;
-	}
+
 
 	/**
 	 * @author Mark Labrador
@@ -750,6 +745,7 @@ public class AdminUI extends AdminView {
 	 *         </p>
 	 */
 	private class UserItem extends JPanel implements ListCellRenderer<IUser> {
+		private static final long serialVersionUID = 1L;
 		private JLabel userImage;
 		private JLabel username;
 		private int width;
@@ -797,19 +793,16 @@ public class AdminUI extends AdminView {
 				JList<? extends IUser> list, IUser value, int index,
 				boolean isSelected, boolean cellHasFocus) {
 
-			if (isSelected)
-				this.setBackground(Color.gray);
-			else
-				this.setBackground(Color.white);
+			this.setBackground(isSelected ? Color.gray : Color.white);
 
 			try {
 				this.username.setText(value.getUsername());
-				this.userImage.setIcon(createIcon(value.getUserImgPath(),
+				this.userImage.setIcon(PhotoModel.createIcon(value.getUserImgPath(),
 						this.height - offset, this.height - offset));
 			} catch (Exception e1) {
 				try {
 					//Try to load the default image, if the user's image does not exist.
-					this.userImage.setIcon(createIcon(IPhotoModel.defaultUserImgPath,
+					this.userImage.setIcon(PhotoModel.createIcon(IPhotoModel.defaultUserImgPath,
 							this.height - offset, this.height - offset));
 				} catch (Exception e2) {
 					//Do nothing.

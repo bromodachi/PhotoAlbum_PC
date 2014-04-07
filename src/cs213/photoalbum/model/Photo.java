@@ -95,18 +95,22 @@ public class Photo extends JLabel implements IPhoto {
 		return defensiveCopy;
 	}
 
+	@Override
 	public Icon getPhoto() {
 		return myOriginalPhoto;
 	}
 
+	@Override
 	public Icon getResized() {
 		return myResized;
 	}
 
+	@Override
 	public void setPhoto(Icon setMe) {
 		myOriginalPhoto = setMe;
 	}
 
+	@Override
 	public void setResized(Icon setMe) {
 		myResized = setMe;
 	}
