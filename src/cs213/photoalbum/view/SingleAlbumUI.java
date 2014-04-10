@@ -106,10 +106,22 @@ public class SingleAlbumUI {
 	 * @param curralbum Album to be accessed under a specific user.
 	 */
 	public SingleAlbumUI(InteractiveControl control, IUser curruser, IAlbum curralbum) {
+		
 		this.control = control;
 		this.curruser = curruser;
 		this.curralbum = curralbum;
 		setup();
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void setup() {
@@ -130,7 +142,7 @@ public class SingleAlbumUI {
 		move = new JButton("move");
 		move.setEnabled(false);
 		slideshow = new JButton("Slideshow");
-		this.recaption = new JButton("Recaption");
+		recaption = new JButton("Recaption");
 		addTag = new JButton("Add Tag");
 		deleteTag = new JButton("Delete Tag");
 		buttonsPhoto = new JPanel();
@@ -141,7 +153,7 @@ public class SingleAlbumUI {
 		add.addActionListener(stateChange);
 		remove.addActionListener(stateChange);
 		move.addActionListener(stateChange);
-		this.recaption.addActionListener(stateChange);
+		recaption.addActionListener(stateChange);
 		addTag.addActionListener(stateChange);
 		backToAlbums.addActionListener(stateChange);
 		
@@ -168,9 +180,10 @@ public class SingleAlbumUI {
 		caption = new JLabel("No Caption");
 		photoInfo.add(date);
 		photoInfo.add(caption);
-		recaption = new JButton("Recaption");
+	//	recaption = new JButton("Recaption");
 		deleteLocationTag = new JButton("Delete Location Tag");
 		recaption.setEnabled(false);
+		addTag.setEnabled(false);
 		photoInfo.add(recaption);
 		photoInfo.add(locationTag);
 		deleteLocationTag.setEnabled(false);
@@ -214,11 +227,13 @@ public class SingleAlbumUI {
 					remove.setEnabled(false);
 					move.setEnabled(false);
 					recaption.setEnabled(false);
+					addTag.setEnabled(false);
 				}
 				if (!photoslistModel.isEmpty()) {
 					remove.setEnabled(true);
 					move.setEnabled(true);
 					recaption.setEnabled(true);
+					addTag.setEnabled(true);
 					getIndex = photoslist.getSelectedIndex();
 					if (getIndex != -1) {
 						Photo test = (Photo) photoslistModel.get(getIndex);
@@ -347,6 +362,7 @@ public class SingleAlbumUI {
 			remove.setEnabled(false);
 			move.setEnabled(false);
 			recaption.setEnabled(false);
+			addTag.setEnabled(false);
 			BufferedImage myPicture;
 			try {
 				caption.setText("No Photos");
@@ -390,7 +406,7 @@ public class SingleAlbumUI {
 					}
 					BufferedImage myPicture = ImageIO.read(file);
 					BufferedImage myPictureForInfo = resizeImage(myPicture, 1,
-							400, 400);
+							200, 200);
 					BufferedImage reSized = resizeImage(myPicture, 1, 140, 140);
 					picLabel = new ImageIcon(myPictureForInfo);
 					re = new Photo(curralbum.getAlbumName(), fc
@@ -437,13 +453,16 @@ public class SingleAlbumUI {
 							test.getFileName());
 				}
 			} else if (source == recaption) {
+				System.out.println("I was clicked");
+				
 				if (getIndex != -1) {
 					Photo test = (Photo) photoslistModel.get(getIndex);
-					System.out.println("Testing" + test.getFileName()
+					System.out.println("Testing recpation" + test.getFileName()
 							+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
 					control.callRecaptionGui(test);
 				}
 			} else if (source == addTag) {
+				System.out.println("I was clicked for tags" );
 				if (getIndex != -1) {
 					Photo test = (Photo) photoslistModel.get(getIndex); //TODO Disable add tag if no photo is currently selected.
 					System.out.println("Testing" + test.getFileName()
