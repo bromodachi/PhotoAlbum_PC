@@ -42,10 +42,9 @@ public class AddPhoto extends JDialog {
 			if (source == changePhoto) {
 				try {
 					JFileChooser chooser = new JFileChooser();
+					chooser.setFileFilter(new FileNameExtensionFilter(
+							"JPG, PNG, & GIF Images", "jpg", "gif", "png"));
 					chooser.showOpenDialog(null);
-					FileNameExtensionFilter filter = new FileNameExtensionFilter(
-							"JPG, PNG, & GIF Images", "jpg", "gif", "png");
-					chooser.setFileFilter(filter);
 					file = chooser.getSelectedFile();
 					BufferedImage myPicture = ImageIO.read(file);
 					BufferedImage reSized = resizeImage(myPicture, 1, 140, 140);
