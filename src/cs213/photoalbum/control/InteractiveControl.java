@@ -1063,6 +1063,13 @@ public class InteractiveControl implements IInteractiveControl {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			List<IPhoto> photoList=singlealbumview.getCurrentAlbum().getPhotoList();
+			/*set everything back to default!*/
+				singlealbumview.getCurrentAlbum().setDateRange(null, null);
+				singlealbumview.getCurrentAlbum().setOldestPhoto(null);
+				singlealbumview.getCurrentAlbum().updateNumOfPhotos(
+				0);
+			
 
 			BufferedImage reSized = singlealbumview.resizeImage(myPicture, 1,
 					100, 100);
