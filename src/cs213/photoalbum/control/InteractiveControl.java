@@ -360,15 +360,16 @@ public class InteractiveControl implements IInteractiveControl {
 			}
 		}
 		if (getMe != null) {
-			System.out.println("do I really work here"); //TODO Remove aux.
+		//	System.out.println("do I really work here"); //TODO Remove aux.
 			addMe.setDate(getMe.getDate());
 			addMe.setCaption(getMe.getCaption());
 			addMe.setLocationTag(getMe.getLocationTag());
 			addMe.getPeopleTags().addAll(getMe.getPeopleTags());
-			return getMe;
+			return addMe;
 		} else {
 		//	System.out.println("adfasdf here"); //TODO Handle error on GUI.
-			return getMe;
+		//just return the photo we were trying to edit
+			return addMe;
 		}
 	}
 
