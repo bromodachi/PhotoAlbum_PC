@@ -337,31 +337,37 @@ public class InteractiveControl implements IInteractiveControl {
 
 	}
 
-	public IPhoto photoExistsInAlbum(Photo addMe) {
+	public IPhoto photoExistsInAlbum(Photo addMe, IAlbum curralbum) {
 		List<IAlbum> album1 = model.getUser(username).getAlbums();
 		IPhoto getMe = null;
 		for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
 			IAlbum temp2 = album1.get(i);
 			List<IPhoto> photoList2 = temp2.getPhotoList();
+			if(curralbum.getAlbumName().equals(temp2.getAlbumName())){
+				continue;
+			}
 			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
 			Collections.sort(photoList2, comparePower2);
 			int index3 = Collections.binarySearch(photoList2,
 					addMe.getFileName());
 			if (index3 < 0) {
-				return addMe;
+				continue;
 			}
 			getMe = photoList2.get(index3);
+			if(getMe!=null){
+				//we found the photo we want. Let's break;
 			break;
+			}
 		}
 		if (getMe != null) {
-			System.out.println("here"); //TODO Remove aux.
+			System.out.println("do I really work here"); //TODO Remove aux.
 			addMe.setDate(getMe.getDate());
 			addMe.setCaption(getMe.getCaption());
 			addMe.setLocationTag(getMe.getLocationTag());
 			addMe.getPeopleTags().addAll(getMe.getPeopleTags());
 			return getMe;
 		} else {
-			System.out.println("adfasdf here"); //TODO Handle error on GUI.
+		//	System.out.println("adfasdf here"); //TODO Handle error on GUI.
 			return getMe;
 		}
 	}
