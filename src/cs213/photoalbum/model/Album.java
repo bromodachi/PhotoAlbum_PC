@@ -160,14 +160,24 @@ public class Album extends JPanel implements IAlbum {
 	}
 
 	public void setDateRange(Date numeroUno, Date numeroDos) {
+		if(numeroUno==null && numeroDos==null){
+			dateRange.setText("No date range");
+		}
+		else{
 		String first = new SimpleDateFormat("MM/dd/yyyy").format(numeroUno);
 		String Second = new SimpleDateFormat("MM/dd/yyyy").format(numeroDos);
 		dateRange.setText(first + "-" + Second);
+		}
 	}
 
 	public void setOldestPhoto(Date meSoOld) {
+		if(meSoOld==null){
+			lastUpdated.setText("Oldest Photo: no photos");
+		}
+		else{
 		String first = new SimpleDateFormat("MM/dd/yyyy").format(meSoOld);
 		lastUpdated.setText("Oldest Photo: " + first);
+		}
 	}
 
 	public void updateNumOfPhotos(int i) {
