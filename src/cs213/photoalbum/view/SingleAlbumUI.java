@@ -417,7 +417,7 @@ public class SingleAlbumUI {
 						 */
 						boolean yes = curralbum.addPhoto(re);
 						if (yes == true) {
-							re = (Photo) control.photoExistsInAlbum(re);
+							re = (Photo) control.photoExistsInAlbum(re, curralbum)
 							photoslistModel.addElement(re);
 							photoslist.setListData(photoslistModel.toArray());
 							photoslist.setSelectedValue(re, true);
@@ -520,7 +520,7 @@ public class SingleAlbumUI {
 			System.out.println(test.getBoolean());
 			System.out.println(chooser.getSelectedFile().getName());
 			if (test.getBoolean() == true) {
-				re = (Photo) control.photoExistsInAlbum(re);
+				re = (Photo) control.photoExistsInAlbum(re, curralbum)
 				curralbum.addPhoto(re);
 				photoslistModel.addElement(re);
 				photoslist.setListData(photoslistModel.toArray());
