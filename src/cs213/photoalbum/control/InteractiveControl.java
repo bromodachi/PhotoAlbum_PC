@@ -375,7 +375,6 @@ public class InteractiveControl implements IInteractiveControl {
 			String error = "album does not exist for user " + username + ":\n"
 					+ albumIdSrc + "";
 			setErrorMessage(error);
-			System.out.println("Over here? wtf here");
 			showError();
 			return;
 		}
@@ -408,13 +407,43 @@ public class InteractiveControl implements IInteractiveControl {
 		if (source.getAlbumName().equals(destination.getAlbumName())) {
 			return;
 		}
+		/*if the destination album already contains that photo, it should
+		 * be an invalid move*/
+		List<IPhoto> thePhotos2 = destination.getPhotoList();
+		Collections.sort(thePhotos2, comparePower2);
+		int index2 = Collections.binarySearch(thePhotos2, photoId);
+		if (index2 >= 0) {
+			String error = "File " + photoId + " already exists in "
+					+ albumIdSrc + "";
+			JButton showTextButton = new JButton();
+			JOptionPane.showMessageDialog(showTextButton, error);
+			return;
+		}
 		IPhoto moveMe = thePhotos.get(index);
 		destination.addPhoto(moveMe);
+		if(thePhotos2.size()==0){
+			
+			destination.setPic((Photo)moveMe);
+		}
+		
 		source.deletePhoto(photoId);
+		/*update the album that now contains the photo
+		 * that has been moved: */
+		getDate(destination);
+		destination.setDateRange(begin, endz);
+		destination.setOldestPhoto(begin);
+		int counter=0;
+		thePhotos2 = destination.getPhotoList();
+		/*counts all photos in O(N)*/
+		for(int i=0; i<thePhotos2.size();i++){
+			counter++;
+		}
+		destination.updateNumOfPhotos(counter);
 		singlealbumview.deleteElementFromVector(singlealbumview.getIndex());
 		String success = "Moved photo " + photoId + ":\n" + photoId
 				+ " - From album " + albumIdSrc + " to album " + albumIdDest
 				+ "";
+		
 		setErrorMessage(success);
 		showError();
 	}
