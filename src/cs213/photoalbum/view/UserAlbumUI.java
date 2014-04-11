@@ -44,7 +44,7 @@ public class UserAlbumUI {
 	private JFrame frame;
 
 	public UserAlbumUI() {
-		try {
+	/*	try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -54,7 +54,7 @@ public class UserAlbumUI {
 			e.printStackTrace();
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void initUI(java.util.List<IAlbum> list) {
@@ -87,10 +87,10 @@ public class UserAlbumUI {
 			public void mouseClicked(MouseEvent evt) {
 				JList list = (JList) evt.getSource();
 				if (evt.getClickCount() == 2) {
-					System.out.println("I was double clicked!");
+			//		System.out.println("I was double clicked!");
 					getIndex = jlwi.getSelectedIndex();
 					IAlbum test = (IAlbum) vector.get(getIndex);
-					System.out.println(test.getAlbumName());
+			//		System.out.println(test.getAlbumName());
 					control.changeGui(test);
 				} else if (evt.getClickCount() == 3) { // Triple-click
 					int index = list.locationToIndex(evt.getPoint());
@@ -104,7 +104,7 @@ public class UserAlbumUI {
 					getIndex = jlwi.getSelectedIndex();
 					if (getIndex != -1) {
 						IAlbum test = (IAlbum) vector.get(getIndex);
-						System.out.println(test.getAlbumName());
+				//		System.out.println(test.getAlbumName());
 						delete.setEnabled(true);
 						rename.setEnabled(true);
 					}
@@ -182,7 +182,7 @@ public class UserAlbumUI {
 			delete.setEnabled(false);
 			rename.setEnabled(false);
 		}
-		System.out.println("I came here" + i);
+	//	System.out.println("I came here" + i);
 		mainPanel.revalidate();
 	}
 
@@ -202,11 +202,11 @@ public class UserAlbumUI {
 					control.createAlbum(test.getName());
 				}
 			} else if (source == delete) {
-				System.out.println("test" + getIndex);
+		//		System.out.println("test" + getIndex);
 				if (getIndex != -1) {
 					IAlbum test = (IAlbum) vector.get(getIndex);
-					System.out.println("Testing" + test.getAlbumName()
-							+ getIndex);
+		//			System.out.println("Testing" + test.getAlbumName()
+		//					+ getIndex);
 					control.deleteAlbum(test.getAlbumName());
 				}
 			} else if (source == rename) {
