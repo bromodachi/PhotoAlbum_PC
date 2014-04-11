@@ -79,7 +79,7 @@ public class AddPhoto extends JDialog {
 				setVisible(false);
 			} else if (source == yes) {
 				success = true;
-				System.out.println("yes");
+		//		System.out.println("yes");
 				thePhoto.setCaption(caption.getText());
 				setVisible(false);
 			}
