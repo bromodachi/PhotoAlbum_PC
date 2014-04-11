@@ -360,15 +360,18 @@ public class InteractiveControl implements IInteractiveControl {
 			}
 		}
 		if (getMe != null) {
-		//	System.out.println("do I really work here"); //TODO Remove aux.
+			System.out.println("do I really work here"); //TODO Remove aux.
 			addMe.setDate(getMe.getDate());
 			addMe.setCaption(getMe.getCaption());
 			addMe.setLocationTag(getMe.getLocationTag());
-			addMe.getPeopleTags().addAll(getMe.getPeopleTags());
+			for(int i=0; i<getMe.getPeopleTags().size();i++){
+				System.out.println(i);
+				//addMe.getPeopleTags().addAll(getMe.getPeopleTags());
+				addMe.personTag(getMe.getPeopleTags().get(i));
+			}
 			return addMe;
 		} else {
-		//	System.out.println("adfasdf here"); //TODO Handle error on GUI.
-		//just return the photo we were trying to edit
+			System.out.println("adfasdf here"); //TODO Handle error on GUI.
 			return addMe;
 		}
 	}
@@ -1036,6 +1039,34 @@ public class InteractiveControl implements IInteractiveControl {
 		this.singlealbumview.registerSlideShowAction(new SlideShowListener());
 		singlealbumview.initUI(album.getPhotoList());
 	}
+	public IPhoto checkIfiExistAlready(Photo addMe){
+		List<IAlbum> album1=model.getUser(username).getAlbums();
+		IPhoto getMe=null;
+		for (int i=0; i<model.getUser(username).getAlbums().size(); i++){
+			IAlbum temp2= album1.get(i);
+			List<IPhoto> photoList2=temp2.getPhotoList();
+			/*Collections.binarySearch(this.peopleTags, personName);*/
+			InteractiveControl.PhotoCompareForNames comparePower2=new InteractiveControl.PhotoCompareForNames();
+			Collections.sort(photoList2, comparePower2);
+			int index3=Collections.binarySearch(photoList2, addMe.getFileName());
+			if(index3<0){
+				return addMe;
+			}
+			getMe=photoList2.get(index3);
+			break;
+		}
+		if(getMe!=null){
+			System.out.println("here");
+			addMe.setDate(getMe.getDate());
+			addMe.setCaption(getMe.getCaption());
+			addMe.setLocationTag(getMe.getLocationTag());
+			addMe.getPeopleTags().addAll(getMe.getPeopleTags());
+			return addMe;
+		}
+		else{
+			System.out.println("adfasdf here");
+			return addMe;}
+	}
 
 	/**
 	 * Destroys the current singlealbumview and tries to return back to the view that is a AlbumCollectionUI.
@@ -1064,7 +1095,6 @@ public class InteractiveControl implements IInteractiveControl {
 				e.printStackTrace();
 			}
 			List<IPhoto> photoList=singlealbumview.getCurrentAlbum().getPhotoList();
-			/*set everything back to default!*/
 				singlealbumview.getCurrentAlbum().setDateRange(null, null);
 				singlealbumview.getCurrentAlbum().setOldestPhoto(null);
 				singlealbumview.getCurrentAlbum().updateNumOfPhotos(
