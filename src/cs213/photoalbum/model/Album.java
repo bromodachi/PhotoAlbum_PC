@@ -37,12 +37,12 @@ public class Album extends JPanel implements IAlbum {
 
 	public void createPanel(String name) {
 		this.setLayout(new GridBagLayout());
-		this.setPreferredSize(new Dimension(380, 150));
+		this.setPreferredSize(new Dimension(380, 168));
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		try {
 			String path = System.getProperty("user.dir");
-		//	System.out.println(IPhotoModel.defaultUserImgPath);
+	//		System.out.println(IPhotoModel.defaultUserImgPath);
 			BufferedImage myPicture = ImageIO.read(new File(IPhotoModel.defaultUserImgPath));
 			BufferedImage reSized = resizeImage(myPicture, 1, 100, 100);
 			this.picLabel = new JLabel(new ImageIcon(myPicture));
@@ -58,7 +58,7 @@ public class Album extends JPanel implements IAlbum {
 			gbc.gridwidth = 2;
 			gbc.gridy = 1;
 			this.add(albumNameForLabel, gbc);
-			dateRange = new JLabel("Range: 3-28-2014");
+			dateRange = new JLabel("Range: No Photos");
 			gbc.anchor = GridBagConstraints.SOUTHWEST;
 			gbc.gridx = 0;
 			gbc.gridy = 3;
@@ -66,7 +66,7 @@ public class Album extends JPanel implements IAlbum {
 			gbc.weighty = 0.5;
 			gbc.gridheight = 2;
 			this.add(dateRange, gbc);
-			lastUpdated = new JLabel("Last Updated: 3-28-2014");
+			lastUpdated = new JLabel("Last Updated: No Photos");
 			gbc.anchor = GridBagConstraints.SOUTH;
 			gbc.gridx = 1;
 			gbc.gridy = 3;
@@ -166,7 +166,7 @@ public class Album extends JPanel implements IAlbum {
 		else{
 		String first = new SimpleDateFormat("MM/dd/yyyy").format(numeroUno);
 		String Second = new SimpleDateFormat("MM/dd/yyyy").format(numeroDos);
-		dateRange.setText(first + "-" + Second);
+		dateRange.setText("<HTML> Range: "+first + "-<br></br>" + Second+"</HTML> ");
 		}
 	}
 
