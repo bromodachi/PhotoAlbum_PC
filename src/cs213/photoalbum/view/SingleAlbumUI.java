@@ -51,61 +51,7 @@ import cs213.photoalbum.model.Photo;
  * 
  *         Secondary window that is triggered by the UserAlbumUI.
  */
-public class SingleAlbumUI {
-	//TODO Following functions belong in the AlbumCollectionUI because it is a search across all photos.
-//	private JButton searchDATE;
-//	private JButton searchTAGS;
-	private int getIndex;
-	private int getTagIndex;
-	private int numberOfPhotos;
-	
-	private JFrame frame;
-	private JPanel buttonsPhoto;
-	private JPanel photoInfo;
-	private JPanel photos;
-	private JPanel buttonsInfo;
-	
-	private JButton add;
-	private JButton remove;
-	private JButton move;
-	
-	/*Mark's Slide Show Implementation*/
-	private JButton slideshow;
-	
-	private JButton recaption;
-	private JButton addTag;
-	private JButton deleteTag;
-	private JButton deleteLocationTag;
-	private JButton backToAlbums;
-	
-	/*Lists*/
-	private JListWithImage photoslist;
-	private JList peopletagslist;	
-	private DefaultListModel<IPhoto> photoslistModel;
-	
-	/*Labels*/
-	private JLabel listInfo;
-	private JLabel date;
-	private JLabel caption;
-	private JLabel locationTag;
-	private JLabel photosLbl;
-
-	private ImageIcon picLabel;
-	private Photo re;
-	
-	private InteractiveControl control;
-	private IAlbum curralbum;
-	private IUser curruser;
-
-	/* Have a class the extends the JLabels so we can remove them */
-	/**
-	 * The view controls the control instead of the other way around.
-	 * 
-	 * @param control A control.
-	 * @param curruser The current user this albumUI is running for.
-	 * @param curralbum Album to be accessed under a specific user.
-	 */
-	public SingleAlbumUI(InteractiveControl control, IUser curruser, IAlbum curralbum) {
+public SingleAlbumUI(InteractiveControl control, IUser curruser, IAlbum curralbum) {
 		
 		this.control = control;
 		this.curruser = curruser;
@@ -187,6 +133,7 @@ public class SingleAlbumUI {
 					move.setEnabled(false);
 					recaption.setEnabled(false);
 					deleteTag.setEnabled(false);
+					
 				}
 				if (!photoslistModel.isEmpty()) {
 					Photo test = (Photo) photoslistModel.get(getIndex);
@@ -217,6 +164,7 @@ public class SingleAlbumUI {
 					move.setEnabled(false);
 					recaption.setEnabled(false);
 					addTag.setEnabled(false);
+					deleteTag.setEnabled(false);
 				}
 				if (!photoslistModel.isEmpty()) {
 					remove.setEnabled(true);
@@ -251,9 +199,7 @@ public class SingleAlbumUI {
 						peopletagslist.setListData(test.getPeopleTags().toArray());
 						if (test.getPeopleTags().isEmpty()) {
 							deleteTag.setEnabled(false);
-						} else {
-							deleteTag.setEnabled(true);
-						}
+						} 
 					}
 
 				}
@@ -352,6 +298,11 @@ public class SingleAlbumUI {
 			move.setEnabled(false);
 			recaption.setEnabled(false);
 			addTag.setEnabled(false);
+			locationTag.setText("No location tag yet");
+			DefaultListModel listmodel=new DefaultListModel();
+			peopletagslist.setListData(listmodel.toArray());
+			deleteLocationTag.setEnabled(false);
+			deleteTag.setEnabled(false);
 			BufferedImage myPicture;
 			try {
 				caption.setText("No Photos");
@@ -395,7 +346,7 @@ public class SingleAlbumUI {
 					}
 					BufferedImage myPicture = ImageIO.read(file);
 					BufferedImage myPictureForInfo = resizeImage(myPicture, 1,
-							200, 200);
+							400, 400);
 					BufferedImage reSized = resizeImage(myPicture, 1, 140, 140);
 					picLabel = new ImageIcon(myPictureForInfo);
 					re = new Photo(curralbum.getAlbumName(), fc
@@ -417,10 +368,12 @@ public class SingleAlbumUI {
 						 */
 						boolean yes = curralbum.addPhoto(re);
 						if (yes == true) {
-							re = (Photo) control.photoExistsInAlbum(re, curralbum)
+							re = (Photo) control.photoExistsInAlbum(re, curralbum);
+			//				System.out.println(re.getCaption());
 							photoslistModel.addElement(re);
 							photoslist.setListData(photoslistModel.toArray());
 							photoslist.setSelectedValue(re, true);
+							updateTagList();
 							photos.revalidate();
 							numberOfPhotos++;
 						} else {
@@ -473,6 +426,9 @@ public class SingleAlbumUI {
 						String tagValue = test.getPeopleTags().get(getTagIndex);
 						control.deleteTag(test.getFileName(), "person",
 								tagValue);
+						if(test.getPeopleTags().isEmpty()){
+							deleteTag.setEnabled(false);
+						}
 					}
 				}
 			} else if (source == deleteLocationTag) {
@@ -520,7 +476,7 @@ public class SingleAlbumUI {
 			System.out.println(test.getBoolean());
 			System.out.println(chooser.getSelectedFile().getName());
 			if (test.getBoolean() == true) {
-				re = (Photo) control.photoExistsInAlbum(re, curralbum)
+				re = (Photo) control.photoExistsInAlbum(re, curralbum);
 				curralbum.addPhoto(re);
 				photoslistModel.addElement(re);
 				photoslist.setListData(photoslistModel.toArray());
