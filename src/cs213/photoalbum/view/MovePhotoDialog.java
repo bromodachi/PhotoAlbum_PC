@@ -33,7 +33,7 @@ public class MovePhotoDialog extends JDialog {
 			JButton source = (JButton) e.getSource();
 			if (source == yes) {
 				success = true;
-				System.out.println("yes");
+			//	System.out.println("yes");
 				destination = (String) moveTo.getSelectedItem();
 				setVisible(false);
 
