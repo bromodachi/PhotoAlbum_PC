@@ -39,24 +39,89 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import cs213.photoalbum.control.InteractiveControl;
-import cs213.photoalbum.model.IAlbum;
-import cs213.photoalbum.model.IPhoto;
-import cs213.photoalbum.model.IPhotoModel;
-import cs213.photoalbum.model.IUser;
-import cs213.photoalbum.model.Photo;
+import control.InteractiveControl;
+import model.IAlbum;
+import model.IPhoto;
+import model.IPhotoModel;
+import model.IUser;
+import model.Photo;
 
 /**
  * @author Conrado Uraga & Mark Labrador
  * 
  *         Secondary window that is triggered by the UserAlbumUI.
  */
-public SingleAlbumUI(InteractiveControl control, IUser curruser, IAlbum curralbum) {
+public class SingleAlbumUI {
+	//TODO Following functions belong in the AlbumCollectionUI because it is a search across all photos.
+//	private JButton searchDATE;
+//	private JButton searchTAGS;
+	private int getIndex;
+	private int getTagIndex;
+	private int numberOfPhotos;
+	
+	private JFrame frame;
+	private JPanel buttonsPhoto;
+	private JPanel photoInfo;
+	private JPanel photos;
+	private JPanel buttonsInfo;
+	
+	private JButton add;
+	private JButton remove;
+	private JButton move;
+	
+	/*Mark's Slide Show Implementation*/
+	private JButton slideshow;
+	
+	private JButton recaption;
+	private JButton addTag;
+	private JButton deleteTag;
+	private JButton deleteLocationTag;
+	private JButton backToAlbums;
+	
+	/*Lists*/
+	private JListWithImage photoslist;
+	private JList peopletagslist;	
+	private DefaultListModel<IPhoto> photoslistModel;
+	
+	/*Labels*/
+	private JLabel listInfo;
+	private JLabel date;
+	private JLabel caption;
+	private JLabel locationTag;
+	private JLabel photosLbl;
+
+	private ImageIcon picLabel;
+	private Photo re;
+	
+	private InteractiveControl control;
+	private IAlbum curralbum;
+	private IUser curruser;
+
+	/* Have a class the extends the JLabels so we can remove them */
+	/**
+	 * The view controls the control instead of the other way around.
+	 * 
+	 * @param control A control.
+	 * @param curruser The current user this albumUI is running for.
+	 * @param curralbum Album to be accessed under a specific user.
+	 */
+	public SingleAlbumUI(InteractiveControl control, IUser curruser, IAlbum curralbum) {
 		
 		this.control = control;
 		this.curruser = curruser;
 		this.curralbum = curralbum;
 		setup();
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void setup() {
