@@ -118,7 +118,7 @@ public class SingleAlbumUI {
 		this.curruser = curruser;
 		this.curralbum = curralbum;
 		setup();
-		try {
+	/*	try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -128,7 +128,7 @@ public class SingleAlbumUI {
 			e.printStackTrace();
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	private void setup() {
@@ -173,8 +173,10 @@ public class SingleAlbumUI {
 			BufferedImage reSized = resizeImage(myPicture, 1, 400, 400);
 			listInfo.setIcon(new ImageIcon(reSized));
 		} catch (IOException e) {
+			/*I don't think we need to handle this since we will always have
+			 * the image in the right path*/
 			//TODO Handle errors and exceptions in the AlbumUI window.
-			System.out.println("or here?");
+		//	System.out.println("or here?");
 		}
 		buttonsInfo = new JPanel();
 		buttonsInfo.add(addTag);
@@ -230,7 +232,7 @@ public class SingleAlbumUI {
 		photoslist.setVisibleRowCount(-1);
 		photoslist.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent arg0) {
-				System.out.println(getIndex);
+			//	System.out.println(getIndex);
 				if (photoslistModel.isEmpty()) {
 					remove.setEnabled(false);
 					move.setEnabled(false);
@@ -249,9 +251,9 @@ public class SingleAlbumUI {
 						listInfo.setIcon(test.getPhoto());
 						String date1 = test.getDateString();
 						date.setText(date1);
-						System.out.println(test.getFileName());
-						System.out.println("TESTING: " + curralbum
-								+ test.getCaption());
+					//	System.out.println(test.getFileName());
+					//System.out.println("TESTING: " + curralbum
+					//			+ test.getCaption());
 						if (test.getCaption() != null
 								&& !test.getCaption().isEmpty()) {
 							caption.setText(test.getCaption());
@@ -382,17 +384,17 @@ public class SingleAlbumUI {
 				String path = System.getProperty("user.dir");
 				myPicture = ImageIO
 						.read(new File(IPhotoModel.defaultUserImgPath));
-				System.out.println(IPhotoModel.defaultUserImgPath);
+		//		System.out.println(IPhotoModel.defaultUserImgPath);
 				BufferedImage reSized = resizeImage(myPicture, 1, 400, 400);
 				listInfo.setIcon(new ImageIcon(reSized));
 				numberOfPhotos = 0;
 			} catch (IOException e) {
-				System.out.println("or here?");
+			//	System.out.println("or here?");
 				return;
 			}
 		}
 		numberOfPhotos--;
-		System.out.println("I came here" + i);
+	//	System.out.println("I came here" + i);
 		photos.revalidate();
 	}
 
@@ -461,26 +463,26 @@ public class SingleAlbumUI {
 			} else if (source == remove) {
 				if (getIndex != -1) {
 					Photo test = (Photo) photoslistModel.get(getIndex);
-					System.out.println("Testing" + test.getFileName()
-							+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
+				//	System.out.println("Testing" + test.getFileName()
+				//			+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
 					control.removePhoto(curralbum.getAlbumName(),
 							test.getFileName());
 				}
 			} else if (source == recaption) {
-				System.out.println("I was clicked");
+			//	System.out.println("I was clicked");
 				
 				if (getIndex != -1) {
 					Photo test = (Photo) photoslistModel.get(getIndex);
-					System.out.println("Testing recpation" + test.getFileName()
-							+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
+			//		System.out.println("Testing recpation" + test.getFileName()
+			//				+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
 					control.callRecaptionGui(test);
 				}
 			} else if (source == addTag) {
-				System.out.println("I was clicked for tags" );
+			//	System.out.println("I was clicked for tags" );
 				if (getIndex != -1) {
 					Photo test = (Photo) photoslistModel.get(getIndex); //TODO Disable add tag if no photo is currently selected.
-					System.out.println("Testing" + test.getFileName()
-							+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
+				//	System.out.println("Testing" + test.getFileName()
+				//			+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
 					control.callTagGui(test);
 				}
 
@@ -507,7 +509,7 @@ public class SingleAlbumUI {
 				Photo test = (Photo) photoslistModel.get(getIndex);
 				if (getTagIndex != -1) {
 					String tagValue = test.getLocationTag();
-					System.out.println("testing what is the tag: " + tagValue); //TODO Remove aux.
+				//	System.out.println("testing what is the tag: " + tagValue); //TODO Remove aux.
 					control.deleteTag(test.getFileName(), "location", tagValue);
 					deleteLocationTag.setEnabled(false);
 				}
@@ -545,15 +547,15 @@ public class SingleAlbumUI {
 			re.setDate(cal.getTime());
 			JFrame testz = new JFrame();
 			AddPhoto test = new AddPhoto(testz, re, true);
-			System.out.println(test.getBoolean());
-			System.out.println(chooser.getSelectedFile().getName());
+		//	System.out.println(test.getBoolean());
+		//	System.out.println(chooser.getSelectedFile().getName());
 			if (test.getBoolean() == true) {
 				re = (Photo) control.photoExistsInAlbum(re, curralbum);
 				curralbum.addPhoto(re);
 				photoslistModel.addElement(re);
 				photoslist.setListData(photoslistModel.toArray());
 				photoslist.setSelectedValue(re, true);
-				System.out.println("test");
+			//	System.out.println("test");
 				numberOfPhotos++;
 				photos.revalidate();
 			}
