@@ -39,12 +39,19 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import control.InteractiveControl;
-import model.IAlbum;
-import model.IPhoto;
-import model.IPhotoModel;
-import model.IUser;
-import model.Photo;
+import cs213.photoalbum.control.InteractiveControl;
+
+import cs213.photoalbum.model.IAlbum;
+
+import cs213.photoalbum.model.IPhoto;
+
+import cs213.photoalbum.model.IPhotoModel;
+
+import cs213.photoalbum.model.IUser;
+
+import cs213.photoalbum.model.Photo;
+
+
 
 /**
  * @author Conrado Uraga & Mark Labrador
