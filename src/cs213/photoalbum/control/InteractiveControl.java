@@ -170,7 +170,7 @@ public class InteractiveControl implements IInteractiveControl {
 			String error = "album does not exist for user " + username + ":\n"
 					+ id + "";
 			setErrorMessage(error);
-			System.out.println(error);
+		//	System.out.println(error);
 			showError();
 			return;
 		}
@@ -179,13 +179,13 @@ public class InteractiveControl implements IInteractiveControl {
 			String error = "album already exist for user " + username + ":\n"
 					+ id + "";
 			setErrorMessage(error);
-			System.out.println(error);
+		//	System.out.println(error);
 			JButton showTextButton = new JButton();
 			JOptionPane.showMessageDialog(showTextButton, error);
 			showError();
 			return;
 		}
-		System.out.println("test in control");
+	//	System.out.println("test in control");
 		IAlbum editAlbum = album.get(index);
 		editAlbum.setAlbumName(id);
 		//	int deleteIndex=view.getIndex();
@@ -208,7 +208,7 @@ public class InteractiveControl implements IInteractiveControl {
 		String msg = "deleted album from user " + username + ":\n" + id + "";
 		setErrorMessage(msg);
 		int deleteIndex = view.getIndex();
-		System.out.println("test in method");
+	//	System.out.println("test in method");
 		view.deleteElementFromVector(deleteIndex);
 		showError();
 		return;
@@ -360,18 +360,18 @@ public class InteractiveControl implements IInteractiveControl {
 			}
 		}
 		if (getMe != null) {
-			System.out.println("do I really work here"); //TODO Remove aux.
+	//		System.out.println("do I really work here"); //TODO Remove aux.
 			addMe.setDate(getMe.getDate());
 			addMe.setCaption(getMe.getCaption());
 			addMe.setLocationTag(getMe.getLocationTag());
 			for(int i=0; i<getMe.getPeopleTags().size();i++){
-				System.out.println(i);
+	//			System.out.println(i);
 				//addMe.getPeopleTags().addAll(getMe.getPeopleTags());
 				addMe.personTag(getMe.getPeopleTags().get(i));
 			}
 			return addMe;
 		} else {
-			System.out.println("adfasdf here"); //TODO Handle error on GUI.
+	//		System.out.println("adfasdf here"); //TODO Handle error on GUI.
 			return addMe;
 		}
 	}
@@ -393,7 +393,7 @@ public class InteractiveControl implements IInteractiveControl {
 		if (index < 0) {
 			String error = "album does not exist for user " + username + ":\n"
 					+ albumIdDest + "";
-			System.out.println("here");
+		//	System.out.println("here");
 			setErrorMessage(error);
 			showError();
 			return;
@@ -410,7 +410,7 @@ public class InteractiveControl implements IInteractiveControl {
 					+ albumIdSrc + "";
 			setErrorMessage(error);
 			showError();
-			System.out.println("here? why here?");
+		//	System.out.println("here? why here?");
 			return;
 		}
 		/* Once moved, the photo gets removed from the source */
@@ -463,18 +463,18 @@ public class InteractiveControl implements IInteractiveControl {
 		List<IAlbum> album1 = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(album1, comparePower);
-		System.out.println(albumId);
+	//	System.out.println(albumId);
 		int index = Collections.binarySearch(album1, albumId);
 		if (index < 0) {
 			String error = "album does not exist for user " + username + ":\n"
 					+ albumId + "";
 			setErrorMessage(error);
 			showError();
-			System.out.println("here");
+	//		System.out.println("here");
 			return;
 		}
 		IAlbum source = album1.get(index);
-		System.out.println(source.getAlbumName());
+	//	System.out.println(source.getAlbumName());
 		InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
 		List<IPhoto> thePhotos = source.getPhotoList();
 		Collections.sort(thePhotos, comparePower2);
@@ -484,7 +484,7 @@ public class InteractiveControl implements IInteractiveControl {
 					+ "";
 			setErrorMessage(error);
 			showError();
-			System.out.println("here 2\n" + photoId);
+		//	System.out.println("here 2\n" + photoId);
 			return;
 		}
 		/* I wonder if I can even do this.. */
@@ -938,7 +938,7 @@ public class InteractiveControl implements IInteractiveControl {
 					}
 
 					if (tagz.contains(tagValue)) {
-						System.out.println("test");
+			//			System.out.println("test");
 						albumNames = getPAlbumNames((getMe), getPhotos.get(j)
 								.getFileName());
 						validPhotos = validPhotos + ""
@@ -962,7 +962,7 @@ public class InteractiveControl implements IInteractiveControl {
 		endz = null;
 		List<IPhoto> photoList = letsGo.getPhotoList();
 		begin = photoList.get(0).getDate();
-		System.out.println(photoList.size());
+	//	System.out.println(photoList.size());
 		if (photoList.size() == 1) {
 			endz = photoList.get(0).getDate();
 		}
@@ -1056,7 +1056,7 @@ public class InteractiveControl implements IInteractiveControl {
 			break;
 		}
 		if(getMe!=null){
-			System.out.println("here");
+	//		System.out.println("here");
 			addMe.setDate(getMe.getDate());
 			addMe.setCaption(getMe.getCaption());
 			addMe.setLocationTag(getMe.getLocationTag());
@@ -1064,7 +1064,7 @@ public class InteractiveControl implements IInteractiveControl {
 			return addMe;
 		}
 		else{
-			System.out.println("adfasdf here");
+	//		System.out.println("adfasdf here");
 			return addMe;}
 	}
 
@@ -1075,8 +1075,8 @@ public class InteractiveControl implements IInteractiveControl {
 		singlealbumview.destroy();
 		if (!singlealbumview.getphotoslistModel().isEmpty()) {
 			Photo setMe = (Photo) singlealbumview.getphotoslistModel().get(0);
-			System.out.println(setMe.getFileName() + "here "
-					+ singlealbumview.getphotoslistModel().size());
+	//		System.out.println(setMe.getFileName() + "here "
+	//				+ singlealbumview.getphotoslistModel().size());
 			getDate(singlealbumview.getCurrentAlbum());
 			singlealbumview.getCurrentAlbum().setDateRange(begin, endz);
 			singlealbumview.getCurrentAlbum().setOldestPhoto(begin);
