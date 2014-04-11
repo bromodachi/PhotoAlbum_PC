@@ -25,7 +25,7 @@ public class RecaptionDialog extends JDialog {
 			JButton source = (JButton) e.getSource();
 			if (source == confirm) {
 				success = true;
-				System.out.println("yes");
+			//	System.out.println("yes");
 				setVisible(false);
 
 			} else if (source == cancel) {
