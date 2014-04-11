@@ -141,7 +141,7 @@ public class SingleAlbumUI {
 		});
 		this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setLayout(new GridBagLayout());
-		photosLbl = new JLabel("Photos");
+		photosLbl = new JLabel("<html><body><font size=\"7\">Photos</font></body></html>");
 		add = new JButton("Add");
 		remove = new JButton("remove");
 		backToAlbums = new JButton("Back to Albums");
@@ -165,7 +165,7 @@ public class SingleAlbumUI {
 		backToAlbums.addActionListener(stateChange);
 		
 		photoInfo.setLayout(new BoxLayout(photoInfo, BoxLayout.PAGE_AXIS));
-		photoInfo.setBorder(BorderFactory.createTitledBorder("[Photo Info]"));
+		photoInfo.setBorder(BorderFactory.createTitledBorder("<html><body><font size=\"6\">[Photo Info]</font></body></html>"));
 		listInfo = new JLabel();
 		BufferedImage myPicture;
 		try {
@@ -173,10 +173,8 @@ public class SingleAlbumUI {
 			BufferedImage reSized = resizeImage(myPicture, 1, 400, 400);
 			listInfo.setIcon(new ImageIcon(reSized));
 		} catch (IOException e) {
-			/*I don't think we need to handle this since we will always have
-			 * the image in the right path*/
 			//TODO Handle errors and exceptions in the AlbumUI window.
-		//	System.out.println("or here?");
+	//		System.out.println("or here?");
 		}
 		buttonsInfo = new JPanel();
 		buttonsInfo.add(addTag);
@@ -223,9 +221,12 @@ public class SingleAlbumUI {
 
 		);
 		TitledBorder title;
-		title = BorderFactory.createTitledBorder("[People Tags]");
+		title = BorderFactory.createTitledBorder("<html><body><font size=\"4\">[People Tags]</font></body></html>");
 		title.setTitleJustification(TitledBorder.CENTER);
 		peopletagslist.setBorder(BorderFactory.createTitledBorder(title));
+		peopletagslist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		peopletagslist.setVisibleRowCount(-1);
+		peopletagslist.setAlignmentX(Component.LEFT_ALIGNMENT);
 		photoslist
 				.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		photoslist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -251,9 +252,9 @@ public class SingleAlbumUI {
 						listInfo.setIcon(test.getPhoto());
 						String date1 = test.getDateString();
 						date.setText(date1);
-					//	System.out.println(test.getFileName());
-					//System.out.println("TESTING: " + curralbum
-					//			+ test.getCaption());
+				//		System.out.println(test.getFileName());
+				//		System.out.println("TESTING: " + curralbum
+				//				+ test.getCaption());
 						if (test.getCaption() != null
 								&& !test.getCaption().isEmpty()) {
 							caption.setText(test.getCaption());
@@ -290,7 +291,7 @@ public class SingleAlbumUI {
 				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPaneTag
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPaneTag.setBounds(50, 50, 150, 150);
+		scrollPaneTag.setBounds(80, 50, 400, 150);
 		scrollPaneTag.setPreferredSize(new Dimension(200, 200));
 		tagListPanel.add(scrollPaneTag);
 		tagListPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -384,7 +385,7 @@ public class SingleAlbumUI {
 				String path = System.getProperty("user.dir");
 				myPicture = ImageIO
 						.read(new File(IPhotoModel.defaultUserImgPath));
-		//		System.out.println(IPhotoModel.defaultUserImgPath);
+			//	System.out.println(IPhotoModel.defaultUserImgPath);
 				BufferedImage reSized = resizeImage(myPicture, 1, 400, 400);
 				listInfo.setIcon(new ImageIcon(reSized));
 				numberOfPhotos = 0;
@@ -463,13 +464,13 @@ public class SingleAlbumUI {
 			} else if (source == remove) {
 				if (getIndex != -1) {
 					Photo test = (Photo) photoslistModel.get(getIndex);
-				//	System.out.println("Testing" + test.getFileName()
-				//			+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
+		//			System.out.println("Testing" + test.getFileName()
+		//					+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
 					control.removePhoto(curralbum.getAlbumName(),
 							test.getFileName());
 				}
 			} else if (source == recaption) {
-			//	System.out.println("I was clicked");
+		//		System.out.println("I was clicked");
 				
 				if (getIndex != -1) {
 					Photo test = (Photo) photoslistModel.get(getIndex);
@@ -481,16 +482,16 @@ public class SingleAlbumUI {
 			//	System.out.println("I was clicked for tags" );
 				if (getIndex != -1) {
 					Photo test = (Photo) photoslistModel.get(getIndex); //TODO Disable add tag if no photo is currently selected.
-				//	System.out.println("Testing" + test.getFileName()
-				//			+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
+			//		System.out.println("Testing" + test.getFileName()
+			//				+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
 					control.callTagGui(test);
 				}
 
 			} else if (source == move) {
 				if (getIndex != -1) {
 					Photo test = (Photo) photoslistModel.get(getIndex);
-					System.out.println("Testing" + test.getFileName()
-							+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
+		//			System.out.println("Testing" + test.getFileName()
+			//				+ getIndex + curralbum.getAlbumName()); //TODO Remove aux.
 					control.callMoveGui(curralbum, test);
 				}
 			} else if (source == deleteTag) {
@@ -509,7 +510,7 @@ public class SingleAlbumUI {
 				Photo test = (Photo) photoslistModel.get(getIndex);
 				if (getTagIndex != -1) {
 					String tagValue = test.getLocationTag();
-				//	System.out.println("testing what is the tag: " + tagValue); //TODO Remove aux.
+		//			System.out.println("testing what is the tag: " + tagValue); //TODO Remove aux.
 					control.deleteTag(test.getFileName(), "location", tagValue);
 					deleteLocationTag.setEnabled(false);
 				}
@@ -547,15 +548,15 @@ public class SingleAlbumUI {
 			re.setDate(cal.getTime());
 			JFrame testz = new JFrame();
 			AddPhoto test = new AddPhoto(testz, re, true);
-		//	System.out.println(test.getBoolean());
-		//	System.out.println(chooser.getSelectedFile().getName());
+	//		System.out.println(test.getBoolean());
+	//		System.out.println(chooser.getSelectedFile().getName());
 			if (test.getBoolean() == true) {
 				re = (Photo) control.photoExistsInAlbum(re, curralbum);
 				curralbum.addPhoto(re);
 				photoslistModel.addElement(re);
 				photoslist.setListData(photoslistModel.toArray());
 				photoslist.setSelectedValue(re, true);
-			//	System.out.println("test");
+		//		System.out.println("test");
 				numberOfPhotos++;
 				photos.revalidate();
 			}
