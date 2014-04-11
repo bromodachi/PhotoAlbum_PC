@@ -41,11 +41,22 @@ public class AddPhoto extends JDialog {
 			JButton source = (JButton) e.getSource();
 			if (source == changePhoto) {
 				try {
+					/*JFileChooser fc = new JFileChooser();
+					fc.setFileFilter(new FileNameExtensionFilter(
+							"JPG, PNG, & GIF Images", "jpg", "gif", "png"));
+					fc.showOpenDialog(frame);
+					File file = fc.getSelectedFile();
+					if (file == null) {*/
 					JFileChooser chooser = new JFileChooser();
 					chooser.setFileFilter(new FileNameExtensionFilter(
 							"JPG, PNG, & GIF Images", "jpg", "gif", "png"));
 					chooser.showOpenDialog(null);
 					file = chooser.getSelectedFile();
+					if (file == null) {
+
+						//stupid fix
+						return;
+					}
 					BufferedImage myPicture = ImageIO.read(file);
 					BufferedImage reSized = resizeImage(myPicture, 1, 140, 140);
 					BufferedImage reSized2 = resizeImage(myPicture, 1, 400, 400);
@@ -61,7 +72,7 @@ public class AddPhoto extends JDialog {
 					thePhoto.setDate(cal.getTime());
 				} catch (IOException e1) {
 
-					e1.printStackTrace();
+					return;
 				}
 			} else if (source == cancel) {
 				success = false;
