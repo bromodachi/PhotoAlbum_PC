@@ -81,10 +81,10 @@ public class AlbumCollectionUI {
 			public void mouseClicked(MouseEvent evt) {
 				JList list = (JList) evt.getSource();
 				if (evt.getClickCount() == 2) {
-					System.out.println("I was double clicked!");
+			//		System.out.println("I was double clicked!");
 					getIndex = photoslist.getSelectedIndex();
 					IAlbum test = (IAlbum) albumslist.get(getIndex);
-					System.out.println(test.getAlbumName());
+			//		System.out.println(test.getAlbumName());
 					control.changeGui(test);
 				} else if (evt.getClickCount() == 3) { //Triple-click
 					int index = list.locationToIndex(evt.getPoint());
@@ -98,7 +98,7 @@ public class AlbumCollectionUI {
 					getIndex = photoslist.getSelectedIndex();
 					if (getIndex != -1) {
 						IAlbum test = (IAlbum) albumslist.get(getIndex);
-						System.out.println(test.getAlbumName());
+					//	System.out.println(test.getAlbumName());
 						delete.setEnabled(true);
 						rename.setEnabled(true);
 					}
@@ -178,7 +178,7 @@ public class AlbumCollectionUI {
 			delete.setEnabled(false);
 			rename.setEnabled(false);
 		}
-		System.out.println("I came here" + i);
+	//	System.out.println("I came here" + i);
 		mainPanel.revalidate();
 	}
 
@@ -198,10 +198,10 @@ public class AlbumCollectionUI {
 					control.createAlbum(test.getName());
 				}
 			} else if (source == delete) {
-				System.out.println("test" + getIndex);
+			//	System.out.println("test" + getIndex);
 				if (getIndex != -1) {
 					IAlbum test = (IAlbum) albumslist.get(getIndex);
-					System.out.println("Testing" + test.getAlbumName()
+				//	System.out.println("Testing" + test.getAlbumName()
 							+ getIndex);
 					control.deleteAlbum(test.getAlbumName());
 				}
