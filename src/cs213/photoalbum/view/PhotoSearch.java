@@ -28,7 +28,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-import javax.swing.border.Border;
 import javax.swing.event.DocumentListener;
 
 import cs213.photoalbum.model.IPhoto;
@@ -50,14 +49,22 @@ public class PhotoSearch extends JDialog implements IErrorView{
 	private JButton searchBtn;
 	private JButton cancelBtn;
 	
+	private Dimension standardDim;
+	private Dimension resultsDim;
+	private Dimension datesDim;
+	
 	public PhotoSearch(Frame owner) {
 		super(owner);
 		setup();
 	}
 	
 	private void setup() {
-		this.setPreferredSize(new Dimension(400, 200));
-		this.setMinimumSize(new Dimension(400, 170));
+		this.standardDim = new Dimension(400, 200);
+		this.resultsDim = new Dimension(400, 400);
+		this.datesDim = new Dimension(400, 300);
+		
+		this.setPreferredSize(standardDim);
+		this.setMinimumSize(standardDim);
 		this.setLayout(new GridBagLayout());
 		
 		this.errorLbl = new JLabel("Error");
@@ -73,6 +80,8 @@ public class PhotoSearch extends JDialog implements IErrorView{
 		
 		this.searchBtn = new JButton("Search");
 		this.cancelBtn = new JButton("Cancel");
+		
+
 		
 		for(TagType t : TagType.values()) {
 			this.tagTypeSelect.addItem(t);
@@ -164,10 +173,17 @@ public class PhotoSearch extends JDialog implements IErrorView{
 		rootsc.anchor = GridBagConstraints.CENTER;
 		this.add(photoSearchList, rootsc);
 		
-		this.photoSearchList.setVisible(true);
 		searchDate.setVisible(false);
 		hideError();
-		pack();
+	}
+	
+	public void setDefaultState() {
+		this.hideError();
+		this.hideDateSearch();
+		this.tagTypeSelect.setSelectedIndex(0);
+		this.photoSearchList.setDefaultState();
+		this.photoSearchList.setPreferredSize(standardDim);
+		this.photoSearchList.setVisible(false);
 	}
 	
 	@Override
@@ -215,30 +231,46 @@ public class PhotoSearch extends JDialog implements IErrorView{
 		}
 	}
 	
+	public String getTag() {
+		return this.searchCrit.getText();
+	}
+	
 	public void showTagSearch() {
+		this.photoSearchList.setMinimumSize(standardDim);
+		this.photoSearchList.setPreferredSize(standardDim);
 		this.searchCritLbl.setVisible(true);
 		this.searchCrit.setVisible(true);
 	}
 	
 	public void hideTagSearch() {
+		this.photoSearchList.setMinimumSize(standardDim);
+		this.photoSearchList.setPreferredSize(standardDim);
 		this.searchCritLbl.setVisible(false);
 		this.searchCrit.setVisible(false);
 		this.searchCrit.setText("");
 	}
 	
 	public void showDateSearch() {
+		this.photoSearchList.setMinimumSize(datesDim);
+		this.photoSearchList.setPreferredSize(datesDim);
 		this.searchDate.setVisible(true);
 	}
 	
 	public void hideDateSearch() {
+		this.photoSearchList.setMinimumSize(standardDim);
+		this.photoSearchList.setPreferredSize(standardDim);
 		this.searchDate.setVisible(false);
 	}
 	
 	public void showPhotoResults() {
+		this.photoSearchList.setMinimumSize(resultsDim);
+		this.photoSearchList.setPreferredSize(resultsDim);
 		this.photoSearchList.setVisible(true);
 	}
 	
 	public void hidePhotoResults() {
+		this.photoSearchList.setMinimumSize(standardDim);
+		this.photoSearchList.setPreferredSize(standardDim);
 		this.photoSearchList.setDefaultState();;
 		this.photoSearchList.setVisible(false);
 	}
@@ -272,7 +304,7 @@ public class PhotoSearch extends JDialog implements IErrorView{
 	}
 	
 	public void registerCancelAction(ActionListener cancelAL) {
-		this.searchBtn.addActionListener(cancelAL);
+		this.cancelBtn.addActionListener(cancelAL);
 	}
 	
 	/********************************
@@ -307,10 +339,9 @@ public class PhotoSearch extends JDialog implements IErrorView{
 			/*Photo List Setup*/
 			this.photosScroll.setAlignmentX(LEFT_ALIGNMENT);
 			this.photosScroll.setViewportView(this.photos);
-			this.photosScroll.setBackground(Color.yellow);
 			this.photos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			this.photos.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-			this.photos.setCellRenderer(new SearchImageItem(50, 50));
+			this.photos.setCellRenderer(new SearchImageItem());
 			GridBagConstraints pslc = new GridBagConstraints();
 			
 			/*Error Components*/
@@ -349,7 +380,6 @@ public class PhotoSearch extends JDialog implements IErrorView{
 			/*Photo Search Operations*/
 			JPanel photosearchOps = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 			photosearchOps.add(this.createAlbum);
-			photosearchOps.add(this.cancel);
 			pslc.gridx = 0;
 			pslc.gridy++;
 			pslc.weightx = 1;
@@ -399,11 +429,15 @@ public class PhotoSearch extends JDialog implements IErrorView{
 			return this.photos.getSelectedValuesList();
 		}
 		
-		private class SearchImageItem extends JLabel implements ListCellRenderer<IPhoto> {
-			private int margin = 10;
+		private class SearchImageItem extends JPanel implements ListCellRenderer<IPhoto> {
+			private static final long serialVersionUID = 1L;
+			private int margin = 20;
+			private JLabel icon;
 			
-			public SearchImageItem(int width, int height) {
-				this.setMinimumSize(new Dimension(50, 50));
+			public SearchImageItem() {
+				this.setLayout(new FlowLayout(FlowLayout.CENTER));
+				this.icon = new JLabel();
+				this.add(icon);
 			}
 
 			@Override
@@ -412,7 +446,7 @@ public class PhotoSearch extends JDialog implements IErrorView{
 					boolean isSelected, boolean cellHasFocus) {
 				this.setMinimumSize(new Dimension(value.getResized().getIconWidth() + margin, value.getResized().getIconHeight() + margin));
 				this.setBackground(isSelected ? Color.gray : Color.white);
-				this.add(new JLabel(value.getFileName()));
+				this.icon.setIcon(value.getResized());
 				return this;
 			}
 		}
@@ -532,7 +566,6 @@ public class PhotoSearch extends JDialog implements IErrorView{
 			rootdts.fill = GridBagConstraints.HORIZONTAL;
 			rootdts.anchor = GridBagConstraints.WEST;
 			this.add(month, rootdts);
-			
 			
 			rootdts.gridx++;
 			rootdts.gridy = 0;

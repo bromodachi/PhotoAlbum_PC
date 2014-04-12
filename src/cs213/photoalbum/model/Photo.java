@@ -26,6 +26,7 @@ public class Photo extends JLabel implements IPhoto {
 		this.myOriginalPhoto = ori;
 		this.photoId = photoId;
 		this.fileName = fileName;
+		this.locationTag = "test";
 		this.peopleTags = new ArrayList<String>();
 	}
 

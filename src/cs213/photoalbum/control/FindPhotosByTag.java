@@ -24,13 +24,13 @@ public class FindPhotosByTag extends FindPhotos {
 				for(IPhoto p : aPhotos) {
 					switch(tagType) {
 						case LOCATION:
-							if(p.getLocationTag().equals(tag)) {
+							if(p.getLocationTag() != null && p.getLocationTag().equals(tag)) {
 								insert(p);
 							}
 							break;
 						case PEOPLE:
 							List<String> people = p.getPeopleTags();
-							if(people.contains(tag)) {
+							if(people != null && people.contains(tag)) {
 								insert(p);
 							}
 							break;

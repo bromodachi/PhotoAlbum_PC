@@ -1,6 +1,7 @@
 package cs213.photoalbum.control;
 
 import java.awt.Dialog.ModalityType;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -98,6 +99,7 @@ public class InteractiveControl implements IInteractiveControl {
 			public void actionPerformed(ActionEvent e) {
 				//TODO Remove test.
 				if(user.getAlbums().size() > 0) searchView.loadPhotoResults(user.getAlbums().get(0).getPhotoList());
+				searchView.setPreferredSize(new Dimension(searchView.getWidth(), searchView.getHeight() + 100));
 				searchView.setVisible(true);
 			}
 		});
@@ -110,12 +112,10 @@ public class InteractiveControl implements IInteractiveControl {
 				case PEOPLE:
 					searchView.hideDateSearch();
 					searchView.showTagSearch();
-					searchView.pack();
 					break;
 				case DATE:
 					searchView.hideTagSearch();
 					searchView.showDateSearch();
-					searchView.pack();
 					break;
 				}
 			}	
@@ -129,15 +129,27 @@ public class InteractiveControl implements IInteractiveControl {
 				switch (searchType) {
 				case LOCATION:
 				case PEOPLE:
-					finder = new FindPhotosByTag(model, username, searchType);
+					finder = new FindPhotosByTag(model, searchView.getTag(), searchType);
 					break;
 				case DATE: 
-					finder = new FindPhotosByDate(searchView.getStartDate(), searchView.getEndDate(), model, username, searchType);
+					finder = new FindPhotosByDate(searchView.getStartDate(), searchView.getEndDate(), model, searchType);
 					break;
 				}
-				searchView.loadPhotoResults(finder.find());
-				searchView.showPhotoResults();
+				if(finder != null) {
+					searchView.loadPhotoResults(finder.find());
+					searchView.showPhotoResults();
+				}
 			}
+		});
+		
+		this.searchView.registerCancelAction(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchView.setDefaultState();
+				searchView.setVisible(false);
+			}
+			
 		});
 	}
 
