@@ -140,4 +140,16 @@ public class Photo extends JLabel implements IPhoto {
 		return new SimpleDateFormat("MM/dd/yyyy-HH:MM:SS")
 				.format(this.photoDate);
 	}
+
+	@Override
+	public String getFilePath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setFilePath(String filePath) {
+		// TODO Auto-generated method stub
+		
+	}
 }

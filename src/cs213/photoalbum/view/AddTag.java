@@ -13,6 +13,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
 import cs213.photoalbum.model.Photo;
 
 public class AddTag extends JDialog {

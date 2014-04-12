@@ -39,8 +39,7 @@ public class AlbumCollectionUI {
 	private JButton add;
 	private JButton delete;
 	private JButton rename;
-	private JButton searchByTag;
-	private JButton searchByRange;
+	private JButton searchBtn;
 	private JButton logout;
 	private JPanel mainPanel;
 	private int getIndex;
@@ -50,6 +49,10 @@ public class AlbumCollectionUI {
 
 	public AlbumCollectionUI() {
 		setup();
+	}
+	
+	public JFrame getFrame() {
+		return this.frame;
 	}
 
 	/**
@@ -67,15 +70,13 @@ public class AlbumCollectionUI {
 		delete = new JButton("Delete");
 		rename = new JButton("Rename");
 		logout = new JButton("Logout");
-		searchByTag = new JButton("Search By Tag");
-		searchByRange = new JButton("Search By Range");
+		searchBtn = new JButton("Search By Tag");
 		delete.setEnabled(false);
 		rename.setEnabled(false);
 		buttonPanel.add(add);
 		buttonPanel.add(delete);
 		buttonPanel.add(rename);
-		buttonPanel.add(searchByTag);
-		buttonPanel.add(searchByRange);
+		buttonPanel.add(searchBtn);
 		photoslist = new JListWithImage(albumslist);
 		photoslist.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
@@ -201,8 +202,6 @@ public class AlbumCollectionUI {
 			//	System.out.println("test" + getIndex);
 				if (getIndex != -1) {
 					IAlbum test = (IAlbum) albumslist.get(getIndex);
-				//	System.out.println("Testing" + test.getAlbumName()
-							+ getIndex);
 					control.deleteAlbum(test.getAlbumName());
 				}
 			} else if (source == rename) {
@@ -298,19 +297,10 @@ public class AlbumCollectionUI {
 
 	/**
 	 * @author Mark Labrador
-	 * @param rangeAL
-	 *            Search By Range control action listener.
-	 */
-	public void registerSearchRangeAction(ActionListener rangeAL) {
-		this.searchByRange.addActionListener(rangeAL);
-	}
-
-	/**
-	 * @author Mark Labrador
 	 * @param tagAL
 	 *            Search By Tag control action listener.
 	 */
-	public void registerSearchTagAction(ActionListener tagAL) {
-		this.searchByTag.addActionListener(tagAL);
+	public void registerSearchAction(ActionListener tagAL) {
+		this.searchBtn.addActionListener(tagAL);
 	}
 }

@@ -1,5 +1,6 @@
 package cs213.photoalbum.control;
 
+import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -32,7 +33,10 @@ import cs213.photoalbum.model.Album;
 import cs213.photoalbum.model.IAlbum;
 import cs213.photoalbum.model.IPhoto;
 import cs213.photoalbum.model.IPhotoModel;
+import cs213.photoalbum.model.IUser;
 import cs213.photoalbum.model.Photo;
+import cs213.photoalbum.model.TagType;
+import cs213.photoalbum.view.PhotoSearch;
 import cs213.photoalbum.view.SingleAlbumUI;
 import cs213.photoalbum.view.AddTag;
 import cs213.photoalbum.view.AlbumCollectionUI;
@@ -50,7 +54,9 @@ import cs213.photoalbum.view.SlideShowUI;
 public class InteractiveControl implements IInteractiveControl {
 	private IPhotoModel model;
 	private String username;
+	private IUser user;
 	private AlbumCollectionUI view;
+	private PhotoSearch searchView;
 	private SingleAlbumUI singlealbumview;
 	private SlideShowUI slideshow;
 	private Date begin = null;
@@ -62,6 +68,7 @@ public class InteractiveControl implements IInteractiveControl {
 		this.model = model;
 		this.view = view;
 		this.view.setInteractiveControl(this);
+		this.user = model.getUser(username);
 		setup();
 	}
 
@@ -69,6 +76,10 @@ public class InteractiveControl implements IInteractiveControl {
 	 * @author Mark Labrador
 	 */
 	private void setup() {
+		this.searchView = new PhotoSearch(view.getFrame());
+		this.searchView.setModal(true);
+		this.searchView.setModalityType(ModalityType.APPLICATION_MODAL);
+
 		this.view.registerFrameWindowListener(new WindowAdapter() { //TODO Open original login window after closing.
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -81,6 +92,53 @@ public class InteractiveControl implements IInteractiveControl {
 					}
 				});
 
+		/* Search Actions */
+		this.view.registerSearchAction(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//TODO Remove test.
+				if(user.getAlbums().size() > 0) searchView.loadPhotoResults(user.getAlbums().get(0).getPhotoList());
+				searchView.setVisible(true);
+			}
+		});
+		
+		this.searchView.registerTagTypeAction(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switch(searchView.getSearchType()) {
+				case LOCATION:
+				case PEOPLE:
+					searchView.hideDateSearch();
+					searchView.showTagSearch();
+					searchView.pack();
+					break;
+				case DATE:
+					searchView.hideTagSearch();
+					searchView.showDateSearch();
+					searchView.pack();
+					break;
+				}
+			}	
+		});
+
+		this.searchView.registerSearchAction(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TagType searchType = searchView.getSearchType();
+				FindPhotos finder = null;
+				switch (searchType) {
+				case LOCATION:
+				case PEOPLE:
+					finder = new FindPhotosByTag(model, username, searchType);
+					break;
+				case DATE: 
+					finder = new FindPhotosByDate(searchView.getStartDate(), searchView.getEndDate(), model, username, searchType);
+					break;
+				}
+				searchView.loadPhotoResults(finder.find());
+				searchView.showPhotoResults();
+			}
+		});
 	}
 
 	class PhotoCompare implements Comparator<IPhoto> {
@@ -105,14 +163,13 @@ public class InteractiveControl implements IInteractiveControl {
 
 	@Override
 	public void setErrorMessage(String msg) {
-		//	view.setMessage(msg);
+		//Do nothing.
 
 	}
 
 	@Override
 	public void showError() {
-		//		view.showMessage();
-
+		//Do nothing.
 	}
 
 	@Override
@@ -170,7 +227,7 @@ public class InteractiveControl implements IInteractiveControl {
 			String error = "album does not exist for user " + username + ":\n"
 					+ id + "";
 			setErrorMessage(error);
-		//	System.out.println(error);
+			//	System.out.println(error);
 			showError();
 			return;
 		}
@@ -179,13 +236,12 @@ public class InteractiveControl implements IInteractiveControl {
 			String error = "album already exist for user " + username + ":\n"
 					+ id + "";
 			setErrorMessage(error);
-		//	System.out.println(error);
 			JButton showTextButton = new JButton();
 			JOptionPane.showMessageDialog(showTextButton, error);
 			showError();
 			return;
 		}
-	//	System.out.println("test in control");
+		//	System.out.println("test in control");
 		IAlbum editAlbum = album.get(index);
 		editAlbum.setAlbumName(id);
 		//	int deleteIndex=view.getIndex();
@@ -208,7 +264,7 @@ public class InteractiveControl implements IInteractiveControl {
 		String msg = "deleted album from user " + username + ":\n" + id + "";
 		setErrorMessage(msg);
 		int deleteIndex = view.getIndex();
-	//	System.out.println("test in method");
+		//	System.out.println("test in method");
 		view.deleteElementFromVector(deleteIndex);
 		showError();
 		return;
@@ -343,7 +399,7 @@ public class InteractiveControl implements IInteractiveControl {
 		for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
 			IAlbum temp2 = album1.get(i);
 			List<IPhoto> photoList2 = temp2.getPhotoList();
-			if(curralbum.getAlbumName().equals(temp2.getAlbumName())){
+			if (curralbum.getAlbumName().equals(temp2.getAlbumName())) {
 				continue;
 			}
 			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
@@ -354,24 +410,24 @@ public class InteractiveControl implements IInteractiveControl {
 				continue;
 			}
 			getMe = photoList2.get(index3);
-			if(getMe!=null){
+			if (getMe != null) {
 				//we found the photo we want. Let's break;
-			break;
+				break;
 			}
 		}
 		if (getMe != null) {
-	//		System.out.println("do I really work here"); //TODO Remove aux.
+			//		System.out.println("do I really work here"); //TODO Remove aux.
 			addMe.setDate(getMe.getDate());
 			addMe.setCaption(getMe.getCaption());
 			addMe.setLocationTag(getMe.getLocationTag());
-			for(int i=0; i<getMe.getPeopleTags().size();i++){
-	//			System.out.println(i);
+			for (int i = 0; i < getMe.getPeopleTags().size(); i++) {
+				//			System.out.println(i);
 				//addMe.getPeopleTags().addAll(getMe.getPeopleTags());
 				addMe.personTag(getMe.getPeopleTags().get(i));
 			}
 			return addMe;
 		} else {
-	//		System.out.println("adfasdf here"); //TODO Handle error on GUI.
+			//		System.out.println("adfasdf here"); //TODO Handle error on GUI.
 			return addMe;
 		}
 	}
@@ -393,7 +449,7 @@ public class InteractiveControl implements IInteractiveControl {
 		if (index < 0) {
 			String error = "album does not exist for user " + username + ":\n"
 					+ albumIdDest + "";
-		//	System.out.println("here");
+			//	System.out.println("here");
 			setErrorMessage(error);
 			showError();
 			return;
@@ -410,15 +466,17 @@ public class InteractiveControl implements IInteractiveControl {
 					+ albumIdSrc + "";
 			setErrorMessage(error);
 			showError();
-		//	System.out.println("here? why here?");
+			//	System.out.println("here? why here?");
 			return;
 		}
 		/* Once moved, the photo gets removed from the source */
 		if (source.getAlbumName().equals(destination.getAlbumName())) {
 			return;
 		}
-		/*if the destination album already contains that photo, it should
-		 * be an invalid move*/
+		/*
+		 * if the destination album already contains that photo, it should be an
+		 * invalid move
+		 */
 		List<IPhoto> thePhotos2 = destination.getPhotoList();
 		Collections.sort(thePhotos2, comparePower2);
 		int index2 = Collections.binarySearch(thePhotos2, photoId);
@@ -431,21 +489,22 @@ public class InteractiveControl implements IInteractiveControl {
 		}
 		IPhoto moveMe = thePhotos.get(index);
 		destination.addPhoto(moveMe);
-		if(thePhotos2.size()==0){
-			
-			destination.setPic((Photo)moveMe);
+		if (thePhotos2.size() == 0) {
+
+			destination.setPic((Photo) moveMe);
 		}
-		
+
 		source.deletePhoto(photoId);
-		/*update the album that now contains the photo
-		 * that has been moved: */
+		/*
+		 * update the album that now contains the photo that has been moved:
+		 */
 		getDate(destination);
 		destination.setDateRange(begin, endz);
 		destination.setOldestPhoto(begin);
-		int counter=0;
+		int counter = 0;
 		thePhotos2 = destination.getPhotoList();
-		/*counts all photos in O(N)*/
-		for(int i=0; i<thePhotos2.size();i++){
+		/* counts all photos in O(N) */
+		for (int i = 0; i < thePhotos2.size(); i++) {
 			counter++;
 		}
 		destination.updateNumOfPhotos(counter);
@@ -453,7 +512,7 @@ public class InteractiveControl implements IInteractiveControl {
 		String success = "Moved photo " + photoId + ":\n" + photoId
 				+ " - From album " + albumIdSrc + " to album " + albumIdDest
 				+ "";
-		
+
 		setErrorMessage(success);
 		showError();
 	}
@@ -463,18 +522,18 @@ public class InteractiveControl implements IInteractiveControl {
 		List<IAlbum> album1 = model.getUser(username).getAlbums();
 		InteractiveControl.AlbumCompare comparePower = new InteractiveControl.AlbumCompare();
 		Collections.sort(album1, comparePower);
-	//	System.out.println(albumId);
+		//	System.out.println(albumId);
 		int index = Collections.binarySearch(album1, albumId);
 		if (index < 0) {
 			String error = "album does not exist for user " + username + ":\n"
 					+ albumId + "";
 			setErrorMessage(error);
 			showError();
-	//		System.out.println("here");
+			//		System.out.println("here");
 			return;
 		}
 		IAlbum source = album1.get(index);
-	//	System.out.println(source.getAlbumName());
+		//	System.out.println(source.getAlbumName());
 		InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
 		List<IPhoto> thePhotos = source.getPhotoList();
 		Collections.sort(thePhotos, comparePower2);
@@ -484,7 +543,7 @@ public class InteractiveControl implements IInteractiveControl {
 					+ "";
 			setErrorMessage(error);
 			showError();
-		//	System.out.println("here 2\n" + photoId);
+			//	System.out.println("here 2\n" + photoId);
 			return;
 		}
 		/* I wonder if I can even do this.. */
@@ -938,7 +997,7 @@ public class InteractiveControl implements IInteractiveControl {
 					}
 
 					if (tagz.contains(tagValue)) {
-			//			System.out.println("test");
+						//			System.out.println("test");
 						albumNames = getPAlbumNames((getMe), getPhotos.get(j)
 								.getFileName());
 						validPhotos = validPhotos + ""
@@ -962,7 +1021,7 @@ public class InteractiveControl implements IInteractiveControl {
 		endz = null;
 		List<IPhoto> photoList = letsGo.getPhotoList();
 		begin = photoList.get(0).getDate();
-	//	System.out.println(photoList.size());
+		//	System.out.println(photoList.size());
 		if (photoList.size() == 1) {
 			endz = photoList.get(0).getDate();
 		}
@@ -1039,44 +1098,47 @@ public class InteractiveControl implements IInteractiveControl {
 		this.singlealbumview.registerSlideShowAction(new SlideShowListener());
 		singlealbumview.initUI(album.getPhotoList());
 	}
-	public IPhoto checkIfiExistAlready(Photo addMe){
-		List<IAlbum> album1=model.getUser(username).getAlbums();
-		IPhoto getMe=null;
-		for (int i=0; i<model.getUser(username).getAlbums().size(); i++){
-			IAlbum temp2= album1.get(i);
-			List<IPhoto> photoList2=temp2.getPhotoList();
-			/*Collections.binarySearch(this.peopleTags, personName);*/
-			InteractiveControl.PhotoCompareForNames comparePower2=new InteractiveControl.PhotoCompareForNames();
+
+	public IPhoto checkIfiExistAlready(Photo addMe) {
+		List<IAlbum> album1 = model.getUser(username).getAlbums();
+		IPhoto getMe = null;
+		for (int i = 0; i < model.getUser(username).getAlbums().size(); i++) {
+			IAlbum temp2 = album1.get(i);
+			List<IPhoto> photoList2 = temp2.getPhotoList();
+			/* Collections.binarySearch(this.peopleTags, personName); */
+			InteractiveControl.PhotoCompareForNames comparePower2 = new InteractiveControl.PhotoCompareForNames();
 			Collections.sort(photoList2, comparePower2);
-			int index3=Collections.binarySearch(photoList2, addMe.getFileName());
-			if(index3<0){
+			int index3 = Collections.binarySearch(photoList2,
+					addMe.getFileName());
+			if (index3 < 0) {
 				return addMe;
 			}
-			getMe=photoList2.get(index3);
+			getMe = photoList2.get(index3);
 			break;
 		}
-		if(getMe!=null){
-	//		System.out.println("here");
+		if (getMe != null) {
+			//		System.out.println("here");
 			addMe.setDate(getMe.getDate());
 			addMe.setCaption(getMe.getCaption());
 			addMe.setLocationTag(getMe.getLocationTag());
 			addMe.getPeopleTags().addAll(getMe.getPeopleTags());
 			return addMe;
+		} else {
+			//		System.out.println("adfasdf here");
+			return addMe;
 		}
-		else{
-	//		System.out.println("adfasdf here");
-			return addMe;}
 	}
 
 	/**
-	 * Destroys the current singlealbumview and tries to return back to the view that is a AlbumCollectionUI.
+	 * Destroys the current singlealbumview and tries to return back to the view
+	 * that is a AlbumCollectionUI.
 	 */
 	public void changeGuiBack() {
 		singlealbumview.destroy();
 		if (!singlealbumview.getphotoslistModel().isEmpty()) {
 			Photo setMe = (Photo) singlealbumview.getphotoslistModel().get(0);
-	//		System.out.println(setMe.getFileName() + "here "
-	//				+ singlealbumview.getphotoslistModel().size());
+			//		System.out.println(setMe.getFileName() + "here "
+			//				+ singlealbumview.getphotoslistModel().size());
 			getDate(singlealbumview.getCurrentAlbum());
 			singlealbumview.getCurrentAlbum().setDateRange(begin, endz);
 			singlealbumview.getCurrentAlbum().setOldestPhoto(begin);
@@ -1094,12 +1156,11 @@ public class InteractiveControl implements IInteractiveControl {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			List<IPhoto> photoList=singlealbumview.getCurrentAlbum().getPhotoList();
-				singlealbumview.getCurrentAlbum().setDateRange(null, null);
-				singlealbumview.getCurrentAlbum().setOldestPhoto(null);
-				singlealbumview.getCurrentAlbum().updateNumOfPhotos(
-				0);
-			
+			List<IPhoto> photoList = singlealbumview.getCurrentAlbum()
+					.getPhotoList();
+			singlealbumview.getCurrentAlbum().setDateRange(null, null);
+			singlealbumview.getCurrentAlbum().setOldestPhoto(null);
+			singlealbumview.getCurrentAlbum().updateNumOfPhotos(0);
 
 			BufferedImage reSized = singlealbumview.resizeImage(myPicture, 1,
 					100, 100);
@@ -1120,12 +1181,12 @@ public class InteractiveControl implements IInteractiveControl {
 		if (this.model.userExists(username))
 			this.username = username;
 	}
-	
+
 	private class ThumbnailSelection implements ListSelectionListener {
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
 			IPhoto curr = slideshow.getSelectedPhoto();
-			if(curr != null) {
+			if (curr != null) {
 				slideshow.setMainPhoto(curr);
 			}
 		}
