@@ -14,8 +14,8 @@ public class FindPhotosByDate extends FindPhotos {
 	private Date start;
 	private Date end;
 
-	public FindPhotosByDate(Date start, Date end, IPhotoModel model, String tag, TagType tagType) {
-		super(model, tag, tagType);
+	public FindPhotosByDate(Date start, Date end, IPhotoModel model, TagType tagType) {
+		super(model, "", tagType);
 		this.start = start;
 		this.end = end;
 	}
