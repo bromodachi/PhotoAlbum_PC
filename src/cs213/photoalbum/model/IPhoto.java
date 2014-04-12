@@ -46,6 +46,17 @@ public interface IPhoto extends Serializable, Comparable<String> {
 	public void setFileName(String fileName);
 
 	/**
+	 * @return Returns the filepath to this photo.
+	 */
+	public String getFilePath();
+
+	/**
+	 * @param filePath
+	 *            Changes the photo's filepath.
+	 */
+	public void setFilePath(String filePath);
+
+	/**
 	 * @return Caption associated with the photo.
 	 */
 	public String getCaption();

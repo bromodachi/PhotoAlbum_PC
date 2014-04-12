@@ -1,18 +1,16 @@
 package cs213.photoalbum.control;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import cs213.photoalbum.model.IAlbum;
 import cs213.photoalbum.model.IPhoto;
+import cs213.photoalbum.model.IPhotoModel;
 import cs213.photoalbum.model.IUser;
 import cs213.photoalbum.model.PhotoModel;
 import cs213.photoalbum.model.TagType;
 
 public class FindPhotosByTag extends FindPhotos {
-	public FindPhotosByTag(PhotoModel model, String tag, TagType tagType) {
+	public FindPhotosByTag(IPhotoModel model, String tag, TagType tagType) {
 		super(model, tag, tagType);
 	}
 	
