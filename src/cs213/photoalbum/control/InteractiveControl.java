@@ -97,8 +97,6 @@ public class InteractiveControl implements IInteractiveControl {
 		this.view.registerSearchAction(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//TODO Remove test.
-				if(user.getAlbums().size() > 0) searchView.loadPhotoResults(user.getAlbums().get(0).getPhotoList());
 				searchView.setPreferredSize(new Dimension(searchView.getWidth(), searchView.getHeight() + 100));
 				searchView.setVisible(true);
 			}
@@ -112,10 +110,12 @@ public class InteractiveControl implements IInteractiveControl {
 				case PEOPLE:
 					searchView.hideDateSearch();
 					searchView.showTagSearch();
+					searchView.hidePhotoResults();
 					break;
 				case DATE:
 					searchView.hideTagSearch();
 					searchView.showDateSearch();
+					searchView.hidePhotoResults();
 					break;
 				}
 			}	
@@ -149,7 +149,34 @@ public class InteractiveControl implements IInteractiveControl {
 				searchView.setDefaultState();
 				searchView.setVisible(false);
 			}
-			
+		});
+		
+		this.searchView.registerCreateAlbum(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<IPhoto> photos = searchView.getSelectedPhotos();
+				String name = searchView.getAlbumName();
+				if(photos != null && photos.size() > 0) {
+					if(!name.isEmpty()) {
+						createAlbum(name);
+						IAlbum curra = null;
+						for(IAlbum a : user.getAlbums()) {
+							if(a.getAlbumName().equals(name)) {
+								curra = a;
+								break;
+							}
+						}
+						
+						if(curra != null) {
+							for(IPhoto p : photos) {
+								curra.addPhoto(p);
+							}
+						}
+					}
+				}
+				searchView.setDefaultState();
+				searchView.setVisible(false);
+			}
 		});
 	}
 

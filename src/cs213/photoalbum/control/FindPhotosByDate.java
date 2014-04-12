@@ -35,5 +35,4 @@ public class FindPhotosByDate extends FindPhotos {
 			}
 		}
 	}
-
 }

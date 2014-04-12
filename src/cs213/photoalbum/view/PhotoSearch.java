@@ -173,6 +173,7 @@ public class PhotoSearch extends JDialog implements IErrorView{
 		rootsc.anchor = GridBagConstraints.CENTER;
 		this.add(photoSearchList, rootsc);
 		
+		photoSearchList.setVisible(false);
 		searchDate.setVisible(false);
 		hideError();
 	}
@@ -182,7 +183,8 @@ public class PhotoSearch extends JDialog implements IErrorView{
 		this.hideDateSearch();
 		this.tagTypeSelect.setSelectedIndex(0);
 		this.photoSearchList.setDefaultState();
-		this.photoSearchList.setPreferredSize(standardDim);
+		this.setPreferredSize(standardDim);
+		this.setMinimumSize(standardDim);
 		this.photoSearchList.setVisible(false);
 	}
 	
@@ -231,47 +233,51 @@ public class PhotoSearch extends JDialog implements IErrorView{
 		}
 	}
 	
+	public String getAlbumName() {
+		return this.photoSearchList.getAlbumName();
+	}
+	
 	public String getTag() {
 		return this.searchCrit.getText();
 	}
 	
 	public void showTagSearch() {
-		this.photoSearchList.setMinimumSize(standardDim);
-		this.photoSearchList.setPreferredSize(standardDim);
+		this.setMinimumSize(standardDim);
+		this.setPreferredSize(standardDim);
 		this.searchCritLbl.setVisible(true);
 		this.searchCrit.setVisible(true);
 	}
 	
 	public void hideTagSearch() {
-		this.photoSearchList.setMinimumSize(standardDim);
-		this.photoSearchList.setPreferredSize(standardDim);
+		this.setMinimumSize(standardDim);
+		this.setPreferredSize(standardDim);
 		this.searchCritLbl.setVisible(false);
 		this.searchCrit.setVisible(false);
 		this.searchCrit.setText("");
 	}
 	
 	public void showDateSearch() {
-		this.photoSearchList.setMinimumSize(datesDim);
-		this.photoSearchList.setPreferredSize(datesDim);
+		this.setMinimumSize(datesDim);
+		this.setPreferredSize(datesDim);
 		this.searchDate.setVisible(true);
 	}
 	
 	public void hideDateSearch() {
-		this.photoSearchList.setMinimumSize(standardDim);
-		this.photoSearchList.setPreferredSize(standardDim);
+		this.setMinimumSize(standardDim);
+		this.setPreferredSize(standardDim);
 		this.searchDate.setVisible(false);
 	}
 	
 	public void showPhotoResults() {
-		this.photoSearchList.setMinimumSize(resultsDim);
-		this.photoSearchList.setPreferredSize(resultsDim);
+		this.setMinimumSize(resultsDim);
+		this.setPreferredSize(resultsDim);
 		this.photoSearchList.setVisible(true);
 	}
 	
 	public void hidePhotoResults() {
-		this.photoSearchList.setMinimumSize(standardDim);
-		this.photoSearchList.setPreferredSize(standardDim);
-		this.photoSearchList.setDefaultState();;
+		this.setMinimumSize(standardDim);
+		this.setPreferredSize(standardDim);
+		this.photoSearchList.setDefaultState();
 		this.photoSearchList.setVisible(false);
 	}
 	
@@ -307,6 +313,10 @@ public class PhotoSearch extends JDialog implements IErrorView{
 		this.cancelBtn.addActionListener(cancelAL);
 	}
 	
+	public void registerCreateAlbum(ActionListener createAL) {
+		this.photoSearchList.registerCreateAlbum(createAL);
+	}
+	
 	/********************************
 	 * Helper Classes
 	 ********************************/
@@ -318,6 +328,9 @@ public class PhotoSearch extends JDialog implements IErrorView{
 		
 		private JButton createAlbum;
 		private JButton cancel;
+		
+		private JLabel albumLbl;
+		private JTextField albumName;
 		
 		private JLabel errorLbl;
 		private JLabel errorMsg;
@@ -333,6 +346,8 @@ public class PhotoSearch extends JDialog implements IErrorView{
 			this.photosScroll = new JScrollPane(this.photos);
 			this.createAlbum = new JButton("Create Album");
 			this.cancel = new JButton("Cancel");
+			this.albumLbl = new JLabel("Album Name");
+			this.albumName = new JTextField();
 			this.errorLbl = new JLabel("Error");
 			this.errorMsg = new JLabel();
 			
@@ -377,6 +392,27 @@ public class PhotoSearch extends JDialog implements IErrorView{
 			photosScroll.setBorder(BorderFactory.createLineBorder(Color.blue));
 			this.add(photosScroll, pslc);
 			
+			/*Create Album*/
+			pslc.gridx = 0;
+			pslc.gridy++;
+			pslc.weightx = 0;
+			pslc.weighty = 0;
+			pslc.gridwidth = 1;
+			pslc.insets = new Insets(5,5,5,5);
+			pslc.fill = GridBagConstraints.NONE;
+			pslc.anchor = GridBagConstraints.EAST;
+			this.add(this.albumLbl, pslc);
+			
+			pslc.gridx = 1;
+			pslc.gridy = pslc.gridy;
+			pslc.weightx = 1;
+			pslc.weighty = 0;
+			pslc.gridwidth = 1;
+			pslc.insets = new Insets(5,5,5,5);
+			pslc.fill = GridBagConstraints.HORIZONTAL;
+			pslc.anchor = GridBagConstraints.CENTER;
+			this.add(this.albumName, pslc);
+			
 			/*Photo Search Operations*/
 			JPanel photosearchOps = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 			photosearchOps.add(this.createAlbum);
@@ -414,7 +450,7 @@ public class PhotoSearch extends JDialog implements IErrorView{
 		public void setDefaultState() {
 			hideError();
 			this.photosModel.clear();
-			this.createAlbum.setEnabled(false);
+			this.createAlbum.setEnabled(true);
 			this.cancel.setEnabled(true);
 		}
 		
@@ -425,8 +461,16 @@ public class PhotoSearch extends JDialog implements IErrorView{
 			}
 		}
 		
+		public String getAlbumName() {
+			return this.albumName.getText();
+		}
+		
 		public List<IPhoto> getSelectedPhotos() {
 			return this.photos.getSelectedValuesList();
+		}
+		
+		public void registerCreateAlbum(ActionListener createAlbum) {
+			this.createAlbum.addActionListener(createAlbum);
 		}
 		
 		private class SearchImageItem extends JPanel implements ListCellRenderer<IPhoto> {
